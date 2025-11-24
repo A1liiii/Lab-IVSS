@@ -1,3 +1,4 @@
+<?php include __DIR__ . '/../layouts/public_header.php'; ?>
 <!-- Recent Posts Section -->
     <section id="recent-posts" class="recent-posts section">
 
@@ -305,3 +306,5 @@
 </body>
 
 </html>
+<?php include __DIR__ . '/../layouts/public_footer.php'; ?>
+<!-- footer -->

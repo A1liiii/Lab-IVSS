@@ -1,3 +1,4 @@
+<?php include __DIR__ . '/../layouts/public_header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -515,3 +516,5 @@
 </body>
 
 </html>
+<?php include __DIR__ . '/../layouts/public_footer.php'; ?>
+<!-- footer -->

@@ -1,10 +1,11 @@
+<?php include __DIR__ . '/../layouts/public_header.php'; ?>
 <!-- Recent Posts Section -->
     <section id="recent-posts" class="recent-posts section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Recent Posts</h2>
-        <p>Publikasi</p>
+        <p>Publikasi   </p>
       </div><!-- End Section Title -->
 
       <div class="container">
@@ -305,3 +306,5 @@
 </body>
 
 </html>
+<?php include __DIR__ . '/../layouts/public_footer.php'; ?>
+<!-- footer -->
