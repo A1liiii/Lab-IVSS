@@ -4,7 +4,7 @@
 </head>
 <body>
   <!-- header -->
-<?php include _DIR_ . '/../layouts/public_header.php'; ?>
+<?php include __DIR__ . '/../layouts/public_header.php'; ?>
 
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio section">
@@ -196,7 +196,7 @@
 </section>
 <!-- /Portfolio Section -->
 
-<?php include _DIR_ . '/../layouts/public_footer.php'; ?>
+<?php include __DIR__ . '/../layouts/public_footer.php'; ?>
 <!-- footer -->
 </body>
 </html>
