@@ -1,4 +1,5 @@
-<!-- header -->
+
+  <!-- header -->
 <?php include __DIR__ . '/../layouts/public_header.php'; ?>
 
 <!-- Portfolio Section -->
