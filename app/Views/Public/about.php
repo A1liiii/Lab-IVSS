@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/public_header.php'; ?>
+<?php include __DIR__ . '/../layouts/public_header.php'; ?>
 <!-- About Section -->
     <section id="about" class="about section">
 
@@ -331,4 +331,4 @@
 
     </section><!-- /Team Section -->
 
-<?php include __DIR__ . '/public_footer.php'; ?>
+<?php include __DIR__ . '/../layouts/public_footer.php'; ?>
