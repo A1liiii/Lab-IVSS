@@ -8,8 +8,7 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
 
-  <link href="../../../public/assets/img/favicon.png" rel="icon">
-  <link href="../../../public/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="../../../public/assets/img/logo-fix-putih.jpg" rel="icon">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -29,14 +28,14 @@
 
 <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
-      <a href="public_layout.php" class="logo d-flex align-items-center me-auto">
+      <a href="../Public/home.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="../../../public/assets/img/logo.png" alt="">
+        <img src="../../../public/assets/img/logo-fix.png" alt="">
         <h1 class="sitename">IVSS</h1>
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="../layouts/public_layout.php" class="active">Beranda<br></a></li>
+          <li><a href="../Public/home.php" class="active">Beranda<br></a></li>
             <li class="dropdown"><a href="../Public/about.php"><span>Tentang Kami</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Lab</a></li>
