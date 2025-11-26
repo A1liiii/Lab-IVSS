@@ -9,7 +9,13 @@ switch ($page) {
         $c = new DashboardController();
         $c->index();
         break;
-
+    
+        case 'admin-logs':
+            require 'app/Controllers/admin/logs.php';
+            $c = new LogsController();
+            $c->index();
+            break;        
+    
     default:
         require 'app/Controllers/public/home.php';
         break;
