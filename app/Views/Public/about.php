@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?php include __DIR__ . '/../layouts/public_header.php'; ?>
+=======
+<?php include __DIR__ . '/public_header.php'; ?>
+>>>>>>> 869e1f4e1a3ac21f51a00a8f075e23919f12ee3e
 <!-- About Section -->
     <section id="about" class="about section">
 
@@ -331,4 +335,8 @@
 
     </section><!-- /Team Section -->
 
+<<<<<<< HEAD
 <?php include __DIR__ . '/../layouts/public_footer.php'; ?>
+=======
+<?php include __DIR__ . '/public_footer.php'; ?>
+>>>>>>> 869e1f4e1a3ac21f51a00a8f075e23919f12ee3e
