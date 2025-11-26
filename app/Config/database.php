@@ -5,7 +5,7 @@ class Database {
         $host = "localhost";
         $port = "5432"; 
         $user = "postgres"; 
-        $pass = "1";        
+        $pass = "258369";        
         $db   = "labIVSS";
 
         try {

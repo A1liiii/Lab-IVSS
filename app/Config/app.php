@@ -1,3 +1,3 @@
 <?php
-define('BASE_URL', 'http://localhost/lab-ivss/public/');
+define('BASE_URL', 'http://localhost/Lab-IVSS/public/');
 ?>
