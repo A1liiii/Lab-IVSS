@@ -3,16 +3,19 @@
 class Database {
     public static function connect() {
         $host = "localhost";
-        $user = "root";
-        $pass = "";
+        $port = "5432"; 
+        $user = "postgres"; 
+        $pass = "1";        
         $db   = "labIVSS";
 
-        $conn = new mysqli($host, $user, $pass, $db);
-
-        if ($conn->connect_error) {
-            die("FAILED TO CONNECT DB: " . $conn->connect_error);
+        try {
+            $dsn = "pgsql:host=$host;port=$port;dbname=$db;";
+            $conn = new PDO($dsn, $user, $pass);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $conn;
+        } catch (PDOException $e) {
+            die("FAILED TO CONNECT DB: " . $e->getMessage());
         }
-
-        return $conn;
     }
 }
+
