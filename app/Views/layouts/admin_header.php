@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title><?= $title ?? 'Admin Panel - IVSS' ?></title>
+  <title><?= isset($title) ? $title : 'Admin Panel - IVSS' ?></title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/main.css">

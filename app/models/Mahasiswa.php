@@ -12,8 +12,9 @@ class Mahasiswa {
 
     public function count() {
         $sql = "SELECT COUNT(*) AS total FROM mahasiswa";
-        $result = $this->conn->query($sql);
-        return $result->fetch_assoc()['total'];
-    }
+        $stmt = $this->conn->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }    
 }
 ?>
