@@ -7,8 +7,7 @@ class Dokumentasi {
     private $conn;
 
     public function __construct() {
-        // PDO connection
-        $this->conn = Database::connect();
+        $this->conn = Database::connect(); // PDO
     }
 
     public function count() {

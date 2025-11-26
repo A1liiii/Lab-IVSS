@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 require_once __DIR__ . '/../Config/database.php';
 
@@ -7,7 +7,6 @@ class User {
     private $conn;
 
     public function __construct() {
-        // PDO Connection
         $this->conn = Database::connect();
     }
 
@@ -23,5 +22,5 @@ class User {
         $stmt = $this->conn->query($sql);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
-   }
+    }
 }

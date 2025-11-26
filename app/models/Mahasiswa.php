@@ -7,7 +7,6 @@ class Mahasiswa {
     private $conn;
 
     public function __construct() {
-        // ini adalah PDO
         $this->conn = Database::connect();
     }
 
@@ -16,6 +15,6 @@ class Mahasiswa {
         $stmt = $this->conn->query($sql);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
-    }
+    }    
 }
 ?>
