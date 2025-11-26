@@ -9,7 +9,7 @@
 :root { 
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
   --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #eaeff8; /* Color for headings, subheadings and title throughout the website */
+  --heading-color: #080808; /* Color for headings, subheadings and title throughout the website */
   --accent-color: #ffde59; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
   --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
   --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
@@ -132,7 +132,6 @@ h6 {
   color: var(--default-color);
   background-color: var(--background-color);
   padding: 20px 0;
-  transition: all 0.5s;
   z-index: 997;
 }
 
@@ -141,7 +140,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 36px;
+  max-height: 95px;
   margin-right: 8px;
 }
 
@@ -198,7 +197,7 @@ h6 {
 
 /* Index Page Header on Scroll
 ------------------------------*/
-.index-page.scrolled .header {
+.index-page .header {
   --background-color: #ffffff;
 }
 
@@ -823,7 +822,7 @@ section,
   padding: 80px 0 60px 0;
   display: flex;
   align-items: center;
-  background: url(../img/hero-bg-final.png) top center no-repeat;
+  background: url(../../assets/img/hero-bg-final.png) top center no-repeat;
   background-size: cover;
 }
 
@@ -1957,7 +1956,7 @@ section,
   font-size: 15px;
 }
 
-.portfolio-details .portfolio-info ul li + li {
+.portfolio-details .portfolio-info ul li+li {
   margin-top: 10px;
 }
 
@@ -1975,7 +1974,6 @@ section,
   padding: 0;
   color: color-mix(in srgb, var(--default-color), transparent 30%);
 }
-
 
 /*--------------------------------------------------------------
 # Service Details Section
