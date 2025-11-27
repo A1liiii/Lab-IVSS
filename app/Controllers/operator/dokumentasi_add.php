@@ -1,0 +1,65 @@
+<?php 
+
+require_once __DIR__ . '/../../models/Dokumentasi.php';
+
+class OperatorDokumentasiAddController {
+
+    public function index() {
+
+        $title  = "Tambah Dokumentasi";
+        $active = "dokumentasi";
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            // ===== Ambil Input =====
+            $judul_kegiatan     = $_POST['judul_kegiatan'];
+            $deskripsi_kegiatan = $_POST['deskripsi_kegiatan'];
+            $caption            = $_POST['caption'];
+            $tanggal_kegiatan   = $_POST['tanggal_kegiatan'];
+            $jenis_kegiatan     = $_POST['jenis_kegiatan'];
+            $user_id            = 1; // nanti ambil dari session
+
+            // ===== Upload File Utama =====
+            $file_path = null;
+            $type_file = null;
+
+            if (!empty($_FILES['file_path']['name'])) {
+
+                $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
+                if (!is_dir($folder)) mkdir($folder, 0755, true);
+
+                $namaFile = time() . "_" . $_FILES['file_path']['name'];
+
+                move_uploaded_file(
+                    $_FILES['file_path']['tmp_name'],
+                    $folder . $namaFile
+                );
+
+                $file_path = $namaFile;
+                $type_file = pathinfo($namaFile, PATHINFO_EXTENSION);
+            }
+
+            // ===== Simpan ke Database =====
+            $m = new Dokumentasi();
+            $m->insert(
+                $file_path,
+                $type_file,
+                $caption,
+                $judul_kegiatan,
+                $deskripsi_kegiatan,
+                $tanggal_kegiatan,
+                $jenis_kegiatan,
+                $user_id
+            );
+
+            header("Location: /lab-ivss/index.php?page=operator-dokumentasi");
+            exit;
+        }
+
+        // ===== TAMPILAN =====
+        require_once __DIR__ . '/../../Views/layouts/operator_header.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_sidebar.php';
+        require_once __DIR__ . '/../../Views/Operator/dokumentasi_add.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_footer.php';
+    }
+}

@@ -35,9 +35,16 @@
                 <input type="file" name="file_url" class="form-control">
             </div>
 
-            <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="/lab-ivss/index.php?page=operator-berita" class="btn btn-secondary">Kembali</a>
+            <div class="d-flex justify-content-end mt-4">
+                <a href="index.php?page=operator-berita" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
 
+                <button class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
+            </div>
+            
         </form>
     </div>
 

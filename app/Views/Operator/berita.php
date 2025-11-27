@@ -18,6 +18,7 @@
         </tr>
       </thead>
       <tbody>
+      <?php if (!empty($berita)) : ?>
         <?php foreach ($berita as $b): ?>
         <tr>
           <td><?= $b['berita_id'] ?></td>
@@ -37,6 +38,11 @@
           </td>
         </tr>
         <?php endforeach; ?>
+        <?php else : ?>
+        <tr>
+        <td colspan="6" class="text-center">Belum ada berita</td>
+        </tr>
+        <?php endif; ?>
       </tbody>
     </table>
   </div>
