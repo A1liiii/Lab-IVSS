@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../Config/database.php';
 
-class Proyek {
+class Publikasi {
 
     private $conn;
 
@@ -11,7 +11,7 @@ class Proyek {
     }
 
     public function count() {
-        $sql = "SELECT COUNT(*) AS total FROM proyek";
+        $sql = "SELECT COUNT(*) AS total FROM publikasi";
         $stmt = $this->conn->query($sql);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
