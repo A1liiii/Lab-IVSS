@@ -39,7 +39,7 @@
     <ul>
       <?php if (!empty($recentActivity) && is_array($recentActivity)): ?>
         <?php foreach ($recentActivity as $row): ?>
-          <li><?php echo $row['activity']; ?> - <small><?php echo $row['created_at']; ?></small></li>
+          <li><?php echo $row['deskripsi']; ?> - <small><?php echo $row['waktu']; ?></small></li>
         <?php endforeach; ?>
       <?php else: ?>
         <li>Tidak ada aktivitas</li>
