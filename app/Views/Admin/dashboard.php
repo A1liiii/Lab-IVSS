@@ -6,28 +6,36 @@
     <div class="col-md-3">
       <div class="admin-card">
         <h5>Total Mahasiswa</h5>
-        <h2><?= $totalMahasiswa ?></h2>
+
+        <h2><?php echo isset($totalMahasiswa) ? $totalMahasiswa : 0; ?></h2>
+
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="admin-card">
         <h5>Total User</h5>
-        <h2><?= $totalUser ?></h2>
+
+        <h2><?php echo isset($totalUser) ? $totalUser : 0; ?></h2>
+
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="admin-card">
         <h5>Pending Registrations</h5>
-        <h2><?= $pendingReg ?></h2>
+
+        <h2><?php echo isset($pendingReg) ? $pendingReg : 0; ?></h2>
+
       </div>
     </div>
 
     <div class="col-md-3">
       <div class="admin-card">
         <h5>Total Dokumentasi</h5>
-        <h2><?= $totalDokumentasi ?></h2>
+
+        <h2><?php echo isset($totalDokumentasi) ? $totalDokumentasi : 0; ?></h2>
+
       </div>
     </div>
   </div>
@@ -37,9 +45,15 @@
   <div class="admin-card">
     <h4>Recent Activity</h4>
     <ul>
-      <?php foreach ($recentActivity as $row): ?>
-      <li><?= $row['activity'] ?> - <small><?= $row['created_at'] ?></small></li>
-      <?php endforeach; ?>
+
+      <?php if (!empty($recentActivity) && is_array($recentActivity)): ?>
+        <?php foreach ($recentActivity as $row): ?>
+          <li><?php echo $row['activity']; ?> - <small><?php echo $row['created_at']; ?></small></li>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <li>Tidak ada aktivitas</li>
+      <?php endif; ?>
+
     </ul>
   </div>
 
