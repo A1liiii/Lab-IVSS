@@ -12,19 +12,48 @@ switch ($page) {
         $c->index();
         break;
 
-
-    case 'admin-approvals':
-        require 'app/Controllers/admin/approvals.php';
-        $c = new ApprovalsController();
-        $c->index();
-        break;
-
-    case 'admin-approvals-approve':
-        require 'app/Controllers/admin/Approvals.php';
-        $c = new ApprovalsController();
-        $c->approve($_GET['id']);
-        break;
-
+    
+        case 'admin-logs':
+            require 'app/Controllers/admin/logs.php';
+            $c = new LogsController();
+            $c->index();
+            break;        
+            case 'operator-dashboard':
+                require 'app/Controllers/operator/dashboard.php';
+                $c = new OperatorDashboardController();
+                $c->index();
+                break;
+            
+            case 'operator-berita':
+                require 'app/Controllers/operator/berita.php';
+                $c = new OperatorBeritaController();
+                $c->index();
+                break;
+            
+            case 'operator-dokumentasi':
+                require 'app/Controllers/operator/dokumentasi.php';
+                $c = new OperatorDokumentasiController();
+                $c->index();
+                break;
+            
+            case 'operator-fasilitas':
+                require 'app/Controllers/operator/fasilitas.php';
+                $c = new OperatorFasilitasController();
+                $c->index();
+                break;
+            
+            case 'operator-proyek':
+                require 'app/Controllers/operator/proyek.php';
+                $c = new OperatorProyekController();
+                $c->index();
+                break;
+            
+            case 'operator-publikasi':
+                require 'app/Controllers/operator/publikasi.php';
+                $c = new OperatorPublikasiController();
+                $c->index();
+                break;
+            
 
     default:
         require 'app/Controllers/public/home.php';
