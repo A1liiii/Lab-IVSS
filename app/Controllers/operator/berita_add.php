@@ -13,7 +13,7 @@ class OperatorBeritaAddController {
             $judul = $_POST['judul'];
             $deskripsi = $_POST['deskripsi'];
             $kategori = $_POST['kategori'];
-            $user_id = 1; // sementara (nanti bisa ambil dari session)
+            $user_id = $_SESSION['user_id'];
 
             // === Upload FOTO ===
             $foto = null;

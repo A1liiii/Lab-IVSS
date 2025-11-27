@@ -17,7 +17,8 @@ class OperatorDokumentasiAddController {
             $caption            = $_POST['caption'];
             $tanggal_kegiatan   = $_POST['tanggal_kegiatan'];
             $jenis_kegiatan     = $_POST['jenis_kegiatan'];
-            $user_id            = 1; // nanti ambil dari session
+            $user_id = $_SESSION['user_id'];
+
 
             // ===== Upload File Utama =====
             $file_path = null;

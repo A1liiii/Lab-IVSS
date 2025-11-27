@@ -74,6 +74,24 @@ switch ($page) {
             $c = new OperatorFasilitasController();
             $c->index();
             break;
+        
+        case 'operator-fasilitas-add':
+            require 'app/Controllers/operator/fasilitas_add.php';
+            $c = new OperatorFasilitasAddController();
+            $c->index();
+            break;
+                
+        case 'operator-fasilitas-edit':
+            require 'app/Controllers/operator/fasilitas_edit.php';
+            $c = new OperatorFasilitasEditController();
+            $c->index();
+            break;
+                
+        case 'operator-fasilitas-delete':
+            require 'app/Controllers/operator/fasilitas_delete.php';
+            $c = new OperatorFasilitasDeleteController();
+            $c->index();
+            break;
             
         case 'operator-proyek':
             require 'app/Controllers/operator/proyek.php';
