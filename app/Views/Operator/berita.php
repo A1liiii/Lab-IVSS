@@ -10,7 +10,7 @@
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>No</th>
           <th>Judul</th>
           <th>Kategori</th>
           <th>Tanggal</th>

@@ -104,6 +104,24 @@ switch ($page) {
             $c = new OperatorPublikasiController();
             $c->index();
             break;
+
+        case 'operator-publikasi-add':
+            require 'app/Controllers/operator/publikasi_add.php';
+            $c = new OperatorPublikasiAddController();
+            $c->index();
+            break;
+                    
+        case 'operator-publikasi-edit':
+            require 'app/Controllers/operator/publikasi_edit.php';
+            $c = new OperatorPublikasiEditController();
+            $c->index();
+            break;
+                    
+        case 'operator-publikasi-delete':
+            require 'app/Controllers/operator/publikasi_delete.php';
+            $c = new OperatorPublikasiDeleteController();
+            $c->index();
+            break;
             
     default:
         require 'app/Controllers/public/home.php';
