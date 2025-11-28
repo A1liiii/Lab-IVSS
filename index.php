@@ -98,6 +98,24 @@ switch ($page) {
             $c = new OperatorProyekController();
             $c->index();
             break;
+
+        case 'operator-proyek-add':
+            require 'app/Controllers/operator/proyek_add.php';
+            $c = new OperatorProyekAddController();
+            $c->index();
+            break;
+                        
+        case 'operator-proyek-edit':
+            require 'app/Controllers/operator/proyek_edit.php';
+            $c = new OperatorProyekEditController();
+            $c->index();
+            break;
+                        
+        case 'operator-proyek-delete':
+            require 'app/Controllers/operator/proyek_delete.php';
+            $c = new OperatorProyekDeleteController();
+            $c->index();
+            break;
             
         case 'operator-publikasi':
             require 'app/Controllers/operator/publikasi.php';
