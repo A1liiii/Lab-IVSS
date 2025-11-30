@@ -5,9 +5,8 @@ class Approval {
     private $conn;
 
     public function __construct() {
-         $this->conn = Database::connect();
+        $this->conn = Database::connect();
     }
-
     public function getPending() {
        $stmt = $this->conn->query("
         SELECT r.*, u.username AS approved_by_username
