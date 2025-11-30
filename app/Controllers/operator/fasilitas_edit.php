@@ -31,7 +31,7 @@ class OperatorFasilitasEditController {
 
             // upload baru?
             if (!empty($_FILES['foto']['name'])) {
-                $folder = __DIR__ . '/../../public/uploads/fasilitas/';
+                $folder = __DIR__ . '/../../../public/uploads/fasilitas/';
                 if (!is_dir($folder)) mkdir($folder, 0777, true);
 
                 $namaFile = time() . "_" . $_FILES['foto']['name'];

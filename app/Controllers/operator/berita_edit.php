@@ -27,7 +27,7 @@ class OperatorBeritaEditController {
             $foto = $data['foto'];
             if (!empty($_FILES['foto']['name'])) {
                 $fotoName = time() . "_" . $_FILES['foto']['name'];
-                $dest = "public/uploads/" . $fotoName;
+                $dest = "public/uploads/berita/" . $fotoName;
                 move_uploaded_file($_FILES['foto']['tmp_name'], $dest);
                 $foto = $fotoName;
             }
@@ -36,7 +36,7 @@ class OperatorBeritaEditController {
             $file_url = $data['file_url'];
             if (!empty($_FILES['file_url']['name'])) {
                 $fileName = time() . "_" . $_FILES['file_url']['name'];
-                $dest = "public/uploads/" . $fileName;
+                $dest = "public/uploads/berita/" . $fileName;
                 move_uploaded_file($_FILES['file_url']['tmp_name'], $dest);
                 $file_url = $fileName;
             }
