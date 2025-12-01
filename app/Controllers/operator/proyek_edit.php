@@ -1,50 +1,76 @@
 <?php
-
-require_once __DIR__ . '/../../models/Proyek.php';
-require_once __DIR__ . '/../../models/User.php';
-require_once __DIR__ . '/../../models/AnggotaProyek.php';
-
+require_once __DIR__ . '/../../models/Berita.php';
 class OperatorProyekEditController {
+    private $conn;
 
     public function index() {
-        $id = $_GET['proyek_id'];
+        $this->conn = Database::connect();
+    }
 
-        $proyekModel = new Proyek();
-        $userModel = new User();
-        $anggotaModel = new AnggotaProyek();
+    public function count() {
+        $sql = "SELECT COUNT(*) AS total FROM proyek";
+        $stmt = $this->conn->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
 
-        $proyek = $proyekModel->find($id);
-        $users = $userModel->getAll();
-        $anggota = $anggotaModel->getByProject($id);
+    public function getAll() {
+        $sql = "SELECT p.*, COUNT(a.id) AS jumlah_anggota
+                FROM proyek p
+                LEFT JOIN anggota_proyek a ON a.proyek_id = p.proyek_id
+                GROUP BY p.proyek_id
+                ORDER BY p.proyek_id DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-        $title = "Edit Proyek";
-        $active = "proyek";
+    public function getById($id) {
+        $sql = "SELECT * FROM proyek WHERE proyek_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $judul = $_POST['judul'];
-            $deskripsi = $_POST['deskripsi'];
-            $mulai = $_POST['tanggal_mulai'];
-            $selesai = $_POST['tanggal_selesai'];
-            $status = $_POST['status'];
+    public function insert($data) {
+        $sql = "INSERT INTO proyek (judul, deskripsi, tanggal_mulai, tanggal_selesai, status)
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['judul'],
+            $data['deskripsi'],
+            $data['tanggal_mulai'],
+            $data['tanggal_selesai'],
+            $data['status']
+        ]);
+    }
 
-            $proyekModel->update($id, $judul, $deskripsi, $mulai, $selesai, $status);
+    public function update($id, $data) {
+        $sql = "UPDATE proyek SET judul=?, deskripsi=?, tanggal_mulai=?, tanggal_selesai=?, status=? WHERE proyek_id=?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            $data['judul'],
+            $data['deskripsi'],
+            $data['tanggal_mulai'],
+            $data['tanggal_selesai'],
+            $data['status'],
+            $id
+        ]);
+    }
 
-            // Tambah anggota baru
-            if (!empty($_POST['user_id'])) {
-                foreach ($_POST['user_id'] as $i => $uid) {
-                    if (!empty($uid)) {
-                        $anggotaModel->insert($id, $uid, $_POST['role'][$i]);
-                    }
-                }
-            }
+    public function delete($id) {
+        $sql = "DELETE FROM proyek WHERE proyek_id=?";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([$id]);
+    }
 
-            header("Location: index.php?page=operator-proyek");
-            exit;
-        }
-
-        require 'app/Views/layouts/operator_header.php';
-        require 'app/Views/layouts/operator_sidebar.php';
-        require 'app/Views/operator/proyek_edit.php';
-        require 'app/Views/layouts/operator_footer.php';
+    public function getAnggota($proyek_id) {
+        $sql = "SELECT a.*, u.username AS nama, u.nip, u.nim
+                FROM anggota_proyek a
+                LEFT JOIN users u ON a.user_id = u.user_id
+                WHERE a.proyek_id=?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$proyek_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

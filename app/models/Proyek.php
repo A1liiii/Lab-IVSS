@@ -1,102 +1,92 @@
 <?php
-
 require_once __DIR__ . '/../Config/database.php';
-require_once __DIR__ . '/AnggotaProyek.php';
 
-class Proyek {
+class Proyek
+{
+    private $db;
 
-    private $conn;
-
-    public function __construct() {
-        $this->conn = Database::connect();
-    }
-
-    public function all() {
-        $sql = "SELECT * FROM proyek ORDER BY proyek_id DESC";
-        $stmt = $this->conn->query($sql);
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-        // Ambil anggota untuk masing-masing proyek
-        $anggotaModel = new AnggotaProyek();
-        foreach ($data as &$p) {
-            $p['id'] = $p['proyek_id'];
-            $p['anggota'] = $anggotaModel->getByProject($p['proyek_id']);
-        }
-    
-        return $data;
-    }    
-    
-
-    public function find($id) {
-        $sql = "SELECT * FROM proyek WHERE proyek_id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        $p = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($p) {
-            $p['id'] = $p['proyek_id'];
-        }
-        return $p;
-
-    }
-
-    public function insertWithMembers($judul, $deskripsi, $mulai, $selesai, $status, $anggota) {
-        $sql = "INSERT INTO proyek (judul, deskripsi, tanggal_mulai, tanggal_selesai, status)
-                VALUES (:judul, :deskripsi, :mulai, :selesai, :status)
-                RETURNING proyek_id";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            ':judul' => $judul,
-            ':deskripsi' => $deskripsi,
-            ':mulai' => $mulai,
-            ':selesai' => $selesai,
-            ':status' => $status
-        ]);
-
-        $proyek_id = $stmt->fetchColumn();
-
-        // insert anggota
-        require_once __DIR__ . '/AnggotaProyek.php';
-        $ap = new AnggotaProyek();
-
-        foreach ($anggota as $a) {
-            $ap->insert($proyek_id, $a['user_id'], $a['role']);
-        }
-
-        return $proyek_id;
-    }
-
-    public function update($id, $judul, $deskripsi, $mulai, $selesai, $status) {
-        $sql = "UPDATE proyek SET
-                judul = :judul,
-                deskripsi = :deskripsi,
-                tanggal_mulai = :mulai,
-                tanggal_selesai = :selesai,
-                status = :status
-                WHERE proyek_id = :id";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            ':id' => $id,
-            ':judul' => $judul,
-            ':deskripsi' => $deskripsi,
-            ':mulai' => $mulai,
-            ':selesai' => $selesai,
-            ':status' => $status
-        ]);
-    }
-
-    public function delete($id) {
-        $stmt = $this->conn->prepare("DELETE FROM proyek WHERE proyek_id = :id");
-        $stmt->execute([':id' => $id]);
+    public function __construct()
+    {
+        // FIX UTAMA ADA DI SINI
+        $this->db = Database::connect();
     }
 
     public function count() {
         $sql = "SELECT COUNT(*) AS total FROM proyek";
-        $stmt = $this->conn->query($sql);
+        $stmt = $this->db->query($sql);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
     }
-    
+
+    public function getAll()
+    {
+        $sql = "SELECT p.*,
+                COUNT(a.id) AS jumlah_anggota
+                FROM proyek p
+                LEFT JOIN anggota_proyek a ON a.proyek_id = p.proyek_id
+                GROUP BY p.proyek_id
+                ORDER BY p.proyek_id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getById($id)
+    {
+        $sql = "SELECT * FROM proyek WHERE proyek_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function insert($data)
+    {
+        $sql = "INSERT INTO proyek (judul, deskripsi, tanggal_mulai, tanggal_selesai, status)
+                VALUES (?, ?, ?, ?, ?)";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            $data['judul'],
+            $data['deskripsi'],
+            $data['tanggal_mulai'],
+            $data['tanggal_selesai'],
+            $data['status']
+        ]);
+    }
+
+    public function update($id, $data)
+    {
+        $sql = "UPDATE proyek SET judul=?, deskripsi=?, tanggal_mulai=?, tanggal_selesai=?, status=?
+                WHERE proyek_id=?";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            $data['judul'],
+            $data['deskripsi'],
+            $data['tanggal_mulai'],
+            $data['tanggal_selesai'],
+            $data['status'],
+            $id
+        ]);
+    }
+
+    public function delete($id)
+    {
+        $sql = "DELETE FROM proyek WHERE proyek_id=?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$id]);
+    }
+
+    public function getAnggota($proyek_id)
+    {
+        $sql = "SELECT a.*, u.username AS nama, u.nip, u.nim 
+        FROM anggota_proyek a
+        LEFT JOIN users u ON a.user_id = u.user_id
+        WHERE a.proyek_id=?";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$proyek_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

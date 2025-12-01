@@ -1,72 +1,88 @@
 <div class="admin-content">
 
-    <h2 class="mb-4">Daftar Proyek</h2>
+    <h2 class="mb-4">Data Proyek</h2>
 
-    <a href="/lab-ivss/index.php?page=operator-proyek-add" 
-       class="btn btn-primary mb-3">
+    <a href="/lab-ivss/index.php?page=operator-proyek-add" class="btn btn-primary mb-3">
         <i class="bi bi-plus-circle"></i> Tambah Proyek
     </a>
 
-    <?php if (!empty($data)): ?>
-        <?php foreach ($data as $p): ?>
+    <div class="admin-card">
 
-        <div class="admin-card p-4 mb-4 shadow-sm" style="border-radius: 10px;">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Judul</th>
+                    <th>Durasi</th>
+                    <th>Status</th>
+                    <th>Jumlah Anggota</th>
+                    <th>Daftar Anggota</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
 
-            <!-- INFO PROYEK -->
-            <div class="d-flex justify-content-between">
-                <h4><?= htmlspecialchars($p['judul']) ?></h4>
-                <span class="badge 
-                    <?= $p['status']=='selesai' ? 'bg-success' : 
-                       ($p['status']=='proses'?'bg-warning':'bg-secondary') ?>">
-                    <?= ucfirst($p['status']) ?>
-                </span>
-            </div>
+            <tbody>
+                <?php if (!empty($data)): ?>
+                    <?php foreach ($data as $p): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($p['judul']) ?></td>
 
-            <p class="text-muted small">
-                <?= $p['tanggal_mulai'] ?: '-' ?> — <?= $p['tanggal_selesai'] ?: '-' ?>
-            </p>
+                            <td>
+                                <?= $p['tanggal_mulai'] ?> s/d <br>
+                                <?= $p['tanggal_selesai'] ?>
+                            </td>
 
-            <p><?= nl2br(htmlspecialchars($p['deskripsi'])) ?></p>
+                            <td>
+                                <?php 
+                                    $badge = "bg-secondary";
+                                    if ($p['status'] == 'perencanaan') $badge = "bg-info";
+                                    if ($p['status'] == 'berjalan') $badge = "bg-warning";
+                                    if ($p['status'] == 'selesai') $badge = "bg-success";
+                                ?>
+                                <span class="badge <?= $badge ?>">
+                                    <?= ucfirst($p['status']) ?>
+                                </span>
+                            </td>
 
-            <hr>
+                            <td><b><?= $p['jumlah_anggota'] ?></b> anggota</td>
 
-            <!-- LIST ANGGOTA -->
-            <h5 class="mb-3">Anggota Proyek</h5>
+                            <td>
+                                <?php if (!empty($p['anggota'])): ?>
+                                    <ul class="mb-0">
+                                        <?php foreach ($p['anggota'] as $a): ?>
+                                            <li><?= htmlspecialchars($a['nama']) ?> (<?= $a['role'] ?>)</li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php else: ?>
+                                    <span class="text-muted">Tidak ada anggota</span>
+                                <?php endif; ?>
+                            </td>
 
-            <?php if (!empty($p['anggota'])): ?>
-                <ul class="list-group mb-3">
-                    <?php foreach ($p['anggota'] as $a): ?>
-                        <li class="list-group-item">
-                            <?= htmlspecialchars($a['username']) ?> 
-                            (<?= htmlspecialchars($a['identitas']) ?>)
-                        <br>
-                        <small class="text-muted">Peran: <?= ucfirst($a['role']) ?></small>
-                        </li>
+                            <td>
+                                <a href="/lab-ivss/index.php?page=operator-proyek-edit&id=<?= $p['proyek_id'] ?>"
+                                   class="btn btn-sm btn-warning">
+                                   <i class="bi bi-pencil"></i> Edit
+                                </a>
+
+                                <a onclick="return confirm('Hapus proyek ini?')"
+                                   href="/lab-ivss/index.php?page=operator-proyek-delete&id=<?= $p['proyek_id'] ?>"
+                                   class="btn btn-sm btn-danger">
+                                   <i class="bi bi-trash"></i> Hapus
+                                </a>
+                            </td>
+
+                        </tr>
                     <?php endforeach; ?>
-                </ul>
-            <?php else: ?>
-                <p class="text-muted">Tidak ada anggota.</p>
-            <?php endif; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Belum ada data proyek.
+                        </td>
+                    </tr>
+                <?php endif; ?>
 
-            <div class="d-flex justify-content-end mt-3">
-                <a href="/lab-ivss/index.php?page=operator-proyek-edit&proyek_id=<?= $p['id'] ?>"
-                   class="btn btn-warning me-2">
-                    <i class="bi bi-pencil"></i> Edit
-                </a>
+            </tbody>
+        </table>
 
-                <a onclick="return confirm('Hapus proyek ini?')"
-                   href="/lab-ivss/index.php?page=operator-proyek-delete&proyek_id=<?= $p['id'] ?>"
-                   class="btn btn-danger">
-                    <i class="bi bi-trash"></i> Hapus
-                </a>
-            </div>
-
-        </div>
-
-        <?php endforeach; ?>
-
-    <?php else: ?>
-        <p class="text-muted text-center">Belum ada proyek.</p>
-    <?php endif; ?>
+    </div>
 
 </div>

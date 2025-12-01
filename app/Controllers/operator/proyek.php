@@ -1,22 +1,20 @@
 <?php
+
 require_once __DIR__ . '/../../models/Proyek.php';
 
 class OperatorProyekController {
 
     public function index() {
 
-        $proyek = new Proyek();
-        $data = $proyek->all();
+        $m = new Proyek();
+        $data = $m->getAll();
 
-        $title = "Kelola Proyek";
+        $title  = "Kelola Proyek";
         $active = "proyek";
 
-        require 'app/Views/layouts/operator_header.php';
-        require 'app/Views/layouts/operator_sidebar.php';
-        require 'app/Views/operator/proyek.php';
-        require 'app/Views/layouts/operator_footer.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_header.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_sidebar.php';
+        require_once __DIR__ . '/../../Views/Operator/proyek.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_footer.php';
     }
 }
-
-
-
