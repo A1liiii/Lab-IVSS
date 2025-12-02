@@ -23,15 +23,6 @@
         <h2><?php echo isset($pendingReg) ? $pendingReg : 0; ?></h2>
       </div>
     </div>
-
-    <div class="col-md-3">
-      <div class="admin-card">
-        <h5>Total Dokumentasi</h5>
-        <h2><?php echo isset($totalDokumentasi) ? $totalDokumentasi : 0; ?></h2>
-      </div>
-    </div>
-  </div>
-
   <br>
 
   <div class="admin-card">
