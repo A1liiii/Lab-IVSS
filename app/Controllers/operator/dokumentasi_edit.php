@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Dokumentasi.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorDokumentasiEditController {
 
@@ -61,6 +62,8 @@ class OperatorDokumentasiEditController {
                 $tanggal_kegiatan,
                 $jenis_kegiatan
             );
+
+            addLog($_SESSION['user_id'], "Memperbarui dokumentasi ID $id", "UPDATE");
 
             header("Location: /lab-ivss/index.php?page=operator-dokumentasi");
             exit;

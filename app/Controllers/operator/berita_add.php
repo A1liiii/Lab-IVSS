@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Berita.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorBeritaAddController {
 
@@ -45,6 +46,8 @@ class OperatorBeritaAddController {
             // SIMPAN
             $model = new Berita();
             $model->insert($judul, $deskripsi, $foto, $file_url, $kategori, $user_id);
+
+            addLog($_SESSION['user_id'], "Menambah berita baru", "INSERT");
 
             header("Location: /lab-ivss/index.php?page=operator-berita");
             exit;

@@ -60,9 +60,14 @@
                 <input type="file" name="file_path" class="form-control mt-2">
             </div>
 
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-success">Update</button>
-                <a href="index.php?page=operator-dokumentasi" class="btn btn-secondary">Kembali</a>
+            <div class="d-flex justify-content-end mt-4">
+                <a href="index.php?page=operator-dokumentasi" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+
+                <button class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
             </div>
 
         </form>

@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Publikasi.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorPublikasiEditController {
 
@@ -25,6 +26,8 @@ class OperatorPublikasiEditController {
             $link            = $_POST['link'];
 
             $m->update($id, $judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
+            
+            addLog($_SESSION['user_id'], "Memperbarui publikasi ID $id", "UPDATE");
 
             header("Location: index.php?page=operator-publikasi");
             exit;

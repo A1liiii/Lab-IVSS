@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Berita.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorBeritaEditController {
 
@@ -43,6 +44,8 @@ class OperatorBeritaEditController {
 
             // UPDATE
             $model->update($id, $judul, $deskripsi, $foto, $file_url, $kategori);
+
+            addLog($_SESSION['user_id'], "Memperbarui berita ID $id", "UPDATE");
 
             header("Location: /lab-ivss/index.php?page=operator-berita");
             exit;

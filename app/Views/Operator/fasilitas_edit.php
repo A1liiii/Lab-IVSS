@@ -46,13 +46,15 @@
                 <?php endif; ?>
             </div>
 
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-save"></i> Simpan Perubahan
-            </button>
+            <div class="d-flex justify-content-end mt-4">
+                <a href="index.php?page=operator-fasilitas" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
 
-            <a href="index.php?page=operator-fasilitas" class="btn btn-secondary">
-                Kembali
-            </a>
+                <button class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan
+                </button>
+            </div>
 
         </form>
     </div>

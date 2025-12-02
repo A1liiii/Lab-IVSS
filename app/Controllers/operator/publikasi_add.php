@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Publikasi.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorPublikasiAddController {
 
@@ -19,6 +20,8 @@ class OperatorPublikasiAddController {
             $link            = $_POST['link'];
 
             $m->insert($user_id, $judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
+
+            addLog($_SESSION['user_id'], "Menambah publikasi baru", "INSERT");
 
             header("Location: index.php?page=operator-publikasi");
             exit;

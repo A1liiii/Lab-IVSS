@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Fasilitas.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorFasilitasEditController {
 
@@ -41,6 +42,8 @@ class OperatorFasilitasEditController {
             }
 
             $m->update($id, $nama, $deskripsi, $status, $foto, $kategori);
+
+            addLog($_SESSION['user_id'], "Memperbarui fasilitas ID $id", "UPDATE");
 
             header("Location: index.php?page=operator-fasilitas");
             exit;
