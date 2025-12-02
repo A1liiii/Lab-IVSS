@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../../models/Mahasiswa.php';
 require_once __DIR__ . '/../../models/User.php';
 require_once __DIR__ . '/../../models/Approval.php';
@@ -20,52 +20,48 @@ class ApprovalsController {
     }
 
     public function approve($id) {
-    session_start();
 
     $Approval  = new Approval();
     $Mahasiswa = new Mahasiswa();
     $User      = new User();
 
-    // Ambil data pendaftar
+    // Ambil data pendaftaran
     $data = $Approval->find($id);
 
-    if ($data && $data['status'] === 'pending') {
-        // 1. Masukkan ke tabel mahasiswa dulu
-        $Mahasiswa->create([
-            'nim'          => $data['nim'],
-            'user_id'      => null, // mahasiswa riset belum punya user_id
-            'nama'         => $data['nama'],
-            'email'        => $data['email'],
-            'prodi'        => $data['prodi'],
-            'angkatan'     => $data['angkatan'],
-            'status'       => 'aktif',
-            'foto'         => null,
-            'kategori'     => 'riset',
-            'tanggal_join' => date('Y-m-d')
-        ]);
-
-        // 2. Masukkan ke tabel users
-        $passwordHash = password_hash($data['nim'], PASSWORD_BCRYPT);
-        $user_id = $User->create([
-            'username' => $data['nama'],   // username = nama
-            'password' => $passwordHash    // password = nim (hashed)
-        ]);
-
-        // 3. Assign role mahasiswa
-        $role_mahasiswa_id = 2; // ganti sesuai id role "mahasiswa" di tabel role
-        $User->assignRole($user_id, $role_mahasiswa_id);
-
-        // 4. Update status pendaftar di tabel registrations
-        $admin_user_id = $_SESSION['user_id'] ?? 1; // user_id admin/dosen
-        $Approval->setApproved($id, $admin_user_id);
+    if (!$data || empty($data['nim'])) {
+        die("ERROR: NIM tidak ditemukan!");
     }
 
-    // Redirect kembali ke daftar approvals
-    header("Location: index.php?page=admin-approvals");
+    // Insert mahasiswa dulu
+    $Mahasiswa->create([
+        'nim'          => $data['nim'],
+        'user_id'      => null,
+        'nama'         => $data['nama'],
+        'email'        => $data['email'],
+        'prodi'        => $data['prodi'],
+        'angkatan'     => $data['angkatan'],
+        'status'       => 'aktif',
+        'kategori'     => 'riset',
+        'tanggal_join' => date('Y-m-d')
+    ]);
+
+    // Baru buat user
+    $user_id = $User->create([
+        'nim'      => $data['nim'],
+        'username' => $data['nama'],
+        'password' => password_hash($data['nim'], PASSWORD_BCRYPT)
+        
+    ]);
+    $User->assignRole($user_id, 4); 
+
+    // Update mahasiswa.user_id
+    $Mahasiswa->updateUserID($data['nim'], $user_id);
+
+    // Update status pendaftaran
+    $Approval->setApproved($id, $_SESSION['user_id']);
+
+    header("Location: index.php?page=admin-approvals&success=1");
     exit;
 }
-
-
-
 }
 

@@ -23,10 +23,14 @@ class Approval {
     }
 
     public function find($id) {
-        $stmt = $this->db->prepare("SELECT * FROM registrations WHERE reg_id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt = $this->db->prepare("
+        SELECT reg_id, nama, nim, prodi, angkatan, alasan, email, status
+        FROM registrations 
+        WHERE reg_id = ?
+    ");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
    public function setApproved($id, $approvedByUserId) {
     $stmt = $this->db->prepare(

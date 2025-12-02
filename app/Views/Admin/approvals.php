@@ -93,6 +93,7 @@ p.no-data {
         <tr>
             <th>No</th>
             <th>Nama</th>
+            <th>NIM</th> 
             <th>Email</th>
             <th>Prodi</th>
             <th>Angkatan</th>
@@ -108,6 +109,7 @@ p.no-data {
         <tr>
             <td><?= $no++ ?></td>
             <td><?= htmlspecialchars($p['nama']) ?></td>
+            <td><?= htmlspecialchars($p['nim']) ?></td>
             <td><?= htmlspecialchars($p['email']) ?></td>
             <td><?= htmlspecialchars($p['prodi']) ?></td>
             <td><?= htmlspecialchars($p['angkatan']) ?></td>
