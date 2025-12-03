@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Berita.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorBeritaEditController {
 
@@ -27,7 +28,7 @@ class OperatorBeritaEditController {
             $foto = $data['foto'];
             if (!empty($_FILES['foto']['name'])) {
                 $fotoName = time() . "_" . $_FILES['foto']['name'];
-                $dest = "public/uploads/berita/" . $fotoName;
+                $dest = "public/uploads/" . $fotoName;
                 move_uploaded_file($_FILES['foto']['tmp_name'], $dest);
                 $foto = $fotoName;
             }
@@ -36,13 +37,15 @@ class OperatorBeritaEditController {
             $file_url = $data['file_url'];
             if (!empty($_FILES['file_url']['name'])) {
                 $fileName = time() . "_" . $_FILES['file_url']['name'];
-                $dest = "public/uploads/berita/" . $fileName;
+                $dest = "public/uploads/" . $fileName;
                 move_uploaded_file($_FILES['file_url']['tmp_name'], $dest);
                 $file_url = $fileName;
             }
 
             // UPDATE
             $model->update($id, $judul, $deskripsi, $foto, $file_url, $kategori);
+
+            addLog($_SESSION['user_id'], "Memperbarui berita ID $id", "UPDATE");
 
             header("Location: /lab-ivss/index.php?page=operator-berita");
             exit;

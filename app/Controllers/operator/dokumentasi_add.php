@@ -1,6 +1,7 @@
 <?php 
 
 require_once __DIR__ . '/../../models/Dokumentasi.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorDokumentasiAddController {
 
@@ -26,7 +27,7 @@ class OperatorDokumentasiAddController {
 
             if (!empty($_FILES['file_path']['name'])) {
 
-                $folder = __DIR__ . '/../../../public/uploads/dokumentasi/';
+                $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
                 if (!is_dir($folder)) mkdir($folder, 0755, true);
 
                 $namaFile = time() . "_" . $_FILES['file_path']['name'];
@@ -52,6 +53,8 @@ class OperatorDokumentasiAddController {
                 $jenis_kegiatan,
                 $user_id
             );
+
+            addLog($_SESSION['user_id'], "Menambah dokumentasi baru", "INSERT");
 
             header("Location: /lab-ivss/index.php?page=operator-dokumentasi");
             exit;

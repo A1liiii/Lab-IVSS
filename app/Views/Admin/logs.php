@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../../models/Log.php';
+
+$logModel = new Log();
+$logs = $logModel->getAll();
+
+require_once __DIR__ . '/../../Views/layouts/admin_header.php';
+require_once __DIR__ . '/../../Views/layouts/admin_sidebar.php';
+?>
 <div class="admin-content">
   <h2 class="mb-4">Log Activity</h2>
 

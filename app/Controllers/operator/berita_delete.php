@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Berita.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorBeritaDeleteController {
 
@@ -35,6 +36,8 @@ class OperatorBeritaDeleteController {
 
         // Hapus dari database
         $model->delete($id);
+
+        addLog($_SESSION['user_id'], "Menghapus berita ID $id", "DELETE");
 
         // Redirect kembali ke list
         header("Location: /lab-ivss/index.php?page=operator-berita");

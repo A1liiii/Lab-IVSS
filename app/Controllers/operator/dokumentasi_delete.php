@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Dokumentasi.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorDokumentasiDeleteController {
 
@@ -25,6 +26,8 @@ class OperatorDokumentasiDeleteController {
         }
 
         $m->delete($id);
+
+        addLog($_SESSION['user_id'], "Menghapus dokumentasi ID $id", "DELETE");
 
         header("Location: /lab-ivss/index.php?page=operator-dokumentasi");
         exit;

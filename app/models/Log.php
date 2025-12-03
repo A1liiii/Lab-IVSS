@@ -10,27 +10,68 @@ class Log {
         $this->conn = Database::connect();  // PDO
     }
 
-    // Untuk dashboard (last 10 logs)
+    // Tambah log
+    public function add($user_id, $deskripsi, $aksi) {
+        $sql = "INSERT INTO log_activity (user_id, deskripsi, aksi) 
+                VALUES (:user_id, :deskripsi, :aksi)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':user_id'   => $user_id,
+            ':deskripsi' => $deskripsi,
+            ':aksi'      => $aksi
+        ]);
+    }
+
+    // Ambil last logs (bisa untuk dashboard & admin)
     public function last($limit = 10) {
-        $sql = "SELECT * FROM log_activity ORDER BY waktu DESC LIMIT :limit";
+        $sql = "SELECT la.*, u.username
+                FROM log_activity la
+                LEFT JOIN users u ON la.user_id = u.user_id
+                ORDER BY la.waktu DESC
+                LIMIT :limit";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Versi formatted (untuk debugging / export)
+    public function getLogsFormatted($limit = 20) {
+        $logs = $this->last($limit);
+        $formatted = [];
+
+        foreach ($logs as $l) {
+            $formatted[] = "{$l['aksi']} - {$l['deskripsi']} {$l['waktu']} ({$l['username']})";
+        }
+
+        return $formatted;
+    }  
+
+    public function recent($limit = 10) {
+        $sql = "SELECT log_activity.*, users.username
+                FROM log_activity
+                LEFT JOIN users ON users.user_id = log_activity.user_id
+                ORDER BY waktu DESC
+                LIMIT :limit";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    }    
 
-    // Untuk halaman admin-logs (semua log)
+        // Ambil semua log (untuk admin)
     public function getAll() {
-        $sql = "SELECT 
-                    log_activity.*, 
-                    users.username
-                FROM log_activity
-                LEFT JOIN users 
-                    ON users.user_id = log_activity.user_id
-                ORDER BY waktu DESC";
+        $sql = "SELECT la.*, u.username
+                FROM log_activity la
+                LEFT JOIN users u ON la.user_id = u.user_id
+                ORDER BY la.waktu DESC";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 }

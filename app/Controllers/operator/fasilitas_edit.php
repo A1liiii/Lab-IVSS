@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../models/Fasilitas.php';
+require_once __DIR__ . '/../../Helper/LogHelper.php';
 
 class OperatorFasilitasEditController {
 
@@ -31,7 +32,7 @@ class OperatorFasilitasEditController {
 
             // upload baru?
             if (!empty($_FILES['foto']['name'])) {
-                $folder = __DIR__ . '/../../../public/uploads/fasilitas/';
+                $folder = __DIR__ . '/../../public/uploads/fasilitas/';
                 if (!is_dir($folder)) mkdir($folder, 0777, true);
 
                 $namaFile = time() . "_" . $_FILES['foto']['name'];
@@ -41,6 +42,8 @@ class OperatorFasilitasEditController {
             }
 
             $m->update($id, $nama, $deskripsi, $status, $foto, $kategori);
+
+            addLog($_SESSION['user_id'], "Memperbarui fasilitas ID $id", "UPDATE");
 
             header("Location: index.php?page=operator-fasilitas");
             exit;
