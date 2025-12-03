@@ -112,7 +112,7 @@ switch ($page) {
         $c->delete($_GET['id']);
         break;
     
-        
+
         case 'operator-dokumentasi-edit':
             require 'app/Controllers/operator/dokumentasi_edit.php';
             $c = new OperatorDokumentasiEditController();
@@ -200,4 +200,9 @@ switch ($page) {
     default:
         require 'app/Controllers/public/home.php';
         break;
+    
+        case 'about':
+    require 'app/Controllers/public/about.php';
+    break;
+
 }

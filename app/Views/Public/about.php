@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 <?php include __DIR__ . '/../layouts/public_header.php'; ?>
-=======
-<?php include __DIR__ . '/public_header.php'; ?>
->>>>>>> 869e1f4e1a3ac21f51a00a8f075e23919f12ee3e
 <!-- About Section -->
     <section id="about" class="about section">
 
@@ -137,7 +134,7 @@
           <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
             <div class="team-member">
               <div class="member-img">
-                <img src="public/assets/img/team/team-3.jpg" class="img-fluid" alt="">
+                <img src="public/assets/img/team/team-3.JPG" class="img-fluid" alt="">
                 <div class="social">
                   <a href=""><i class="bi bi-twitter-x"></i></a>
                   <a href=""><i class="bi bi-facebook"></i></a>
@@ -335,8 +332,5 @@
 
     </section><!-- /Team Section -->
 
-<<<<<<< HEAD
+
 <?php include __DIR__ . '/../layouts/public_footer.php'; ?>
-=======
-<?php include __DIR__ . '/public_footer.php'; ?>
->>>>>>> 869e1f4e1a3ac21f51a00a8f075e23919f12ee3e

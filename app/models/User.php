@@ -184,18 +184,6 @@ class User {
 
     return $this->conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
-        public function find($id) {
-            $sql = "SELECT u.*, r.role_id
-                    FROM users u
-                    LEFT JOIN user_roles r ON u.user_id = r.user_id
-                    WHERE u.user_id = :id
-                    LIMIT 1";
-
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':id' => $id]);
-
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
 
         public function assignRole($user_id, $role_id) {
     $sql = "INSERT INTO user_roles (user_id, role_id)
@@ -206,12 +194,6 @@ class User {
         ':user_id' => $user_id,
         ':role_id' => $role_id
     ]);
-}
-
-
-=======
-    // Ambil semua user untuk dropdown anggota proyek
-    public function getAll() {
         $sql = "SELECT user_id, 
                        COALESCE(nip, nim) AS identitas,
                        username
@@ -224,6 +206,17 @@ class User {
 
     // Ambil detail user berdasarkan ID
     public function find($id) {
+        $sql = "SELECT u.*, r.role_id
+                    FROM users u
+                    LEFT JOIN user_roles r ON u.user_id = r.user_id
+                    WHERE u.user_id = :id
+                    LIMIT 1";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+            
         $stmt = $this->conn->prepare("
             SELECT user_id, 
                    COALESCE(nip, nim) AS identitas,
