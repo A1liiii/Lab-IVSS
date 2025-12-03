@@ -40,6 +40,48 @@ $routes = [
         'method' => 'approve'
     ],
 
+        'admin-user' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'index',
+        'params' => []
+    ],
+
+    'admin-user-create' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'create',
+        'params' => []
+    ],
+
+    'admin-user-store' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'store',
+        'params' => ['post' => true]
+    ],
+
+    'admin-user-edit' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'edit',
+        'params' => ['get' => 'id']
+    ],
+
+    'admin-user-update' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'update',
+        'params' => ['post' => true]
+    ],
+
+    'admin-user-delete' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'delete',
+        'params' => ['get' => 'id']
+    ],
+
     // ============================
     // OPERATOR DASHBOARD
     // ============================
