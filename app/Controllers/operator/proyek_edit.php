@@ -11,7 +11,7 @@ class OperatorProyekEditController {
         $mu = new User();
 
         // ===== Ambil ID
-        $id = $_GET['id'] ?? null;
+        $id = isset($_GET['id']) ? $_GET['id'] : null;
         if (!$id) {
             die("ID proyek tidak ditemukan.");
         }

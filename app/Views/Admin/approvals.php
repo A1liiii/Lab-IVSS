@@ -107,13 +107,13 @@ p.no-data {
         <?php $no=1; foreach($pendaftar as $p): ?>
         <tr>
             <td><?= $no++ ?></td>
-            <td><?= htmlspecialchars($p['nama']) ?></td>
-            <td><?= htmlspecialchars($p['email']) ?></td>
-            <td><?= htmlspecialchars($p['prodi']) ?></td>
-            <td><?= htmlspecialchars($p['angkatan']) ?></td>
-            <td><?= htmlspecialchars($p['alasan']) ?></td>
-            <td><?= date('d-m-Y', strtotime($p['tanggal_daftar'])) ?></td>
-            <td><?= htmlspecialchars($p['approved_by_username'] ?? '-') ?></td>
+            <td><?php echo isset($p['nama']) ? htmlspecialchars($p['nama']) : '-'; ?></td>
+            <td><?php echo isset($p['email']) ? htmlspecialchars($p['email']) : '-'; ?></td>
+            <td><?php echo isset($p['prodi']) ? htmlspecialchars($p['prodi']) : '-'; ?></td>
+            <td><?php echo isset($p['angkatan']) ? htmlspecialchars($p['angkatan']) : '-'; ?></td>
+            <td><?php echo isset($p['alasan']) ? htmlspecialchars($p['alasan']) : '-'; ?></td>
+            <td><?php echo isset($p['tanggal_daftar']) ? date('d-m-Y', strtotime($p['tanggal_daftar'])) : '-'; ?></td>
+            <td><?= htmlspecialchars(isset($p['approved_by_username']) ? $p['approved_by_username'] : '-') ?></td>
             <td><?= htmlspecialchars(isset($p['approved_at']) ? date('d-m-Y H:i', strtotime($p['approved_at'])) : '-') ?></td>
             <td>
                 <?php if ($p['status'] === 'pending'): ?>

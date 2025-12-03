@@ -13,7 +13,7 @@
       <nav class="breadcrumbs">
         <div class="container">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="home.php">Home</a></li>
             <li class="current">Blog</li>
           </ol>
         </div>
@@ -58,7 +58,7 @@
                       </p>
 
                       <div class="read-more">
-                        <a href="blog-details.html">Read More</a>
+                        <a href="detail_berita.php">Read More</a>
                       </div>
                     </div>
 
@@ -74,7 +74,7 @@
                     </div>
 
                     <h2 class="title">
-                      <a href="blog-details.html">Nisi magni odit consequatur autem nulla dolorem</a>
+                      <a href="detail_berita.php">Nisi magni odit consequatur autem nulla dolorem</a>
                     </h2>
 
                     <div class="meta-top">
@@ -91,7 +91,7 @@
                         Ad impedit qui officiis est in non aliquid veniam laborum. Id ipsum qui aut. Sit aliquam et quia molestias laboriosam. Tempora nam odit omnis eum corrupti qui aliquid excepturi molestiae. Facilis et sint quos sed voluptas. Maxime sed tempore enim omnis non alias odio quos distinctio.
                       </p>
                       <div class="read-more">
-                        <a href="blog-details.html">Read More</a>
+                        <a href="detail_berita.php">Read More</a>
                       </div>
                     </div>
 
@@ -108,7 +108,7 @@
                     </div>
 
                     <h2 class="title">
-                      <a href="blog-details.html">Possimus soluta ut id suscipit ea ut. In quo quia et soluta libero sit sint.</a>
+                      <a href="detail_berita.php">Possimus soluta ut id suscipit ea ut. In quo quia et soluta libero sit sint.</a>
                     </h2>
 
                     <div class="meta-top">
@@ -125,7 +125,7 @@
                         Doloremque est saepe laborum aut. Ipsa cupiditate ex harum at recusandae nesciunt. Ut dolores velit.
                       </p>
                       <div class="read-more">
-                        <a href="blog-details.html">Read More</a>
+                        <a href="detail_berita.php">Read More</a>
                       </div>
                     </div>
 
@@ -142,7 +142,7 @@
                     </div>
 
                     <h2 class="title">
-                      <a href="blog-details.html">Non rem rerum nam cum quo minus. Dolor distinctio deleniti explicabo eius exercitationem.</a>
+                      <a href="detail_berita.php">Non rem rerum nam cum quo minus. Dolor distinctio deleniti explicabo eius exercitationem.</a>
                     </h2>
 
                     <div class="meta-top">
@@ -159,7 +159,7 @@
                         Quia sed sunt. Ea asperiores expedita et et delectus voluptates rerum. Id saepe ut itaque quod qui voluptas nobis porro rerum. Quam quia nesciunt qui aut est non omnis. Inventore occaecati et quaerat magni itaque nam voluptas. Voluptatem ducimus sint id earum ut nesciunt sed corrupti nemo.
                       </p>
                       <div class="read-more">
-                        <a href="blog-details.html">Read More</a>
+                        <a href="detail_berita.php">Read More</a>
                       </div>
                     </div>
 
@@ -228,35 +228,35 @@
               <div class="post-item">
                 <img src="assets/img/blog/blog-recent-1.jpg" alt="" class="flex-shrink-0">
                 <div>
-                  <h4><a href="blog-details.html">Nihil blanditiis at in nihil autem</a></h4>
+                  <h4><a href="detail_berita.php">Nihil blanditiis at in nihil autem</a></h4>
                   <time datetime="2020-01-01">Jan 1, 2020</time>
                 </div>
               </div><!-- End recent post item-->
               <div class="post-item">
                 <img src="assets/img/blog/blog-recent-2.jpg" alt="" class="flex-shrink-0">
                 <div>
-                  <h4><a href="blog-details.html">Quidem autem et impedit</a></h4>
+                  <h4><a href="detail_berita.php">Quidem autem et impedit</a></h4>
                   <time datetime="2020-01-01">Jan 1, 2020</time>
                 </div>
               </div><!-- End recent post item-->
               <div class="post-item">
                 <img src="assets/img/blog/blog-recent-3.jpg" alt="" class="flex-shrink-0">
                 <div>
-                  <h4><a href="blog-details.html">Id quia et et ut maxime similique occaecati ut</a></h4>
+                  <h4><a href="detail_berita.php">Id quia et et ut maxime similique occaecati ut</a></h4>
                   <time datetime="2020-01-01">Jan 1, 2020</time>
                 </div>
               </div><!-- End recent post item-->
               <div class="post-item">
                 <img src="assets/img/blog/blog-recent-4.jpg" alt="" class="flex-shrink-0">
                 <div>
-                  <h4><a href="blog-details.html">Laborum corporis quo dara net para</a></h4>
+                  <h4><a href="detail_berita.php">Laborum corporis quo dara net para</a></h4>
                   <time datetime="2020-01-01">Jan 1, 2020</time>
                 </div>
               </div><!-- End recent post item-->
               <div class="post-item">
                 <img src="assets/img/blog/blog-recent-5.jpg" alt="" class="flex-shrink-0">
                 <div>
-                  <h4><a href="blog-details.html">Et dolores corrupti quae illo quod dolor</a></h4>
+                  <h4><a href="detail_berita.php">Et dolores corrupti quae illo quod dolor</a></h4>
                   <time datetime="2020-01-01">Jan 1, 2020</time>
                 </div>
               </div><!-- End recent post item-->

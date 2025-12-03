@@ -57,7 +57,7 @@ class ApprovalsController {
         $User->assignRole($user_id, $role_mahasiswa_id);
 
         // 4. Update status pendaftar di tabel registrations
-        $admin_user_id = $_SESSION['user_id'] ?? 1; // user_id admin/dosen
+        $admin_user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1; // user_id admin/dosen
         $Approval->setApproved($id, $admin_user_id);
     }
 

@@ -208,7 +208,7 @@ document.querySelectorAll('.alert').forEach(alert => {
             <tr>
                 <td><?= $u['username'] ?></td>
                 <td><?= $u['role_name'] ?></td>
-                <td><?= $u['identitas'] ?? '-' ?></td>
+                <td><?= isset($u['identitas']) ? $u['identitas'] : '-' ?></td>
                 <td>
                     <a class="btn-edit" href="index.php?page=admin-user&edit=<?= $u['user_id'] ?>">Edit</a>
                     <a class="btn-delete" href="index.php?page=admin-user-delete&id=<?= $u['user_id'] ?>"

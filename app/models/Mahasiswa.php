@@ -34,13 +34,13 @@ public function create($data) {
 
     return $stmt->execute([
         ':nim'          => $data['nim'],
-        ':user_id'      => $data['user_id'] ?? null,
+        ':user_id'  => isset($data['user_id']) ? $data['user_id'] : null,
         ':nama'         => $data['nama'],
         ':email'        => $data['email'],
         ':prodi'        => $data['prodi'],
         ':angkatan'     => $data['angkatan'],
         ':status'       => $data['status'],
-        ':foto'         => $data['foto'] ?? null,   // ← FIX PENTING
+        ':foto'     => isset($data['foto']) ? $data['foto'] : null,   // ← FIX PENTING
         ':kategori'     => $data['kategori'],
         ':tanggal_join' => $data['tanggal_join']
     ]);
