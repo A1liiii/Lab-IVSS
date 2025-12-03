@@ -10,22 +10,18 @@
                     <label class="form-label fw-semibold">Judul Proyek</label>
                     <input type="text" name="judul" class="form-control" required>
                 </div>
-
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Status</label>
                     <select name="status" class="form-control" required>
-                        <option value="ongoing">On Going</option>
-                        <option value="selesai">Selesai</option>
-                        <option value="pending">Pending</option>
+                        <option value="on going">on going</option>
+                        <option value="selesai">selesai</option>
                     </select>
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label fw-semibold">Deskripsi</label>
                 <textarea name="deskripsi" class="form-control" rows="4"></textarea>
             </div>
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Tanggal Mulai</label>
@@ -37,7 +33,6 @@
                     <input type="date" name="tanggal_selesai" class="form-control">
                 </div>
             </div>
-
             <!-- ANGGOTA PROYEK -->
             <div class="mb-3">
                 <label class="form-label fw-semibold">Anggota Proyek</label>
@@ -65,7 +60,11 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" name="role[]" class="form-control" placeholder="ex: Anggota, Ketua">
+                                <select name="role[]" class="form-select" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="ketua">Ketua</option>
+                                    <option value="anggota">Anggota</option>
+                                </select>
                             </td>
                             <td class="text-center">
                                 <button type="button" onclick="addRow()" class="btn btn-success btn-sm">+</button>
@@ -74,7 +73,6 @@
                     </tbody>
                 </table>
             </div>
-
             <!-- Template row anggota untuk JS -->
             <template id="anggotaRowTemplate">
                 <tr>
@@ -90,14 +88,17 @@
                         </select>
                     </td>
                     <td>
-                        <input type="text" name="role[]" class="form-control" placeholder="ex: Anggota, Ketua">
+                        <select name="role[]" class="form-select" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="ketua">Ketua</option>
+                            <option value="anggota">Anggota</option>
+                        </select>
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button>
                     </td>
                 </tr>
             </template>
-
             <script>
                 function addRow() {
                     let table = document.querySelector("#anggotaTable tbody");

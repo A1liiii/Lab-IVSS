@@ -1,208 +1,207 @@
 <?php
 
-$page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$page = $_GET['page'] ?? 'home';
 
-switch ($page) {
+$routes = [
 
-    case 'admin-dashboard':
-        require 'app/Controllers/admin/dashboard.php';
-        $c = new DashboardController();
-        $c->index();
-        break;
+    // ============================
+    // PUBLIC
+    // ============================
+    'home' => [
+        'controller' => 'app/Controllers/public/home.php',
+        'class' => 'HomePublicController',
+        'method' => 'index'
+    ],
 
-    case 'admin-approvals':
-        require 'app/Controllers/admin/approvals.php';
-        $c = new ApprovalsController();
-        $c->index();
-        break;
+    // ============================
+    // ADMIN ROUTES
+    // ============================
+    'admin-dashboard' => [
+        'controller' => 'app/Controllers/admin/dashboard.php',
+        'class' => 'DashboardController',
+        'method' => 'index'
+    ],
 
-    case 'admin-approvals-approve':
-        require 'app/Controllers/admin/Approvals.php';
-        $c = new ApprovalsController();
-        $c->approve($_GET['id']);
-        break;
-    
-        case 'admin-logs':
-            require 'app/Controllers/admin/logs.php';
-            $c = new LogsController();
-            $c->index();
-            break;        
-        case 'operator-dashboard':
-            require 'app/Controllers/operator/dashboard.php';
-            $c = new OperatorDashboardController();
-            $c->index();
-            break;
-            
-        case 'operator-berita':
-            require 'app/Controllers/operator/berita.php';
-            $c = new OperatorBeritaController();
-            $c->index();
-            break;
-        
-        case 'operator-berita-add':
-            require 'app/Controllers/operator/berita_add.php';
-            $c = new OperatorBeritaAddController();
-            $c->index();
-            break;
-            
-        case 'operator-berita-edit':
-            require 'app/Controllers/operator/berita_edit.php';
-            $c = new OperatorBeritaEditController();
-            $c->index();
-            break;
-        
-        case 'operator-berita-delete':
-            require 'app/Controllers/operator/berita_delete.php';
-            $c = new OperatorBeritaDeleteController();
-            $c->index();
-            break;
-            
-        case 'operator-dokumentasi':
-            require 'app/Controllers/operator/dokumentasi.php';
-            $c = new OperatorDokumentasiController();
-            $c->index();
-            break;
-            
-        case 'operator-dokumentasi-add':
-            require 'app/Controllers/operator/dokumentasi_add.php';
-            $c = new OperatorDokumentasiAddController();
-            $c->index();
-            break;
-    
-            case 'operator-publikasi':
-                require 'app/Controllers/operator/publikasi.php';
-                $c = new OperatorPublikasiController();
-                $c->index();
-                break;
+    'admin-logs' => [
+        'controller' => 'app/Controllers/admin/logs.php',
+        'class' => 'LogsController',
+        'method' => 'index'
+    ],
 
-                case 'admin-user':
-        require 'app/Controllers/admin/user.php';
-        $c = new UserController();
-        $c->index();
-        break;
+    'admin-approvals' => [
+        'controller' => 'app/Controllers/admin/approvals.php',
+        'class' => 'ApprovalsController',
+        'method' => 'index'
+    ],
 
-    case 'admin-user-create':
-        require 'app/Controllers/admin/user.php';
-        $c = new UserController();
-        $c->create();
-        break;
+    'admin-approvals-approve' => [
+        'controller' => 'app/Controllers/admin/approvals.php',
+        'class' => 'ApprovalsController',
+        'method' => 'approve'
+    ],
 
-   case 'admin-user-store':
-    require 'app/Controllers/admin/user.php';
-    $c = new UserController();
-    $c->store($_POST); // ✅ kirim data form sebagai parameter
-    break;
+    // ============================
+    // OPERATOR DASHBOARD
+    // ============================
+    'operator-dashboard' => [
+        'controller' => 'app/Controllers/operator/dashboard.php',
+        'class' => 'OperatorDashboardController',
+        'method' => 'index'
+    ],
+
+    // ============================
+    // OPERATOR BERITA
+    // ============================
+    'operator-berita' => [
+        'controller' => 'app/Controllers/operator/berita.php',
+        'class' => 'OperatorBeritaController',
+        'method' => 'index'
+    ],
+
+    'operator-berita-add' => [
+        'controller' => 'app/Controllers/operator/berita_add.php',
+        'class' => 'OperatorBeritaAddController',
+        'method' => 'index'
+    ],
+
+    'operator-berita-edit' => [
+        'controller' => 'app/Controllers/operator/berita_edit.php',
+        'class' => 'OperatorBeritaEditController',
+        'method' => 'index'
+    ],
+
+    'operator-berita-delete' => [
+        'controller' => 'app/Controllers/operator/berita_delete.php',
+        'class' => 'OperatorBeritaDeleteController',
+        'method' => 'index'
+    ],
+
+    // ============================
+    // OPERATOR DOKUMENTASI
+    // ============================
+    'operator-dokumentasi' => [
+        'controller' => 'app/Controllers/operator/dokumentasi.php',
+        'class' => 'OperatorDokumentasiController',
+        'method' => 'index'
+    ],
+
+    'operator-dokumentasi-add' => [
+        'controller' => 'app/Controllers/operator/dokumentasi_add.php',
+        'class' => 'OperatorDokumentasiAddController',
+        'method' => 'index'
+    ],
+
+    'operator-dokumentasi-edit' => [
+        'controller' => 'app/Controllers/operator/dokumentasi_edit.php',
+        'class' => 'OperatorDokumentasiEditController',
+        'method' => 'index'
+    ],
+
+    'operator-dokumentasi-delete' => [
+        'controller' => 'app/Controllers/operator/dokumentasi_delete.php',
+        'class' => 'OperatorDokumentasiDeleteController',
+        'method' => 'index'
+    ],
+
+    // ============================
+    // OPERATOR FASILITAS
+    // ============================
+    'operator-fasilitas' => [
+        'controller' => 'app/Controllers/operator/fasilitas.php',
+        'class' => 'OperatorFasilitasController',
+        'method' => 'index'
+    ],
+
+    'operator-fasilitas-add' => [
+        'controller' => 'app/Controllers/operator/fasilitas_add.php',
+        'class' => 'OperatorFasilitasAddController',
+        'method' => 'index'
+    ],
+
+    'operator-fasilitas-edit' => [
+        'controller' => 'app/Controllers/operator/fasilitas_edit.php',
+        'class' => 'OperatorFasilitasEditController',
+        'method' => 'index'
+    ],
+
+    'operator-fasilitas-delete' => [
+        'controller' => 'app/Controllers/operator/fasilitas_delete.php',
+        'class' => 'OperatorFasilitasDeleteController',
+        'method' => 'index'
+    ],
+
+    // ============================
+    // OPERATOR PROYEK
+    // ============================
+    'operator-proyek' => [
+        'controller' => 'app/Controllers/operator/proyek.php',
+        'class' => 'OperatorProyekController',
+        'method' => 'index'
+    ],
+
+    'operator-proyek-add' => [
+        'controller' => 'app/Controllers/operator/proyek_add.php',
+        'class' => 'OperatorProyekAddController',
+        'method' => 'index'
+    ],
+
+    'operator-proyek-edit' => [
+        'controller' => 'app/Controllers/operator/proyek_edit.php',
+        'class' => 'OperatorProyekEditController',
+        'method' => 'index'
+    ],
+
+    'operator-proyek-delete' => [
+        'controller' => 'app/Controllers/operator/proyek_delete.php',
+        'class' => 'OperatorProyekDeleteController',
+        'method' => 'index'
+    ],
+
+    // ============================
+    // OPERATOR PUBLIKASI
+    // ============================
+    'operator-publikasi' => [
+        'controller' => 'app/Controllers/operator/publikasi.php',
+        'class' => 'OperatorPublikasiController',
+        'method' => 'index'
+    ],
+
+    'operator-publikasi-add' => [
+        'controller' => 'app/Controllers/operator/publikasi_add.php',
+        'class' => 'OperatorPublikasiAddController',
+        'method' => 'index'
+    ],
+
+    'operator-publikasi-edit' => [
+        'controller' => 'app/Controllers/operator/publikasi_edit.php',
+        'class' => 'OperatorPublikasiEditController',
+        'method' => 'index'
+    ],
+
+    'operator-publikasi-delete' => [
+        'controller' => 'app/Controllers/operator/publikasi_delete.php',
+        'class' => 'OperatorPublikasiDeleteController',
+        'method' => 'index'
+    ],
+];
 
 
-    case 'admin-user-edit':
-    require 'app/Controllers/admin/user.php';
-    $c = new UserController();
-    $c->edit($_GET['id']);
-    break;
+// ================= ROUTER EXECUTOR ===================
 
-    case 'admin-user-update':
-        require 'app/Controllers/admin/user.php';
-        $c = new UserController();
-        $c->update($_POST);
-        break;
-
-    case 'admin-user-delete':
-        require 'app/Controllers/admin/user.php';
-        $c = new UserController();
-        $c->delete($_GET['id']);
-        break;
-    
-
-        case 'operator-dokumentasi-edit':
-            require 'app/Controllers/operator/dokumentasi_edit.php';
-            $c = new OperatorDokumentasiEditController();
-            $c->index();
-            break;
-            
-        case 'operator-dokumentasi-delete':
-            require 'app/Controllers/operator/dokumentasi_delete.php';
-            $c = new OperatorDokumentasiDeleteController();
-            $c->index();
-            break;
-            
-        case 'operator-fasilitas':
-            require 'app/Controllers/operator/fasilitas.php';
-            $c = new OperatorFasilitasController();
-            $c->index();
-            break;
-        
-        case 'operator-fasilitas-add':
-            require 'app/Controllers/operator/fasilitas_add.php';
-            $c = new OperatorFasilitasAddController();
-            $c->index();
-            break;
-                
-        case 'operator-fasilitas-edit':
-            require 'app/Controllers/operator/fasilitas_edit.php';
-            $c = new OperatorFasilitasEditController();
-            $c->index();
-            break;
-                
-        case 'operator-fasilitas-delete':
-            require 'app/Controllers/operator/fasilitas_delete.php';
-            $c = new OperatorFasilitasDeleteController();
-            $c->index();
-            break;
-            
-        case 'operator-proyek':
-            require 'app/Controllers/operator/proyek.php';
-            $c = new OperatorProyekController();
-            $c->index();
-            break;
-
-        case 'operator-proyek-add':
-            require 'app/Controllers/operator/proyek_add.php';
-            $c = new OperatorProyekAddController();
-            $c->index();
-            break;
-                        
-        case 'operator-proyek-edit':
-            require 'app/Controllers/operator/proyek_edit.php';
-            $c = new OperatorProyekEditController();
-            $c->index();
-            break;
-                        
-        case 'operator-proyek-delete':
-            require 'app/Controllers/operator/proyek_delete.php';
-            $c = new OperatorProyekDeleteController();
-            $c->index();
-            break;
-            
-        case 'operator-publikasi':
-            require 'app/Controllers/operator/publikasi.php';
-            $c = new OperatorPublikasiController();
-            $c->index();
-            break;
-
-        case 'operator-publikasi-add':
-            require 'app/Controllers/operator/publikasi_add.php';
-            $c = new OperatorPublikasiAddController();
-            $c->index();
-            break;
-                    
-        case 'operator-publikasi-edit':
-            require 'app/Controllers/operator/publikasi_edit.php';
-            $c = new OperatorPublikasiEditController();
-            $c->index();
-            break;
-                    
-        case 'operator-publikasi-delete':
-            require 'app/Controllers/operator/publikasi_delete.php';
-            $c = new OperatorPublikasiDeleteController();
-            $c->index();
-            break;
-            
-    default:
-        require 'app/Controllers/public/home.php';
-        break;
-    
-        case 'about':
-    require 'app/Controllers/public/about.php';
-    break;
-
+if (!isset($routes[$page])) {
+    require 'app/Controllers/public/home.php';
+    $c = new HomePublicController();
+    return $c->index();
 }
+
+$route = $routes[$page];
+
+require_once $route['controller'];
+$controller = new $route['class']();
+$method = $route['method'];
+
+if (!method_exists($controller, $method)) {
+    die("Method $method tidak ditemukan di controller {$route['class']}");
+}
+
+return $controller->$method();

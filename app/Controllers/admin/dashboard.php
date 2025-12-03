@@ -11,22 +11,8 @@ require_once __DIR__ . '/../../models/Log.php';
 
 class DashboardController {
 
+
     public function index() {
-
-        // === Panggil model ===
-        $Mahasiswa = new Mahasiswa();
-        $User = new User();
-        $Registration = new Approval();
-        $Dokumentasi = new Dokumentasi();
-        $Log = new Log();
-
-        // === Ambil data ===
-        $totalMahasiswa   = $Mahasiswa->count();
-        $totalUser        = $User->count();
-        $pendingReg       = $User->countPending();
-        $totalDokumentasi = $Dokumentasi->count();
-        $recentActivity   = $Log->last(10);
-
         // === Data untuk view ===
         $title  = 'Dashboard - IVSS';
         $active = 'dashboard';

@@ -30,20 +30,17 @@ class OperatorProyekAddController {
             $mProyek  = new Proyek();
             $mAnggota = new AnggotaProyek();
 
-            // Insert proyek
-            $mProyek->insert($_POST);
+            // Insert proyek dan ambil ID langsung dari model
+            $proyek_id = $mProyek->insert($_POST);
 
-            // FIX: LAST INSERT ID PAKE $db
-            $proyek_id = $db->lastInsertId();
-
-            // simpan anggota (boleh null)
+            // simpan anggota
             if (!empty($_POST['user_id'])) {
 
                 $list = [];
 
                 foreach ($_POST['user_id'] as $i => $uid) {
                     $list[] = [
-                        'user_id' => !empty($uid) ? $uid : null,   // <-- INI AGAR NULL BOLEH
+                        'user_id' => !empty($uid) ? $uid : null,
                         'role' => isset($_POST['role'][$i]) ? $_POST['role'][$i] : null
                     ];
                 }

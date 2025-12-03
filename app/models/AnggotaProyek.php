@@ -6,8 +6,7 @@ class AnggotaProyek
 
     public function __construct()
     {
-        global $pdo;
-        $this->db = $pdo;
+        $this->db = Database::connect();
     }
 
     public function insertBatch($proyek_id, $anggota)

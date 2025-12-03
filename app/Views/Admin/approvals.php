@@ -93,7 +93,6 @@ p.no-data {
         <tr>
             <th>No</th>
             <th>Nama</th>
-            <th>NIM</th> 
             <th>Email</th>
             <th>Prodi</th>
             <th>Angkatan</th>
@@ -109,7 +108,6 @@ p.no-data {
         <tr>
             <td><?= $no++ ?></td>
             <td><?= htmlspecialchars($p['nama']) ?></td>
-            <td><?= htmlspecialchars($p['nim']) ?></td>
             <td><?= htmlspecialchars($p['email']) ?></td>
             <td><?= htmlspecialchars($p['prodi']) ?></td>
             <td><?= htmlspecialchars($p['angkatan']) ?></td>
@@ -132,7 +130,7 @@ p.no-data {
 </table>
 </div>
 <?php else: ?>
-<p class="no-data">Tidak ada pendaftar pending.</p>
+<p class="no-data">Tidak ada pendaftar</p>
 <?php endif; ?>
 </div>
 

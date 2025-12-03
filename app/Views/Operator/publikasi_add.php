@@ -22,14 +22,13 @@
                     <input type="date" name="tanggal_selesai" class="form-control" required>
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label fw-semibold">Status Publikasi</label>
                 <select name="status" class="form-select" required>
                     <option value="">-- Pilih Status --</option>
                     <option value="draft">Draft</option>
-                    <option value="publik">Publik</option>
-                    <option value="arsip">Arsip</option>
+                    <option value="proses">Proses</option>
+                    <option value="publikasi">Publikasi</option>
                 </select>
             </div>
 

@@ -2,18 +2,13 @@
 
 class Approval {
 
-    private $db;
+    private $conn;
 
     public function __construct() {
-        $this->db = new PDO(
-            "pgsql:host=localhost;port=5432;dbname=labIVSS",
-            "postgres",
-            "258369"
-        );
+        $this->conn = Database::connect();
     }
-
     public function getPending() {
-       $stmt = $this->db->query("
+       $stmt = $this->conn->query("
         SELECT r.*, u.username AS approved_by_username
         FROM registrations r
         LEFT JOIN users u ON r.approved_by = u.user_id
@@ -23,17 +18,13 @@ class Approval {
     }
 
     public function find($id) {
-    $stmt = $this->db->prepare("
-        SELECT reg_id, nama, nim, prodi, angkatan, alasan, email, status
-        FROM registrations 
-        WHERE reg_id = ?
-    ");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+        $stmt = $this->conn->prepare("SELECT * FROM registrations WHERE reg_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
    public function setApproved($id, $approvedByUserId) {
-    $stmt = $this->db->prepare(
+    $stmt = $this->conn->prepare(
         "UPDATE registrations 
          SET status='approved', approved_by = ?, approved_at = NOW() 
          WHERE reg_id=?"
