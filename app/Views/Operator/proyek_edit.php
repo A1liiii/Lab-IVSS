@@ -48,10 +48,9 @@
                     <tr>
                         <th>User</th>
                         <th>Peran</th>
-                        <th width="50">#</th>
+                        <th width="50">Aksi</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <?php foreach ($anggota as $a): ?>
                         <tr>
@@ -59,9 +58,8 @@
                                 <select name="user_id[]" class="form-control">
                                     <option value="">-- Pilih User --</option>
                                     <?php foreach ($users as $u): ?>
-                                        <option value="<?= $u['user_id'] ?>"
-                                            <?= $u['user_id']==$a['user_id']?'selected':'' ?>>
-                                            <?= htmlspecialchars($u['nama']) ?>
+                                        <option value="<?= $u['user_id'] ?>" <?= $u['user_id']==$a['user_id']?'selected':'' ?>>
+                                            <?= htmlspecialchars($u['nama'] ?? 'Tanpa Nama') ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

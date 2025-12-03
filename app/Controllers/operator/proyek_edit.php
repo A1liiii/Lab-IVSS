@@ -1,76 +1,71 @@
 <?php
-require_once __DIR__ . '/../../models/Berita.php';
+require_once __DIR__ . '/../../models/Proyek.php';
+require_once __DIR__ . '/../../models/User.php';
+
 class OperatorProyekEditController {
-    private $conn;
 
     public function index() {
-        $this->conn = Database::connect();
-    }
 
-    public function count() {
-        $sql = "SELECT COUNT(*) AS total FROM proyek";
-        $stmt = $this->conn->query($sql);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['total'];
-    }
+        // ===== MODEL
+        $m = new Proyek();
+        $mu = new User();
 
-    public function getAll() {
-        $sql = "SELECT p.*, COUNT(a.id) AS jumlah_anggota
-                FROM proyek p
-                LEFT JOIN anggota_proyek a ON a.proyek_id = p.proyek_id
-                GROUP BY p.proyek_id
-                ORDER BY p.proyek_id DESC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+        // ===== Ambil ID
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            die("ID proyek tidak ditemukan.");
+        }
 
-    public function getById($id) {
-        $sql = "SELECT * FROM proyek WHERE proyek_id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+        // ===== Jika submit update
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    public function insert($data) {
-        $sql = "INSERT INTO proyek (judul, deskripsi, tanggal_mulai, tanggal_selesai, status)
-                VALUES (?, ?, ?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([
-            $data['judul'],
-            $data['deskripsi'],
-            $data['tanggal_mulai'],
-            $data['tanggal_selesai'],
-            $data['status']
-        ]);
-    }
+            $m->update($id, [
+                'judul'          => $_POST['judul'],
+                'deskripsi'      => $_POST['deskripsi'],
+                'tanggal_mulai'  => $_POST['tanggal_mulai'],
+                'tanggal_selesai'=> $_POST['tanggal_selesai'],
+                'status'         => $_POST['status']
+            ]);
 
-    public function update($id, $data) {
-        $sql = "UPDATE proyek SET judul=?, deskripsi=?, tanggal_mulai=?, tanggal_selesai=?, status=? WHERE proyek_id=?";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([
-            $data['judul'],
-            $data['deskripsi'],
-            $data['tanggal_mulai'],
-            $data['tanggal_selesai'],
-            $data['status'],
-            $id
-        ]);
-    }
+            // Hapus semua anggota dulu
+            $m->deleteAnggota($id);
 
-    public function delete($id) {
-        $sql = "DELETE FROM proyek WHERE proyek_id=?";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([$id]);
-    }
+            // Insert ulang anggota
+            if (!empty($_POST['user_id'])) {
+                foreach ($_POST['user_id'] as $i => $user_id) {
 
-    public function getAnggota($proyek_id) {
-        $sql = "SELECT a.*, u.username AS nama, u.nip, u.nim
-                FROM anggota_proyek a
-                LEFT JOIN users u ON a.user_id = u.user_id
-                WHERE a.proyek_id=?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$proyek_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    if (!$user_id) continue;
+
+                    $role = $_POST['role'][$i];
+
+                    $m->insertAnggota([
+                        'proyek_id' => $id,
+                        'user_id'   => $user_id,
+                        'role'      => $role
+                    ]);
+                }
+            }
+
+            header("Location: /lab-ivss/index.php?page=operator-proyek");
+            exit;
+        }
+
+        // ===== Ambil data proyek
+        $data = $m->getById($id);
+
+        // ===== Ambil anggota proyek
+        $anggota = $m->getAnggota($id);
+
+        // ===== Ambil user untuk dropdown
+        $users = $mu->getAll();
+
+        // ===== Tampilkan view
+        $title  = "Edit Proyek";
+        $active = "proyek";
+
+        require_once __DIR__ . '/../../Views/layouts/operator_header.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_sidebar.php';
+        require_once __DIR__ . '/../../Views/Operator/proyek_edit.php';
+        require_once __DIR__ . '/../../Views/layouts/operator_footer.php';
     }
 }

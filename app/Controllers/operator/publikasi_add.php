@@ -11,7 +11,6 @@ class OperatorPublikasiAddController {
 
             $m = new Publikasi();
 
-            $user_id         = 3; // nanti diganti ke SESSION
             $judul           = $_POST['judul'];
             $deskripsi       = $_POST['deskripsi'];
             $tanggal_mulai   = $_POST['tanggal_mulai'];
@@ -19,7 +18,7 @@ class OperatorPublikasiAddController {
             $status          = $_POST['status'];
             $link            = $_POST['link'];
 
-            $m->insert($user_id, $judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
+            $m->insert ($judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
 
             addLog($_SESSION['user_id'], "Menambah publikasi baru", "INSERT");
 

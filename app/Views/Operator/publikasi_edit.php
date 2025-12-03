@@ -25,14 +25,13 @@
                            value="<?php echo isset($data['tanggal_selesai']) ? $data['tanggal_selesai'] : ''; ?>" required>
                 </div>
             </div>
-
             <div class="mb-3">
                 <label class="form-label fw-semibold">Status Publikasi</label>
                 <select name="status" class="form-select" required>
                     <option value="">-- Pilih Status --</option>
+                    <option value="proses" <?php echo ($data['status'] == 'proses') ? 'selected' : ''; ?>>Proses</option>
+                    <option value="publikasi" <?php echo ($data['status'] == 'publikasi') ? 'selected' : ''; ?>>publikasi</option>
                     <option value="draft" <?php echo ($data['status'] == 'draft') ? 'selected' : ''; ?>>Draft</option>
-                    <option value="publik" <?php echo ($data['status'] == 'publik') ? 'selected' : ''; ?>>Publik</option>
-                    <option value="arsip" <?php echo ($data['status'] == 'arsip') ? 'selected' : ''; ?>>Arsip</option>
                 </select>
             </div>
 

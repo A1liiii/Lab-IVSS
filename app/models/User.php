@@ -25,10 +25,13 @@ class User {
     }
 
     // Ambil semua user untuk dropdown anggota proyek
-    public function getAll() {
-        $sql = "SELECT user_id, 
-                       COALESCE(nip, nim) AS identitas,
-                       username
+    public function getAll()
+    {
+        $sql = "SELECT 
+                    user_id,
+                    username AS nama,
+                    nip,
+                    nim
                 FROM users
                 ORDER BY username ASC";
 

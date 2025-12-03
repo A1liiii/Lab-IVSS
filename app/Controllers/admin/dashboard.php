@@ -11,6 +11,7 @@ require_once __DIR__ . '/../../models/Log.php';
 
 class DashboardController {
 
+
     public function index() {
         // === Data untuk view ===
         $title  = 'Dashboard - IVSS';
