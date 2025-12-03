@@ -31,25 +31,6 @@
       </div>
     </div>
   </div>
-
-  <br>
-
-  <div class="admin-card">
-  <h4>Recent Activity</h4>
-  <ul>
-    <?php if (!empty($recentActivity) && is_array($recentActivity)): ?>
-      <?php foreach ($recentActivity as $row): ?>
-        <li>
-        <strong><?= htmlspecialchars($row['aksi']) ?></strong>
-        - <?= htmlspecialchars($row['deskripsi']) ?>
-        (<?= htmlspecialchars($row['username']) ?>)
-        <br>
-        <small><?= htmlspecialchars($row['waktu']) ?></small>
-      </li>
-      <?php endforeach; ?>
-    <?php else: ?>
-      <li>Tidak ada aktivitas</li>
-    <?php endif; ?>
   </ul>
 </div>
 
