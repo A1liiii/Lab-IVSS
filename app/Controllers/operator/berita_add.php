@@ -20,7 +20,7 @@ class OperatorBeritaAddController {
             $foto = null;
             if (!empty($_FILES['foto']['name'])) {
 
-                $folder = __DIR__ . '/../../public/uploads/berita/';
+                $folder = __DIR__ . '/../../../public/uploads/berita/';
                 if (!is_dir($folder)) mkdir($folder, 0755, true);
 
                 $fotoName = time() . "_" . $_FILES['foto']['name'];
@@ -33,7 +33,7 @@ class OperatorBeritaAddController {
             $file_url = null;
             if (!empty($_FILES['file_url']['name'])) {
 
-                $folder = __DIR__ . '/../../public/uploads/berita/';
+                $folder = __DIR__ . '/../../../public/uploads/berita/';
                 if (!is_dir($folder)) mkdir($folder, 0755, true);
 
                 $fileName = time() . "_" . $_FILES['file_url']['name'];

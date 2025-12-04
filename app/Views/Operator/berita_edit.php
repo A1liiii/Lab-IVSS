@@ -29,7 +29,7 @@
             <div class="mb-3">
                 <label>Foto Saat Ini</label><br>
                 <?php if ($data['foto']): ?>
-                    <img src="/lab-ivss/public/uploads/<?= $data['foto'] ?>" width="120" class="mb-2">
+                    <img src="public/uploads/berita/<?= $data['foto'] ?>" width="120" class="mb-2">
                 <?php else: ?>
                     <p>Tidak ada foto</p>
                 <?php endif; ?>

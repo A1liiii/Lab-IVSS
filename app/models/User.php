@@ -229,5 +229,24 @@ class User {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function findByUsername($username) {
+        $sql = "SELECT * FROM users WHERE username = :username LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':username' => $username]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getRoles($user_id) {
+        $sql = "SELECT r.role_name 
+                FROM user_roles ur
+                JOIN roles r ON ur.role_id = r.role_id
+                WHERE ur.user_id = :uid";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':uid' => $user_id]);
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
 }
 

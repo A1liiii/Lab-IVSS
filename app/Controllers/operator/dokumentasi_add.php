@@ -27,7 +27,7 @@ class OperatorDokumentasiAddController {
 
             if (!empty($_FILES['file_path']['name'])) {
 
-                $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
+                $folder = __DIR__ . '/../../../public/uploads/dokumentasi/';
                 if (!is_dir($folder)) mkdir($folder, 0755, true);
 
                 $namaFile = time() . "_" . $_FILES['file_path']['name'];

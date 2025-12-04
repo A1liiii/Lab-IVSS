@@ -31,5 +31,4 @@ class Approval {
     );
     return $stmt->execute([$approvedByUserId, $id]);
 }
-
 }

@@ -30,7 +30,6 @@
                 <select name="kategori" class="form-control" required>
                     <option value="fasilitas">Fasilitas</option>
                     <option value="peralatan">Peralatan</option>
-                    <option value="ruangan">Ruangan</option>
                 </select>
             </div>
 

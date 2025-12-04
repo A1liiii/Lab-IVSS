@@ -37,10 +37,11 @@ $routes = [
     'admin-approvals-approve' => [
         'controller' => 'app/Controllers/admin/approvals.php',
         'class' => 'ApprovalsController',
-        'method' => 'approve'
+        'method' => 'approve',
+        'params' => ['get' => 'id']
     ],
 
-        'admin-user' => [
+    'admin-user' => [
         'controller' => 'app/Controllers/admin/user.php',
         'class' => 'UserController',
         'method' => 'index',
@@ -225,8 +226,9 @@ $routes = [
         'class' => 'OperatorPublikasiDeleteController',
         'method' => 'index'
     ],
-];
+    
 
+];
 
 // ================= ROUTER EXECUTOR ===================
 
@@ -239,11 +241,34 @@ if (!isset($routes[$page])) {
 $route = $routes[$page];
 
 require_once $route['controller'];
-$controller = new $route['class']();
-$method = $route['method'];
 
+$controller = new $route['class']();
+$method     = $route['method'];
+
+
+// Pastikan method ada
 if (!method_exists($controller, $method)) {
     die("Method $method tidak ditemukan di controller {$route['class']}");
 }
 
+// ================ HANDLE PARAMETER ================
+$params = $route['params'] ?? [];
+
+// Jika route menggunakan POST
+if (isset($params['post']) && $params['post'] === true) {
+    return $controller->$method($_POST);
+}
+
+// Jika route menggunakan GET dengan parameter tertentu
+if (isset($params['get'])) {
+    $paramKey = $params['get'];
+
+    if (!isset($_GET[$paramKey])) {
+        die("Parameter GET '$paramKey' tidak ditemukan untuk route '$page'");
+    }
+
+    return $controller->$method($_GET[$paramKey]);
+}
+
+// Default: tanpa parameter
 return $controller->$method();
