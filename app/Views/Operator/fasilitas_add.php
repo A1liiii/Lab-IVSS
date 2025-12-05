@@ -30,13 +30,21 @@
                 <select name="kategori" class="form-control" required>
                     <option value="fasilitas">Fasilitas</option>
                     <option value="peralatan">Peralatan</option>
-                    <option value="ruangan">Ruangan</option>
                 </select>
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">Foto (opsional)</label>
-                <input type="file" name="foto" class="form-control">
+                <label class="form-label">Foto Fasilitas</label>
+                <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewFoto(event)">
+
+                <!-- Preview foto lama -->
+                <?php if (!empty($data['foto'])): ?>
+                    <img id="preview-old" 
+                        src="/lab-ivss/public/uploads/fasilitas/<?= htmlspecialchars($data['foto']) ?>" 
+                        style="width:120px;height:120px;object-fit:cover;margin-top:10px;border-radius:6px;">
+                <?php else: ?>
+                    <p class="text-muted" id="no-photo">Tidak ada foto</p>
+                <?php endif; ?>
             </div>
 
             <div class="d-flex justify-content-end mt-4">
@@ -52,3 +60,36 @@
         </form>
     </div>
 </div>
+<script>
+function previewFoto(event) {
+    const input = event.target;
+    let previewNew = document.getElementById('preview-new');
+
+    // Jika preview baru belum ada, buat elemen img
+    if(!previewNew) {
+        previewNew = document.createElement('img');
+        previewNew.id = 'preview-new';
+        previewNew.style.width = '120px';
+        previewNew.style.height = '120px';
+        previewNew.style.objectFit = 'cover';
+        previewNew.style.borderRadius = '6px';
+        previewNew.style.marginTop = '10px';
+        input.parentNode.insertBefore(previewNew, input.nextSibling);
+    }
+
+    if(input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewNew.src = e.target.result;
+            previewNew.style.display = 'block';
+
+            // Sembunyikan preview lama / teks "Tidak ada foto"
+            const old = document.getElementById('preview-old');
+            if(old) old.style.display = 'none';
+            const noPhoto = document.getElementById('no-photo');
+            if(noPhoto) noPhoto.style.display = 'none';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>

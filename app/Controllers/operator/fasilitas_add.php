@@ -26,13 +26,13 @@ class OperatorFasilitasAddController {
             $status    = $_POST['status'];
 
             // Pastikan kategori sesuai enum di DB
-            $validKategori = ['kelas', 'laboratorium', 'kantor'];
+            $validKategori = ['fasilitas', 'peralatan'];
             $kategori = in_array($_POST['kategori'], $validKategori) ? $_POST['kategori'] : null;
 
             // --- Upload FOTO ---
             $foto = null;
             if (!empty($_FILES['foto']['name'])) {
-                $folder = __DIR__ . '/../../public/uploads/fasilitas/';
+                $folder = __DIR__ . '/../../../public/uploads/fasilitas/';
                 if (!is_dir($folder)) mkdir($folder, 0777, true);
 
                 $namaFile = time() . "_" . basename($_FILES['foto']['name']);

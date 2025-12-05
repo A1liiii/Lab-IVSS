@@ -25,14 +25,16 @@ class OperatorFasilitasEditController {
             $nama      = $_POST['nama'];
             $deskripsi = $_POST['deskripsi'];
             $status    = $_POST['status'];
-            $kategori  = $_POST['kategori'];
+            // Pastikan kategori sesuai enum di DB
+            $validKategori = ['fasilitas', 'peralatan'];
+            $kategori = in_array($_POST['kategori'], $validKategori) ? $_POST['kategori'] : null;
 
             // foto lama
             $foto = $_POST['foto_lama'];
 
             // upload baru?
             if (!empty($_FILES['foto']['name'])) {
-                $folder = __DIR__ . '/../../public/uploads/fasilitas/';
+                $folder = __DIR__ . '/../../../public/uploads/fasilitas/';
                 if (!is_dir($folder)) mkdir($folder, 0777, true);
 
                 $namaFile = time() . "_" . $_FILES['foto']['name'];

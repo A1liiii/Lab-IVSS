@@ -9,10 +9,10 @@
         <table class="table table-bordered table-striped table-hover">
             <thead>
                 <tr>
-                    <th style="width:35%;">Judul & Deskripsi</th>
+                    <th style="width:20%;">Dokumentasi</th>    
+                    <th style="width:32%;">Judul & Deskripsi</th>
                     <th style="width:12%;">Jenis</th>
                     <th style="width:12%;">Tanggal</th>
-                    <th style="width:15%;">Dokumentasi</th>
                     <th style="width:15%; text-align:center;">Aksi</th>
                 </tr>
             </thead>
@@ -20,6 +20,26 @@
                 <?php if (!empty($data)) : ?>
                     <?php foreach ($data as $d) : ?>
                         <tr>
+                            <!-- Dokumentasi (Thumbnail / Icon) -->
+                            <td>
+                                <?php if (!empty($d['file_path'])): ?>
+                                    <?php
+                                        $file = htmlspecialchars($d['file_path']);
+                                        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                                    ?>
+                                    <?php if (in_array($ext, ['jpg','jpeg','png','gif'])): ?>
+                                        <img src="/lab-ivss/public/uploads/dokumentasi/<?= $file ?>" 
+                                            style="width:150px; height:auto; object-fit:cover; border-radius:6px;">
+                                    <?php else: ?>
+                                        <a href="/lab-ivss/public/uploads/dokumentasi/<?= $file ?>" target="_blank">
+                                            <i class="bi bi-file-earmark-text" style="font-size:40px;"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
+
                             <!-- Judul & Deskripsi -->
                             <td>
                                 <strong><?= htmlspecialchars($d['judul_kegiatan']); ?></strong><br>
@@ -42,26 +62,6 @@
 
                             <!-- Tanggal -->
                             <td><?= date('d M Y', strtotime($d['tanggal_kegiatan'])); ?></td>
-
-                            <!-- Dokumentasi (Thumbnail / Icon) -->
-                            <td>
-                                <?php if (!empty($d['file_path'])): ?>
-                                    <?php
-                                        $file = htmlspecialchars($d['file_path']);
-                                        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-                                    ?>
-                                    <?php if (in_array($ext, ['jpg','jpeg','png','gif'])): ?>
-                                        <img src="/lab-ivss/public/uploads/dokumentasi/<?= $file ?>" 
-                                            style="width:120px; height:auto; object-fit:cover; border-radius:6px;">
-                                    <?php else: ?>
-                                        <a href="/lab-ivss/public/uploads/dokumentasi/<?= $file ?>" target="_blank">
-                                            <i class="bi bi-file-earmark-text" style="font-size:40px;"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <span class="text-muted">-</span>
-                                <?php endif; ?>
-                            </td>
 
                             <!-- Aksi -->
                             <td style="text-align:center;">
