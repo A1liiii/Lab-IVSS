@@ -10,49 +10,73 @@ class Berita {
         $this->conn = Database::connect();
     }
 
+    // GET ALL BERITA + JOIN PENULIS
     public function getAll() {
-        $sql = "SELECT * FROM berita ORDER BY berita_id DESC";
+        $sql = "SELECT b.*, u.username AS penulis 
+                FROM berita b
+                LEFT JOIN users u ON b.user_id = u.user_id
+                ORDER BY b.berita_id DESC";
+
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // GET DETAIL BERITA + PENULIS
     public function getById($id) {
-        $sql = "SELECT * FROM berita WHERE berita_id = :id";
+        $sql = "SELECT b.*, u.username AS penulis
+                FROM berita b
+                LEFT JOIN users u ON b.user_id = u.user_id
+                WHERE berita_id = :id";
+
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function insert($judul, $deskripsi, $foto, $file_url, $kategori, $user_id) {
-        $sql = "INSERT INTO berita (judul, deskripsi, foto, file_url, kategori, tgl_post, user_id)
-                VALUES (:judul, :deskripsi, :foto, :file_url, :kategori, CURRENT_DATE, :user_id)";
+    // INSERT DATA BERITA
+    public function insert($judul, $deskripsi, $foto, $file_url, $kategori, $tanggal, $user_id) {
+
+        $sql = "INSERT INTO berita 
+                (judul, deskripsi, foto, file_url, kategori, tgl_post, user_id)
+                VALUES
+                (:judul, :deskripsi, :foto, :file_url, :kategori, :tgl_post, :user_id)";
 
         $stmt = $this->conn->prepare($sql);
+
         return $stmt->execute([
-            ':judul' => $judul,
+            ':judul'     => $judul,
             ':deskripsi' => $deskripsi,
-            ':foto' => $foto,
-            ':file_url' => $file_url,
-            ':kategori' => $kategori,
-            ':user_id' => $user_id
+            ':foto'      => $foto,
+            ':file_url'  => $file_url,
+            ':kategori'  => $kategori,
+            ':tgl_post'  => $tanggal,
+            ':user_id'   => $user_id
         ]);
     }
 
-    public function update($id, $judul, $deskripsi, $foto, $file_url, $kategori) {
-        $sql = "UPDATE berita 
-                SET judul = :judul, deskripsi = :deskripsi, foto = :foto,
-                    file_url = :file_url, kategori = :kategori 
+    // UPDATE BERITA (dengan / tanpa ganti foto atau file)
+    public function update($id, $judul, $deskripsi, $foto, $file_url, $kategori, $tanggal) {
+
+        $sql = "UPDATE berita SET
+                    judul      = :judul,
+                    deskripsi  = :deskripsi,
+                    foto       = :foto,
+                    file_url   = :file_url,
+                    kategori   = :kategori,
+                    tgl_post   = :tgl_post
                 WHERE berita_id = :id";
 
         $stmt = $this->conn->prepare($sql);
+
         return $stmt->execute([
-            ':judul' => $judul,
+            ':judul'     => $judul,
             ':deskripsi' => $deskripsi,
-            ':foto' => $foto,
-            ':file_url' => $file_url,
-            ':kategori' => $kategori,
-            ':id' => $id
+            ':foto'      => $foto,
+            ':file_url'  => $file_url,
+            ':kategori'  => $kategori,
+            ':tgl_post'  => $tanggal,
+            ':id'        => $id
         ]);
     }
 

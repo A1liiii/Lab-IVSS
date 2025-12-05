@@ -2,61 +2,75 @@
 
     <h2 class="mb-4">Edit Berita</h2>
 
-    <div class="admin-card">
+    <form method="POST" enctype="multipart/form-data">
 
-        <form method="POST" enctype="multipart/form-data">
+        <!-- JUDUL -->
+        <label class="form-label">Judul Berita</label>
+        <input type="text" name="judul" class="form-control mb-3" 
+               value="<?= $berita['judul'] ?>" required>
 
-            <div class="mb-3">
-                <label>Judul</label>
-                <input type="text" name="judul" value="<?= $data['judul'] ?>" class="form-control" required>
-            </div>
+        <!-- DESKRIPSI -->
+        <label class="form-label">Deskripsi</label>
+        <textarea name="deskripsi" class="form-control mb-3" rows="6" required><?= $berita['deskripsi'] ?></textarea>
 
-            <div class="mb-3">
-                <label>Deskripsi</label>
-                <textarea name="deskripsi" rows="5" class="form-control" required><?= $data['deskripsi'] ?></textarea>
-            </div>
+        <!-- KATEGORI -->
+        <label class="form-label">Kategori</label>
+        <select name="kategori" class="form-control mb-3" required>
+            <option value="berita"        <?= $berita['kategori']=='berita' ? 'selected':'' ?>>Berita</option>
+            <option value="pengumuman"        <?= $berita['kategori']=='pengumuman' ? 'selected':'' ?>>Pengumuman</option>
+            <option value="aktivitas"    <?= $berita['kategori']=='aktivitas' ? 'selected':'' ?>>Aktivitas</option>
+            <option value="lainnya"    <?= $berita['kategori']=='lainnya' ? 'selected':'' ?>>Lainnya</option>
+        </select>
 
-            <div class="mb-3">
-                <label>Kategori</label>
-                <select name="kategori" class="form-control" required>
-                    <option value="berita"     <?= $data['kategori']=='berita' ? 'selected':'' ?>>Berita</option>
-                    <option value="pengumuman" <?= $data['kategori']=='pengumuman' ? 'selected':'' ?>>Pengumuman</option>
-                    <option value="aktivitas"  <?= $data['kategori']=='aktivitas' ? 'selected':'' ?>>Aktivitas</option>
-                    <option value="lainnya"     <?= $data['kategori']=='lainnya' ? 'selected':'' ?>>Lainnya</option>
-                </select>
-            </div>
+        <!-- PENULIS -->
+        <label class="form-label">Penulis</label>
+        <input type="text" class="form-control mb-3"
+       value="<?= $_SESSION['username'] ?>" disabled>
 
-            <div class="mb-3">
-                <label>Foto Saat Ini</label><br>
-                <?php if ($data['foto']): ?>
-                    <img src="/lab-ivss/public/uploads/<?= $data['foto'] ?>" width="120" class="mb-2">
-                <?php else: ?>
-                    <p>Tidak ada foto</p>
-                <?php endif; ?>
-                <input type="file" name="foto" class="form-control mt-2">
-            </div>
+        <!-- TANGGAL POST -->
+        <label class="form-label">Tanggal Posting</label>
+        <input type="date" name="tgl_post" class="form-control mb-3"
+        value="<?= isset($berita['tgl_post']) && !empty($berita['tgl_post']) ? $berita['tgl_post'] : date('Y-m-d') ?>" required>
 
-            <div class="mb-3">
-                <label>File Tambahan</label>
-                <?php if ($data['file_url']): ?>
-                    <p>File: <?= $data['file_url'] ?></p>
-                <?php else: ?>
-                    <p>Tidak ada file PDF</p>
-                <?php endif; ?>
-                <input type="file" name="file_url" class="form-control mt-2">
-            </div>
+        <!-- FOTO / THUMBNAIL -->
+        <label class="form-label">Foto Berita</label><br>
 
-            <div class="d-flex justify-content-end mt-4">
-                <a href="index.php?page=operator-berita" class="btn btn-secondary me-2">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+        <?php if ($berita['foto']): ?>
+            <img src="/lab-ivss/public/uploads/berita/<?= $berita['foto'] ?>" 
+                id="preview-old"
+                style="width:200px;margin-bottom:10px;border-radius:6px;">
+        <?php else: ?>
+            <p class="text-muted">Tidak ada foto</p>
+        <?php endif; ?>
 
-                <button class="btn btn-primary">
-                    <i class="bi bi-save"></i> Simpan
-                </button>
-            </div>
-        </form>
+        <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewFoto(event)">
 
-    </div>
+        <!-- PREVIEW NEW PHOTO -->
+        <img id="preview-new" src="#" 
+             style="display:none;width:200px;margin-top:10px;border-radius:6px;">
+
+        <div class="d-flex justify-content-end mt-4">
+            <a href="index.php?page=operator-berita" class="btn btn-secondary me-2">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+
+            <button class="btn btn-primary">
+                <i class="bi bi-save"></i> Update
+            </button>
+        </div>
+
+    </form>
 
 </div>
+
+<script>
+function previewFoto(event) {
+    const img = document.getElementById('preview-new');
+    const old = document.getElementById('preview-old');
+
+    img.src = URL.createObjectURL(event.target.files[0]);
+    img.style.display = "block";
+
+    if (old) old.style.opacity = "0.4";
+}
+</script>

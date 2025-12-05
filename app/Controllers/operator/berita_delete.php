@@ -29,7 +29,7 @@ class OperatorBeritaDeleteController {
 
             // Hapus file_url jika ada
             if (!empty($data['file_url'])) {
-                $pathFile = __DIR__ . '/../../public/uploads/berita/' . $data['file_url'];
+                $pathFile = __DIR__ . '/../../../public/uploads/berita/' . $data['file_url'];
                 if (file_exists($pathFile)) unlink($pathFile);
             }
         }
