@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+  
 
 <head>
+  <style>
+    body {
+        padding-top: 120px !important;
+    }
+</style>
+
+</style>
+
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title><?= $title ?? 'IVSS' ?></title>

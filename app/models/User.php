@@ -33,8 +33,8 @@ class User {
 
     $stmt = $this->conn->prepare($sql);
     $stmt->execute([
-        ':nip'      => $data['nip'] ?? null,
-        ':nim'      => $data['nim'] ?? null,
+        ':nip'     => isset($data['nip']) ? $data['nip'] : null,
+        ':nim'     => isset($data['nim']) ? $data['nim'] : null,
         ':username' => $data['username'],
         ':password' => $data['password']
     ]);
@@ -230,4 +230,3 @@ class User {
     }
 
 }
-

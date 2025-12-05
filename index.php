@@ -14,7 +14,17 @@ $routes = [
     ],
 
     // ============================
-    // ADMIN ROUTES
+    // PUBLIC LAB INFO
+    // ============================
+    'about' => [
+        'controller' => 'app/Controllers/admin/lab_info.php', // tetap pakai LabInfoController
+        'class' => 'LabInfoController',
+        'method' => 'aboutPublic'
+    ],
+
+
+    // ============================
+    // ADMIN
     // ============================
     'admin-dashboard' => [
         'controller' => 'app/Controllers/admin/dashboard.php',
@@ -33,25 +43,22 @@ $routes = [
         'class' => 'ApprovalsController',
         'method' => 'index'
     ],
-
     'admin-approvals-approve' => [
         'controller' => 'app/Controllers/admin/approvals.php',
         'class' => 'ApprovalsController',
-        'method' => 'approve'
+        'method' => 'approve',
+        'params' => ['get' => 'id']
     ],
 
-        'admin-user' => [
-        'controller' => 'app/Controllers/admin/user.php',
-        'class' => 'UserController',
-        'method' => 'index',
-        'params' => []
-    ],
 
-    'admin-user-create' => [
+
+    // ============================
+    // USER MANAGEMENT (BERSIH)
+    // ============================
+    'admin-user' => [
         'controller' => 'app/Controllers/admin/user.php',
         'class' => 'UserController',
-        'method' => 'create',
-        'params' => []
+        'method' => 'index'
     ],
 
     'admin-user-store' => [
@@ -59,13 +66,6 @@ $routes = [
         'class' => 'UserController',
         'method' => 'store',
         'params' => ['post' => true]
-    ],
-
-    'admin-user-edit' => [
-        'controller' => 'app/Controllers/admin/user.php',
-        'class' => 'UserController',
-        'method' => 'edit',
-        'params' => ['get' => 'id']
     ],
 
     'admin-user-update' => [
@@ -81,9 +81,49 @@ $routes = [
         'method' => 'delete',
         'params' => ['get' => 'id']
     ],
+            'admin-user-create' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'createUserFromDosen',
+        'params' => ['get' => 'nip']
+    ],
+
+
 
     // ============================
-    // OPERATOR DASHBOARD
+    // TAMBAH DOSEN
+    // ============================
+    'admin-dosen-add' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'addDosen'
+    ],
+
+    'admin-dosen-store' => [
+        'controller' => 'app/Controllers/admin/user.php',
+        'class' => 'UserController',
+        'method' => 'storeDosen',
+        'params' => ['post' => true]
+    ],
+
+    // ============================
+// ADMIN LAB INFO
+// ============================
+'admin-labinfo' => [
+    'controller' => 'app/Controllers/admin/lab_info.php',
+    'class' => 'LabInfoController',
+    'method' => 'index'
+],
+
+'admin-labinfo-update' => [
+    'controller' => 'app/Controllers/admin/lab_info.php',
+    'class' => 'LabInfoController',
+    'method' => 'update',
+    'params' => ['post' => true]
+],
+
+    // ============================
+    // OPERATOR
     // ============================
     'operator-dashboard' => [
         'controller' => 'app/Controllers/operator/dashboard.php',
@@ -230,20 +270,29 @@ $routes = [
 
 // ================= ROUTER EXECUTOR ===================
 
+// CEK ROUTE VALID
 if (!isset($routes[$page])) {
-    require 'app/Controllers/public/home.php';
-    $c = new HomePublicController();
-    return $c->index();
+    die("Route '$page' tidak ditemukan!");
 }
 
 $route = $routes[$page];
 
 require_once $route['controller'];
 $controller = new $route['class']();
-$method = $route['method'];
+$method     = $route['method'];
 
-if (!method_exists($controller, $method)) {
-    die("Method $method tidak ditemukan di controller {$route['class']}");
+// PARAMETER HANDLING
+if (isset($route['params'])) {
+
+    if (isset($route['params']['post']) && $route['params']['post'] === true) {
+        return $controller->$method($_POST);
+    }
+
+    if (isset($route['params']['get'])) {
+        $param = $route['params']['get'];
+        $value = $_GET[$param] ?? null;
+        return $controller->$method($value);
+    }
 }
 
 return $controller->$method();

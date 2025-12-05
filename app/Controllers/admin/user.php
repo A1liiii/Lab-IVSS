@@ -3,9 +3,13 @@ session_start();
 
 require_once __DIR__ . '/../../models/User.php';
 require_once __DIR__ . '/../../models/Role.php';
+require_once __DIR__ . '/../../Config/database.php';
 
 class UserController {
 
+    // =========================================
+    // HALAMAN USER MANAGEMENT
+    // =========================================
     public function index() {
         $User  = new User();
         $Role  = new Role();
@@ -13,7 +17,7 @@ class UserController {
         $users = $User->getAll();
         $roles = $Role->getAll();
 
-        // cek jika sedang edit
+        // Jika sedang edit user
         $userEdit = null;
         if (isset($_GET['edit'])) {
             $userEdit = $User->find($_GET['edit']);
@@ -27,103 +31,137 @@ class UserController {
         include __DIR__ . '/../../Views/Admin/user.php';
         include __DIR__ . '/../../Views/layouts/admin_footer.php';
     }
-
-    public function edit($id) {
-        $User  = new User();
-        $Role  = new Role();
-
-        $user  = $User->find($id);
-        $roles = $Role->getAll();
-
-        $title  = "Edit User";
-        $active = "user";
-
-        include __DIR__ . '/../../Views/layouts/admin_header.php';
-        include __DIR__ . '/../../Views/layouts/admin_sidebar.php';
-        include __DIR__ . '/../../Views/Admin/user_edit.php';
-        include __DIR__ . '/../../Views/layouts/admin_footer.php';
-    }
-
+    // =========================================
+    // UPDATE USER
+    // =========================================
     public function update($data) {
-    $User = new User();
 
-    try {
-        $User->updateUser($data);
-    } catch (Exception $e) {
-        // Jika ingin diam-diam gagal tanpa alert
-        // cukup kosong
+        $User = new User();
+
+        try {
+            $User->updateUser($data);
+            $_SESSION['success'] = "User berhasil diperbarui!";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Gagal update user: " . $e->getMessage();
+        }
+
+        header("Location: index.php?page=admin-user");
+        exit;
     }
 
-    header("Location: index.php?page=admin-user");
-    exit;
-}
+
+    // =========================================
+    // HAPUS USER
+    // =========================================
     public function delete($id) {
-    $User = new User();
+        if (!$id) {
+            $_SESSION['error'] = "ID user tidak valid!";
+            header("Location: index.php?page=admin-user");
+            exit;
+        }
 
-    try {
-        $User->delete($id);
-        $_SESSION['success'] = "User berhasil dihapus!";
-    } catch (Exception $e) {
-        $_SESSION['error'] = "Gagal menghapus user: " . $e->getMessage();
+        $User = new User();
+
+        try {
+            $User->delete($id);
+            $_SESSION['success'] = "User berhasil dihapus!";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Gagal menghapus user: " . $e->getMessage();
+        }
+
+        header("Location: index.php?page=admin-user");
+        exit;
+    }
+    // =========================================
+    // TAMBAH DOSEN
+    // =========================================
+
+    public function addDosen() {
+    $title = "Tambah Dosen";
+    $active = "user";
+
+    include __DIR__ . '/../../Views/layouts/admin_header.php';
+    include __DIR__ . '/../../Views/layouts/admin_sidebar.php';
+    include __DIR__ . '/../../Views/Admin/dosen_add.php';
+    include __DIR__ . '/../../Views/layouts/admin_footer.php';
     }
 
-    header("Location: index.php?page=admin-user");
+    public function storeDosen($data) {
+    $User = new User();
+    // INSERT ke tabel dosen
+    $sql = "INSERT INTO dosen (nip, nama, nidn, email, jabatan, pendidikan, foto)
+            VALUES (:nip, :nama, :nidn, :email, :jabatan, :pendidikan, :foto)";
+
+    $stmt = Database::connect()->prepare($sql);
+    $stmt->execute([
+        ':nip'         => $data['nip'],
+        ':nama'        => $data['nama'],
+        ':nidn'        => $data['nidn'],
+        ':email'       => $data['email'],
+        ':jabatan'     => $data['jabatan'],
+        ':pendidikan'  => $data['pendidikan'],
+        ':foto'        => $data['foto'] ?? null
+    ]);
+
+    // Redirect ke form tambah user
+    header("Location: index.php?page=admin-user-create&nip=" . $data['nip']);
     exit;
-}
+    }
+
     public function store($data) {
     $User = new User();
 
-    // ==========================
-    // VALIDASI ROLE DIPILIH
-    // ==========================
-    if (!isset($data['role_id']) || empty($data['role_id'])) {
-        $_SESSION['error'] = "Role harus dipilih!";
-        header("Location: index.php?page=admin-user");
-        exit;
-    }
-
-    // ==========================
-    // VALIDASI NIM / NIP ADA DI DB
-    // ==========================
-    if (!$User->nimExists($data['nim'])) {
-        $_SESSION['error'] = "NIM atau NIP tidak ditemukan di database!";
-        header("Location: index.php?page=admin-user");
-        exit;
-    }
-
-    // ==========================
-    // MAPPING NIM / NIP BERDASARKAN ROLE
-    // ==========================
-    if ($data['role_id'] == 3) { 
-        // DOSEN → pindahkan ke NIP
-        $data['nip'] = $data['nim'];
-        $data['nim'] = null;
-    } 
-    else if ($data['role_id'] == 4) {
-        // MAHASISWA → gunakan NIM
-        $data['nip'] = null;
-    } 
-    else {
-        // ADMIN / OPERATOR → tidak punya nim/nip
-        $data['nip'] = null;
-        // tetap simpan nim karena form minta nim
-    }
-
-    // ==========================
-    // INSERT USER
-    // ==========================
     try {
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-$user_id = $User->create($data);
+        $user_id = $User->create([
+            'nip'      => $data['identitas'], // NIP DOSEN
+            'nim'      => null,
+            'username' => $data['username'], // NIDN
+            'password' => $data['password']  // NIP
+        ]);
+
         $User->assignRole($user_id, $data['role_id']);
 
-        $_SESSION['success'] = "User berhasil ditambahkan!";
+        $_SESSION['success'] = "User dosen berhasil dibuat!";
+        header("Location: index.php?page=admin-user");
+        exit;
+
     } catch (Exception $e) {
-        $_SESSION['error'] = "Terjadi kesalahan: " . $e->getMessage();
+        $_SESSION['error'] = "Gagal membuat user: " . $e->getMessage();
+        header("Location: index.php?page=admin-user");
+        exit;
+    }
+}
+
+
+    public function createUserFromDosen($nip = null) {
+
+    if (!$nip) {
+        $_SESSION['error'] = "Data dosen tidak ditemukan!";
+        header("Location: index.php?page=admin-user");
+        exit;
     }
 
-    header("Location: index.php?page=admin-user");
-    exit;
+    $conn = Database::connect();
+
+    $stmt = $conn->prepare("SELECT * FROM dosen WHERE nip = ?");
+    $stmt->execute([$nip]);
+    $dosen = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$dosen) {
+        $_SESSION['error'] = "Dosen tidak ditemukan!";
+        header("Location: index.php?page=admin-user");
+        exit;
+    }
+
+    $d = $dosen; // untuk view
+
+    $title  = "Tambah User Dari Dosen";
+    $active = "user";
+
+    include __DIR__ . '/../../Views/layouts/admin_header.php';
+    include __DIR__ . '/../../Views/layouts/admin_sidebar.php';
+    include __DIR__ . '/../../Views/admin/user_create_from_dosen.php';
+    include __DIR__ . '/../../Views/layouts/admin_footer.php';
 }
 
 }

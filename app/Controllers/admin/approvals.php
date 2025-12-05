@@ -33,7 +33,7 @@ class ApprovalsController {
         // 1. Masukkan ke tabel mahasiswa dulu
         $Mahasiswa->create([
             'nim'          => $data['nim'],
-            'user_id'      => null,
+            'user_id'      => null, // mahasiswa riset belum punya user_id
             'nama'         => $data['nama'],
             'email'        => $data['email'],
             'prodi'        => $data['prodi'],
@@ -47,13 +47,12 @@ class ApprovalsController {
         // 2. Masukkan ke tabel users
         $passwordHash = password_hash($data['nim'], PASSWORD_BCRYPT);
         $user_id = $User->create([
-            'nim'      => $data['nim'],
             'username' => $data['nama'],   // username = nama
             'password' => $passwordHash    // password = nim (hashed)
         ]);
 
         // 3. Assign role mahasiswa
-        $role_mahasiswa_id = 4; // ganti sesuai id role "mahasiswa" di tabel role
+        $role_mahasiswa_id = 2; // ganti sesuai id role "mahasiswa" di tabel role
         $User->assignRole($user_id, $role_mahasiswa_id);
 
         // 4. Update status pendaftar di tabel registrations
@@ -68,5 +67,4 @@ class ApprovalsController {
 
 
 
-}
-
+}  
