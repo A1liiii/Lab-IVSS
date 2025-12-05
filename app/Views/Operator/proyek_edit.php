@@ -59,7 +59,7 @@
                                     <option value="">-- Pilih User --</option>
                                     <?php foreach ($users as $u): ?>
                                         <option value="<?= $u['user_id'] ?>" <?= $u['user_id']==$a['user_id']?'selected':'' ?>>
-                                            <?= htmlspecialchars($u['nama'] ?? 'Tanpa Nama') ?>
+                                        <?= isset($u['username']) ? htmlspecialchars($u['username']) : 'Tanpa Nama' ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -96,7 +96,7 @@
                                     <option value="">-- Pilih User --</option>
                                     <?php foreach ($users as $u): ?>
                                         <option value="<?= $u['user_id'] ?>">
-                                            <?= htmlspecialchars($u['nama']) ?>
+                                            <?= htmlspecialchars($u['username']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -120,7 +120,15 @@
                 }
             </script>
 
-            <button class="btn btn-primary mt-3">Update</button>
+                <div class="d-flex justify-content-end mt-4">
+                <a href="index.php?page=operator-proyek" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+
+                <button class="btn btn-primary">
+                    <i class="bi bi-save"></i> Simpan Perubahan
+                </button>
+            </div>
 
         </form>
 
