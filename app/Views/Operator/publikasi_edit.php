@@ -14,15 +14,9 @@
                 </div>
 
                 <div class="col-md-3 mb-3">
-                    <label class="form-label fw-semibold">Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" class="form-control" 
-                           value="<?php echo isset($data['tanggal_mulai']) ? $data['tanggal_mulai'] : ''; ?>" required>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-semibold">Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai" class="form-control" 
-                           value="<?php echo isset($data['tanggal_selesai']) ? $data['tanggal_selesai'] : ''; ?>" required>
+                <label class="form-label">Tahun</label>
+                <input type="number" name="tahun" class="form-control mb-3"
+                    min="2000" max="2099" value="<?= date('Y') ?>" required>
                 </div>
             </div>
             <div class="mb-3">
@@ -54,7 +48,7 @@
                 </a>
 
                 <button class="btn btn-primary">
-                    <i class="bi bi-save"></i> Simpan
+                    <i class="bi bi-save"></i> Simpan Perubahan
                 </button>
             </div>
 

@@ -11,16 +11,28 @@ class OperatorPublikasiAddController {
 
             $m = new Publikasi();
 
-            $judul           = $_POST['judul'];
-            $deskripsi       = $_POST['deskripsi'];
-            $tanggal_mulai   = $_POST['tanggal_mulai'];
-            $tanggal_selesai = $_POST['tanggal_selesai'];
-            $status          = $_POST['status'];
-            $link            = $_POST['link'];
+            $user_id   = $_SESSION['user_id'];  // wajib
+            $judul     = trim($_POST['judul']);
+            $deskripsi = trim($_POST['deskripsi']);
+            $tahun     = trim($_POST['tahun']); // input tahun dari form
+            $status    = $_POST['status'];  
+            $link      = $_POST['link'];
 
-            $m->insert ($judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
+            // Konversi tahun ke tanggal_mulai & tanggal_selesai
+            $tanggal_mulai   = $tahun . '-01-01';
+            $tanggal_selesai = $tahun . '-12-31';
 
-            addLog($_SESSION['user_id'], "Menambah publikasi baru", "INSERT");
+            $m->insert(
+                $user_id,
+                $judul,
+                $deskripsi,
+                $tanggal_mulai,
+                $tanggal_selesai,
+                $status,
+                $link
+            );
+
+            addLog($_SESSION['user_id'], "Menambah publikasi baru", "CREATE");
 
             header("Location: index.php?page=operator-publikasi");
             exit;

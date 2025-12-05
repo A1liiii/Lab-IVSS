@@ -13,13 +13,9 @@
                 </div>
 
                 <div class="col-md-3 mb-3">
-                    <label class="form-label fw-semibold">Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" class="form-control" required>
-                </div>
-
-                <div class="col-md-3 mb-3">
-                    <label class="form-label fw-semibold">Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai" class="form-control" required>
+                    <label class="form-label">Tahun</label>
+                    <input type="number" name="tahun" class="form-control mb-3"
+                        min="2000" max="2099" value="<?= date('Y') ?>" required>
                 </div>
             </div>
             <div class="mb-3">

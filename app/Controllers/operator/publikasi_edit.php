@@ -20,13 +20,24 @@ class OperatorPublikasiEditController {
 
             $judul           = $_POST['judul'];
             $deskripsi       = $_POST['deskripsi'];
-            $tanggal_mulai   = $_POST['tanggal_mulai'];
-            $tanggal_selesai = $_POST['tanggal_selesai'];
+            $tahun     = trim($_POST['tahun']); // input tahun dari form
             $status          = $_POST['status'];
             $link            = $_POST['link'];
 
-            $m->update($id, $judul, $deskripsi, $tanggal_mulai, $tanggal_selesai, $status, $link);
-            
+            // Konversi tahun menjadi tanggal_mulai dan tanggal_selesai
+            $tanggal_mulai   = $tahun . '-01-01';
+            $tanggal_selesai = $tahun . '-12-31';
+
+            $m->update(
+                $id,
+                $judul,
+                $deskripsi,
+                $tanggal_mulai,
+                $tanggal_selesai,
+                $status,
+                $link
+            );
+
             addLog($_SESSION['user_id'], "Memperbarui publikasi ID $id", "UPDATE");
 
             header("Location: index.php?page=operator-publikasi");

@@ -9,6 +9,20 @@ class OperatorPublikasiController {
         $m = new Publikasi();
         $data = $m->all();
 
+        // Generate tahun 2025–2035
+        $years = range(2025, 2035);
+
+        // Jika mau filter berdasarkan tahun (opsional)
+        if (!empty($_GET['tahun'])) {
+            $tahun = $_GET['tahun'];
+
+            // Filter manual karena tidak ada kolom tahun di DB
+            $data = array_filter($data, function($d) use ($tahun) {
+                return strpos($d['tanggal_mulai'], $tahun) === 0 
+                       || strpos($d['tanggal_selesai'], $tahun) === 0;
+            });
+        }
+
         $title  = "Publikasi";
         $active = "publikasi";
 
