@@ -43,23 +43,22 @@
             </div>
 
             <div class="mb-3">
-                <label>Caption (opsional)</label>
-                <input type="text" name="caption" class="form-control" value="<?= $data['caption']; ?>">
-            </div>
+    <label class="form-label">Dokumentasi (Foto)</label><br>
 
-            <div class="mb-3">
-                <label>File Saat Ini</label><br>
+    <!-- Preview foto lama -->
+    <?php if (!empty($data['file_path'])): ?>
+        <img id="preview-old" 
+             src="/lab-ivss/public/uploads/dokumentasi/<?= htmlspecialchars($data['file_path']) ?>" 
+             style="width:250px;margin-bottom:10px;border-radius:6px;">
+    <?php else: ?>
+        <p class="text-muted">Tidak ada foto</p>
+    <?php endif; ?>
 
-                <?php if (preg_match('/\.(jpg|jpeg|png)$/i', $data['file_path'])) : ?>
-                    <img src="public/uploads/dokumentasi/<?= $data['file_path']; ?>" 
-                         width="120" class="mb-2" style="border-radius: 6px; object-fit:cover;">
-                <?php else : ?>
-                    <p>File: <?= $data['file_path']; ?></p>
-                <?php endif; ?>
+    <!-- Input file baru -->
+    <input type="file" name="file_path" class="form-control" accept="image/*" onchange="previewFoto(event)">
+</div>
 
-                <input type="file" name="file_path" class="form-control mt-2">
-            </div>
-
+            
             <div class="d-flex justify-content-end mt-4">
                 <a href="index.php?page=operator-dokumentasi" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Kembali
@@ -74,3 +73,30 @@
     </div>
 
 </div>
+<script>
+function previewFoto(event) {
+    const input = event.target;
+    let preview = document.getElementById('preview-new');
+
+    // jika preview baru belum ada, buat img element
+    if(!preview) {
+        preview = document.createElement('img');
+        preview.id = 'preview-new';
+        preview.style.width = '250px';
+        preview.style.marginTop = '10px';
+        preview.style.borderRadius = '6px';
+        input.parentNode.insertBefore(preview, input.nextSibling);
+    }
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.style.display = 'none';
+    }
+}
+</script>

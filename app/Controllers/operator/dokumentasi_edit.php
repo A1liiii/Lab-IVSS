@@ -25,7 +25,6 @@ class OperatorDokumentasiEditController {
 
             $judul_kegiatan     = $_POST['judul_kegiatan'];
             $deskripsi_kegiatan = $_POST['deskripsi_kegiatan'];
-            $caption            = $_POST['caption'];
             $tanggal_kegiatan   = $_POST['tanggal_kegiatan'];
             $jenis_kegiatan     = $_POST['jenis_kegiatan'];
 
@@ -38,7 +37,7 @@ class OperatorDokumentasiEditController {
             // Jika ada file baru →
             if (!empty($_FILES['file_path']['name'])) {
 
-                $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
+                $folder = __DIR__ . '/../../../public/uploads/dokumentasi/';
 
                 // Hapus file lama
                 $old = $folder . $file_path;
@@ -56,7 +55,6 @@ class OperatorDokumentasiEditController {
                 $id,
                 $file_path,
                 $type_file,
-                $caption,
                 $judul_kegiatan,
                 $deskripsi_kegiatan,
                 $tanggal_kegiatan,

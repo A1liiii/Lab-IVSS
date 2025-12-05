@@ -19,7 +19,7 @@ class OperatorDokumentasiDeleteController {
         $data = $m->getById($id);
 
         if ($data) {
-            $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
+            $folder = __DIR__ . '/../../../public/uploads/dokumentasi/';
             $file = $folder . $data['file_path'];
 
             if (file_exists($file)) unlink($file);

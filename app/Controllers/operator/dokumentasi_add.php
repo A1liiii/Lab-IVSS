@@ -12,30 +12,23 @@ class OperatorDokumentasiAddController {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            // ===== Ambil Input =====
             $judul_kegiatan     = $_POST['judul_kegiatan'];
             $deskripsi_kegiatan = $_POST['deskripsi_kegiatan'];
-            $caption            = $_POST['caption'];
             $tanggal_kegiatan   = $_POST['tanggal_kegiatan'];
             $jenis_kegiatan     = $_POST['jenis_kegiatan'];
-            $user_id = $_SESSION['user_id'];
-
+            $user_id            = $_SESSION['user_id'];
 
             // ===== Upload File Utama =====
-            $file_path = null;
+            $file_path = 'no-file.png'; // default jika tidak upload
             $type_file = null;
 
-            if (!empty($_FILES['file_path']['name'])) {
+            if (!empty($_FILES['foto']['name'])) {
 
-                $folder = __DIR__ . '/../../public/uploads/dokumentasi/';
+                $folder = __DIR__ . '/../../../public/uploads/dokumentasi/';
                 if (!is_dir($folder)) mkdir($folder, 0755, true);
 
-                $namaFile = time() . "_" . $_FILES['file_path']['name'];
-
-                move_uploaded_file(
-                    $_FILES['file_path']['tmp_name'],
-                    $folder . $namaFile
-                );
+                $namaFile = time() . "_" . $_FILES['foto']['name'];
+                move_uploaded_file($_FILES['foto']['tmp_name'], $folder . $namaFile);
 
                 $file_path = $namaFile;
                 $type_file = pathinfo($namaFile, PATHINFO_EXTENSION);
@@ -46,7 +39,7 @@ class OperatorDokumentasiAddController {
             $m->insert(
                 $file_path,
                 $type_file,
-                $caption,
+                '', // caption diabaikan
                 $judul_kegiatan,
                 $deskripsi_kegiatan,
                 $tanggal_kegiatan,

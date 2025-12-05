@@ -38,14 +38,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">Caption (opsional)</label>
-                <input type="text" name="caption" class="form-control" placeholder="Contoh: Suasana kegiatan penyuluhan">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Upload Foto / File</label>
-                <input type="file" name="file_path" class="form-control" required>
-                <small class="text-muted">Format diperbolehkan: JPG, PNG, PDF, DOC</small>
+                <label class="form-label fw-semibold">Dokumentasi</label>
+                <input type="file" name="foto" class="form-control" accept="image/*" onchange="previewFoto(event)" required>
+                <img id="preview" src="#" style="display:none;width:200px;margin-top:10px;border-radius:6px;">
             </div>
 
             <div class="d-flex justify-content-end mt-4">
@@ -61,5 +56,12 @@
         </form>
 
     </div>
-
 </div>
+
+<script>
+function previewFoto(event) {
+    const img = document.getElementById('preview');
+    img.src = URL.createObjectURL(event.target.files[0]);
+    img.style.display = "block";
+}
+</script>
