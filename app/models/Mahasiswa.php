@@ -16,7 +16,8 @@ class Mahasiswa {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
     }
-public function create($data) {
+    
+    public function create($data) {
 
     // Cek apakah nim sudah pernah dibuat
     $stmtCheck = $this->conn->prepare("SELECT nim FROM mahasiswa WHERE nim = :nim");
@@ -44,7 +45,8 @@ public function create($data) {
         ':kategori'     => $data['kategori'],
         ':tanggal_join' => $data['tanggal_join']
     ]);
-}
+    }
+
     public function getAvailableMahasiswa() {
         $sql = "SELECT * FROM mahasiswa WHERE user_id IS NULL";
         $stmt = $this->conn->query($sql);
@@ -59,15 +61,24 @@ public function create($data) {
             ':nim'     => $nim
         ]);
     }
+
     public function updateUserID($nim, $user_id) {
-    $stmt = $this->conn->prepare("
-        UPDATE mahasiswa SET user_id = :uid WHERE nim = :nim
-    ");
-    $stmt->execute([
-        ':uid' => $user_id,
-        ':nim' => $nim
-    ]);
-}
+        $stmt = $this->conn->prepare("
+            UPDATE mahasiswa SET user_id = :uid WHERE nim = :nim
+        ");
+        $stmt->execute([
+            ':uid' => $user_id,
+            ':nim' => $nim
+        ]);
+    }
+
+    // Ambil data mahasiswa berdasarkan user_id
+    public function findByUserId($user_id) {
+        $sql = "SELECT * FROM mahasiswa WHERE user_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
 }
 ?>

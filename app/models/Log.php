@@ -74,4 +74,16 @@ class Log {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Recent activity by user
+    public function recentByUser($user_id, $limit = 10) {
+        $sql = "SELECT * FROM log_activity 
+                WHERE user_id = ? 
+                ORDER BY created_at DESC 
+                LIMIT $limit";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

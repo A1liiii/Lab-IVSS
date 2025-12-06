@@ -225,6 +225,8 @@ $routes = [
         'class' => 'OperatorPublikasiDeleteController',
         'method' => 'index'
     ],
+
+    
 ];
 
 
@@ -247,3 +249,4 @@ if (!method_exists($controller, $method)) {
 }
 
 return $controller->$method();
+

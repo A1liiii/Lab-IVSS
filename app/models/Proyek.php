@@ -134,4 +134,14 @@ class Proyek
         ]);
     }
 
+    // Ambil proyek/riset berdasarkan id mahasiswa
+    public function getByMahasiswa($mhs_id) {
+        if (!$mhs_id) return [];
+
+        $sql = "SELECT * FROM proyek WHERE mahasiswa_id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$mhs_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
