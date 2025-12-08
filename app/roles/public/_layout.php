@@ -51,7 +51,7 @@
           </li>
           <li class="dropdown"><a href="#"><span>Riset</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="../Public/proyek.php">Projek</a></li>
+              <li><a href="../Public/proyek.php">Proyek</a></li>
               <li><a href="../Public/publikasi.php">Publikasi</a></li>
             </ul>
           </li>
@@ -68,11 +68,6 @@
             </ul>
           </li>
           <li class="dropdown"><a href="../Public/berita.php"><span>Berita</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Pengumuman</a></li>
-              <li><a href="#">Penghargaan</a></li>
-            </ul>
-          </li>
           <li class="dropdown"><a href="../Public/dokumentasi.php"><span>Galeri</span></a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>

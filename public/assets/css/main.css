@@ -128,6 +128,9 @@ h6 {
 /*--------------------------------------------------------------
 # Global Header
 --------------------------------------------------------------*/
+body {
+  padding-top: 90px; /* sesuaikan tinggi header, biasanya 70–90px */
+}
 .header {
   color: var(--default-color);
   background-color: var(--background-color);
@@ -1783,12 +1786,19 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Recent Posts Section
+# Publikasi Section
 --------------------------------------------------------------*/
 .recent-posts .post-item {
   background-color: var(--surface-color);
   box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
   transition: 0.3s;
+
+  /* supaya tinggi card lebih konsisten */
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .recent-posts .post-item .post-img img {
@@ -1809,6 +1819,10 @@ section,
 
 .recent-posts .post-item .post-content {
   padding: 30px;
+
+  /* biar isi di dalamnya bisa diatur vertikal */
+  display: flex;
+  flex-direction: column;
 }
 
 .recent-posts .post-item .post-title {
@@ -1817,6 +1831,12 @@ section,
   font-weight: 700;
   transition: 0.3s;
   margin-bottom: 15px;
+
+  /* clamp max 2 baris, biar rapi */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .recent-posts .post-item .meta i {
@@ -1841,6 +1861,9 @@ section,
   line-height: 1;
   transition: 0.3s;
   color: color-mix(in srgb, var(--default-color), transparent 40%);
+
+  /* dorong readmore ke bawah card */
+  margin-top: auto;
 }
 
 .recent-posts .post-item .readmore i {
@@ -1849,14 +1872,38 @@ section,
   font-size: 16px;
 }
 
-.recent-posts .post-item:hover .post-title,
-.recent-posts .post-item:hover .readmore {
-  color: var(--accent-color);
+.recent-posts .post-item:hover .post-title {
+  color: #0F2F8A !important; /* biru tua IVSS */
 }
 
 .recent-posts .post-item:hover .post-img img {
   transform: scale(1.1);
 }
+
+/* === Read More Box (IVSS Blue) === */
+.recent-posts .post-item .readmore-box {
+  background: #0F2F8A; /* Biru tua IVSS */
+  border-radius: 0 0 12px 12px;
+  padding: 14px 20px;
+  margin: 0 -30px -30px -30px; /* supaya full width sesuai padding post-content */
+  transition: background 0.3s ease;
+}
+
+/* Text di dalam biru → putih */
+.recent-posts .post-item .readmore-box .readmore {
+  color: #ffffff !important;
+}
+
+/* Hover card → gelapkan sedikit */
+.recent-posts .post-item:hover .readmore-box {
+  background: #0C256E; /* lebih gelap saat hover */
+}
+
+/* Arrow hover tetap jalan */
+.recent-posts .post-item .readmore:hover i {
+  transform: translateX(6px);
+}
+
 
 /*--------------------------------------------------------------
 # Contact Section

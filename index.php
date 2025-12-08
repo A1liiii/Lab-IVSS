@@ -7,3 +7,5 @@ if (!isLoggedIn()) {
 }
 
 redirectByRole($_SESSION['user']['role']);
+
+

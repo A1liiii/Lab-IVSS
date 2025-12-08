@@ -1,8 +1,93 @@
 <?php
 $title = "Publikasi | IVSS";
 $active = "publikasi";
+?>
 
-ob_start(); ?>
+<style>
+/* ====== Publikasi Card – Theme IVSS (Biru + Kuning) ====== */
+
+.post-item {
+  border-radius: 16px;
+  background: #0b1120; /* biru tua */
+  padding: 18px 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.post-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.6);
+  border-color: #fbbf24; /* kuning IVSS */
+}
+
+/* Tahun badge (pojok kanan atas) */
+.post-date {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #fbbf24;
+  color: #1e1e1e;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* Judul */
+.post-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  transition: color 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.post-title:hover {
+  color: #fbbf24;
+}
+
+/* Meta (penulis) */
+.meta {
+  color: #9ca3af !important;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.meta i {
+  color: #fbbf24;
+}
+
+/* Read more */
+.readmore {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  color: #fbbf24;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.readmore:hover {
+  color: #fcd34d;
+}
+
+.readmore i {
+  transition: transform 0.2s ease;
+}
+
+.post-item:hover .readmore i {
+  transform: translateX(4px);
+}
+</style>
+
+<?php
+ob_start(); 
+?>
+
 
 <!-- Recent Posts Section -->
     <section id="recent-posts" class="recent-posts section">
