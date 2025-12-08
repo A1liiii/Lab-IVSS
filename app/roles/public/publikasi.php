@@ -35,9 +35,6 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 /*--------------------------------------------------------------
 # Publikasi Section
 --------------------------------------------------------------*/
-/*--------------------------------------------------------------
-# Publikasi Section
---------------------------------------------------------------*/
 
 /* Card publikasi rapi + readmore nempel ke bawah */
 .recent-posts .post-item {
@@ -164,10 +161,6 @@ ob_start();
   </div>
 
 <?php endforeach ?>
-
-        </div>
-
-      </div>
 
     </section><!-- /Recent Posts Section -->
 

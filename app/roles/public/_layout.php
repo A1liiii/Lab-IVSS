@@ -49,10 +49,11 @@
               </li>
             </ul>
           </li>
-          <li class="dropdown"><a href="#"><span>Riset</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+         <li class="dropdown <?= ($active === 'riset') ? 'active' : '' ?>">
+            <a href="riset.php"><span>Riset</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
-              <li><a href="../Public/proyek.php">Proyek</a></li>
-              <li><a href="../Public/publikasi.php">Publikasi</a></li>
+              <li><a href="proyek.php">Proyek</a></li>
+              <li><a href="publikasi.php">Publikasi</a></li>
             </ul>
           </li>
           <li class="dropdown"><a href="#"><span>Fasilitas</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
