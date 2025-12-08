@@ -72,11 +72,6 @@ ob_start();
   color: #15803d;
 }
 
-.status-planning {
-  background: #fef3c7;
-  color: #b45309;
-}
-
 .status-other {
   background: #e5e7eb;
   color: #374151;
@@ -117,23 +112,18 @@ ob_start();
   background: #dcfce7;
   color: #15803d;
 }
-
-.modal-status-planning {
-  background: #fef3c7;
-  color: #b45309;
-}
-
 .modal-status-other {
   background: #e5e7eb;
   color: #374151;
 }
 
 /* Judul proyek boleh sampai 3 baris, sisanya dipotong */
-#projects .post-item .post-title {
+.recent-posts .post-item .post-title {
   display: -webkit-box;
-  -webkit-line-clamp: 3;          /* maksimal 3 baris */
+  -webkit-line-clamp: 3; 
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 72px; /* 3 baris @ 24px, sesuaikan dengan font size */
 }
 /* Di proyek, garis pemisah jangan terlalu jauh dari status & tombol */
 #projects .post-item hr {
@@ -153,8 +143,8 @@ ob_start();
 
   <!-- Section Title -->
   <div class="container section-title" data-aos="fade-up">
-    <h2>Proyek</h2>
-    <p>Daftar Proyek</p>
+    <h2>Riset</h2>
+    <p>Proyek</p>
   </div>
 
   <div class="container">
@@ -163,9 +153,8 @@ ob_start();
       <?php foreach ($proyek as $p): 
         $status = strtolower(trim($p['status'] ?? ''));
         $statusClass = match ($status) {
-          'berjalan'  => 'status-running',
+          'on going'  => 'status-running',
           'selesai'   => 'status-done',
-          'perencanaan', 'planning' => 'status-planning',
           default     => 'status-other',
         };
       ?>
