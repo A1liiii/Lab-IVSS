@@ -68,7 +68,7 @@
               </li>
             </ul>
           </li>
-          <li class="dropdown"><a href="../Public/berita.php"><span>Berita</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="../Public/berita.php"><span>Berita</span></i></a>
           <li class="dropdown"><a href="../Public/dokumentasi.php"><span>Galeri</span></a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
