@@ -6,7 +6,7 @@ class Database {
         $port = "5432"; 
         $user = "postgres"; 
         $pass = "PasswordBaru123!";        
-        $db   = "labIVSS";
+        $db   = "labivss";
 
         try {
             $dsn = "pgsql:host=$host;port=$port;dbname=$db;";

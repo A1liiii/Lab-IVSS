@@ -13,16 +13,36 @@ function requireLogin() {
 }
 
 // require bahwa user sudah login dan active_role cocok
-function requireRole($role) {
-    requireLogin();
-    if (!isset($_SESSION['active_role']) || $_SESSION['active_role'] !== $role) {
-        // akses ditolak
-        http_response_code(403);
-        echo "<h3>Akses ditolak — Anda tidak memiliki role: " . htmlentities($role) . "</h3>";
-        echo '<p><a href="../../../select_role.php">Pilih role lain</a> atau <a href="../../../logout.php">Logout</a></p>';
-        exit;
+function requireRole($requiredRoles) {
+    requireLogin(); // pastikan sudah login
+
+    if (!isset($_SESSION['active_role'])) {
+        forbidden("Role aktif tidak ditemukan.");
+    }
+
+    $current = strtolower($_SESSION['active_role']);
+
+    // jika yang dikirim 1 role string -> ubah jadi array
+    if (!is_array($requiredRoles)) {
+        $requiredRoles = [$requiredRoles];
+    }
+
+    // normalisasi value array required role
+    $requiredRoles = array_map("strtolower", $requiredRoles);
+
+    if (!in_array($current, $requiredRoles)) {
+        forbidden("Anda tidak memiliki akses ke role ini.");
     }
 }
+
+// fungsi helper clean utk forbidden 
+function forbidden($message) {
+    http_response_code(403);
+    echo "<h3>Akses ditolak — $message</h3>";
+    echo '<p><a href="../../../select_role.php">Pilih role lain</a> atau <a href="../../../logout.php">Logout</a></p>';
+    exit;
+}
+
 
 // redirect sesuai role ke file dashboard/landing masing-masing
 function redirectByRole($role) {
