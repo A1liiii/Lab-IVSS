@@ -2,21 +2,82 @@
 $title = "Beranda | IVSS";
 $active = "home";
 
-ob_start(); ?>
+require_once __DIR__ . "/../../core/database.php";
+$conn = Database::connect(); // PDO
+
+// =========================
+// 1. Ambil 1 data lab
+// =========================
+$sql = "SELECT * FROM lab_info LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$lab = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$lab) {
+    $lab = [];
+}
+
+// =========================
+// 2. Ambil semua fasilitas
+// =========================
+$sql = "SELECT * FROM fasilitas ORDER BY fasilitas_id DESC LIMIT 9";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$fasilitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// =========================
+// 3. Ambil semua mata kuliah
+// =========================
+$sql = "SELECT * FROM mata_kuliah ORDER BY semester ASC LIMIT 5";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$matkul = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// ============================
+// 4. Ambil dokumentasi (foto)
+// ============================
+$sql = "SELECT * FROM act_documentation 
+        WHERE type_file LIKE '%.jpg' 
+           OR type_file LIKE '%.jpeg'
+           OR type_file LIKE '%.png'
+           OR type_file LIKE '%.webp'
+        ORDER BY documentation_id DESC LIMIT 8";
+
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$dokumentasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Ambil 3 berita terbaru pakai PDO
+$sql = "SELECT * FROM berita ORDER BY tgl_post DESC LIMIT 3";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$berita = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Ambil 9 profil dosen
+$sql = "SELECT * FROM dosen LIMIT 9";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$dosen = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+ob_start();
+?>
     <!-- Hero Section -->
     <section id="hero" class="hero section">
 
       <div class="container">
         <div class="row gy-4">
           <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">
-              <?= htmlspecialchars($lab['nama'] ?? 'Nama Lab Belum Diisi'); ?>
+            <h1 data-aos="fade-up" style="color:#FFFFFF;">
+              <?= htmlspecialchars(isset($lab['nama']) ? $lab['nama'] : 'Nama Lab Belum Diisi'); ?>
             </h1>
-            <p data-aos="fade-up" data-aos-delay="100">
-              <?= htmlspecialchars($lab['deskripsi'] ?? 'Deskripsi belum diisi.'); ?>
+            <p data-aos="fade-up" data-aos-delay="100" style="color:#FFFFFF;">
+              <?= htmlspecialchars(isset($lab['deskripsi']) ? $lab['deskripsi'] : 'Deskripsi belum diisi.'); ?>
             </p>
             <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
-              <a href="#about" class="btn-get-started">Bergabung<i class="bi bi-arrow-right"></i></a>
+            <a href="#form-pendaftaran" class="btn-get-started">Bergabung <i class="bi bi-arrow-right"></i></a>
             </div>
           </div>
         </div>
@@ -29,12 +90,14 @@ ob_start(); ?>
           <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
             <div class="content">
               <h3>Kami adalah</h3>
-              <h2>Expedita voluptas omnis cupiditate totam eveniet nobis sint iste. Dolores est repellat corrupti reprehenderit.</h2>
+              <h2>
+                <?= !empty($lab['nama']) ? htmlspecialchars($lab['nama']) : 'Nama lab belum diisi' ?>
+              </h2>
               <p>
-                Quisquam vel ut sint cum eos hic dolores aperiam. Sed deserunt et. Inventore et et dolor consequatur itaque ut voluptate sed et. Magnam nam ipsum tenetur suscipit voluptatum nam et est corrupti.
+                <?= !empty($lab['deskripsi']) ? htmlspecialchars($lab['deskripsi']) : 'Deskripsi lab belum diisi.' ?>
               </p>
               <div class="text-center text-lg-start">
-                <a href="#" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
+                <a href="../public/about.php" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
                   <span>Read More</span>
                   <i class="bi bi-arrow-right"></i>
                 </a>
@@ -42,11 +105,13 @@ ob_start(); ?>
             </div>
           </div>
           <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="../../../public/assets/img/about.jpg" class="img-fluid" alt="">
+            <img src="../../../public/assets/img/about1.jpeg" class="img-fluid" alt="">
           </div>
         </div>
       </div>
     </section><!-- /About Section -->
+
+
     <!-- Clients Section -->
     <section id="clients" class="clients section">
       <!-- Section Title -->
@@ -88,22 +153,25 @@ ob_start(); ?>
               }
             }
           </script>
-          <div class="swiper-wrapper align-items-center">
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-1.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-2.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-3.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-4.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-5.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-6.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-7.png" class="img-fluid" alt=""></div>
-            <div class="swiper-slide"><img src="../../../public/assets/img/clients/client-8.png" class="img-fluid" alt=""></div>
+            <div class="swiper-wrapper align-items-center">
+
+              <?php if (!empty($dokumentasi)): ?>
+                  <?php foreach ($dokumentasi as $dok): ?>
+                      <div class="swiper-slide">
+                        <img src="../../../public/uploads/dokumentasi/<?= htmlspecialchars($dok['type_file']) ?>" 
+                          class="img-fluid">
+                      </div>
+                  <?php endforeach; ?>
+                  <?php else: ?>
+                    <div class="swiper-slide d-flex justify-content-center align-items-center" style="height: 200px;">
+                      <p class="text-center mb-0">Belum ada dokumentasi.</p>
+                    </div>
+                  <?php endif; ?>
+            </div>
+            <div class="swiper-pagination"></div>
           </div>
-          <div class="swiper-pagination"></div>
         </div>
-
-      </div>
-
-    </section><!-- /Clients Section -->
+      </section><!-- /Clients Section -->
 
     <!-- Values Section -->
     <section id="values" class="values section">
@@ -121,28 +189,30 @@ ob_start(); ?>
           <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
             <div class="card">
               <h3>Visi</h3>
-              <p>Menjadi laboratorium unggulan dalam pengembangan teknologi penglihatan cerdas 
-                (Intelligent Vision) dan sistem cerdas terintegrasi (Smart Systems) yang inovatif, aplikatif, 
-                serta berdaya saing nasional dan internasional untuk mendukung kemajuan bidang teknologi informasi 
-                dan industri berbasis kecerdasan buatan.</p>
+              <p>
+              <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
+              </p>
             </div>
           </div><!-- End Card Item -->
 
           <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
             <div class="card">
-              <h3>Voluptatem voluptatum alias</h3>
-              <p>Repudiandae amet nihil natus in distinctio suscipit id. Doloremque ducimus ea sit non.</p>
+              <h3>Misi</h3>
+              <p>
+              <?= !empty($lab['misi']) ? htmlspecialchars($lab['misi']) : 'Misi lab belum diisi.' ?>
+              </p>
             </div>
           </div><!-- End Card Item -->
         </div>
       </div>
     </section><!-- /Values Section -->
+
     <!-- Services Section -->
     <section id="services" class="services section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Services</h2>
+        <h2>Riset</h2>
         <p>Fokus riset<br></p>
       </div><!-- End Section Title -->
 
@@ -152,27 +222,29 @@ ob_start(); ?>
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
             <div class="service-item item-cyan position-relative">
-              <i class="bi bi-activity icon"></i>
-              <h3>Nesciunt Mete</h3>
-              <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis tempore et consequatur.</p>
-              <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+            <div class="icon">
+              <i class="bi bi-eye"></i>
+            </div>
+              <h3>Intelligence Vision</h3>
+              <p>Teknologi yang memungkinkan mesin “melihat” dan memahami lingkungan, untuk pengenalan objek, deteksi gerakan, dan sistem cerdas.</p>
             </div>
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
             <div class="service-item item-orange position-relative">
-              <i class="bi bi-broadcast icon"></i>
-              <h3>Eosle Commodi</h3>
-              <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
-              <a href="#" class="read-more stretched-link"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
+            <div class="icon">
+              <i class="bi bi-cpu"></i>
+            </div>
+              <h3>Smart System</h3>
+              <p>Sistem adaptif yang pintar, mampu 
+                mengambil keputusan otomatis menggunakan sensor, AI, dan IoT, untuk smart home, industri, dan layanan inovatif.</p>
             </div>
           </div><!-- End Service Item -->
 
         </div>
-
       </div>
-
     </section><!-- /Services Section -->
+
     <!-- Recent Posts Section -->
     <section id="recent-posts" class="recent-posts section">
 
@@ -181,102 +253,55 @@ ob_start(); ?>
         <h2>Recent Posts</h2>
         <p>Berita</p>
       </div><!-- End Section Title -->
-
       <div class="container">
-
         <div class="row gy-5">
-
-          <div class="col-xl-4 col-md-6">
-            <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">
-
-              <div class="post-img position-relative overflow-hidden">
-                <img src="../../../public/assets/img/blog/blog-1.jpg" class="img-fluid" alt="">
-                <span class="post-date">December 12</span>
-              </div>
-
-              <div class="post-content d-flex flex-column">
-
-                <h3 class="post-title">Eum ad dolor et. Autem aut fugiat debitis</h3>
-
-                <div class="meta d-flex align-items-center">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person"></i> <span class="ps-2">Julia Parker</span>
-                  </div>
-                  <span class="px-3 text-black-50">/</span>
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-folder2"></i> <span class="ps-2">Politics</span>
-                  </div>
-                </div>
-
-                <hr>
-
-                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
-
-              </div>
-
-            </div>
-          </div><!-- End post item -->
-
-          <div class="col-xl-4 col-md-6">
-            <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="200">
-
-              <div class="post-img position-relative overflow-hidden">
-                <img src="../../../public/assets/img/blog/blog-2.jpg" class="img-fluid" alt="">
-                <span class="post-date">July 17</span>
-              </div>
-
-              <div class="post-content d-flex flex-column">
-
-                <h3 class="post-title">Et repellendus molestiae qui est sed omnis</h3>
-
-                <div class="meta d-flex align-items-center">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person"></i> <span class="ps-2">Mario Douglas</span>
-                  </div>
-                  <span class="px-3 text-black-50">/</span>
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-folder2"></i> <span class="ps-2">Sports</span>
-                  </div>
-                </div>
-
-                <hr>
-
-                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
-
-              </div>
-
-            </div>
-          </div><!-- End post item -->
-
-          <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="post-item position-relative h-100">
-
-              <div class="post-img position-relative overflow-hidden">
-                <img src="../../../public/assets/img/blog/blog-3.jpg" class="img-fluid" alt="">
-                <span class="post-date">September 05</span>
-              </div>
-
-              <div class="post-content d-flex flex-column">
-
-                <h3 class="post-title">Quia assumenda est et veritati tirana ploder</h3>
-
-                <div class="meta d-flex align-items-center">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-person"></i> <span class="ps-2">Lisa Hunter</span>
-                  </div>
-                  <span class="px-3 text-black-50">/</span>
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-folder2"></i> <span class="ps-2">Economics</span>
-                  </div>
-                </div>
-                <hr>
-                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
-              </div>
-            </div>
-          </div><!-- End post item -->
+          <?php if (!empty($berita)): ?>
+          <?php foreach ($berita as $b): ?>
+                <div class="col-xl-4 col-md-6">
+                    <div class="post-item position-relative h-100">
+                        <div class="post-img position-relative overflow-hidden">
+                            <img src="../../../public/uploads/berita/<?= htmlspecialchars($b['foto']) ?>" 
+                                class="img-fluid" 
+                                alt="<?= htmlspecialchars($b['judul']) ?>">
+                            <span class="post-date">
+                                <?= date('F d', strtotime($b['tgl_post'])) ?>
+                            </span>
+                        </div>
+                        <div class="post-content d-flex flex-column">
+                            <h3 class="post-title">
+                                <?= htmlspecialchars($b['judul']) ?>
+                            </h3>
+                            <div class="meta d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person"></i> 
+                                    <span class="ps-2">
+                                        <?= htmlspecialchars($b['user_id']) ?>
+                                    </span>
+                                </div>
+                                <span class="px-3 text-black-50">/</span>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-folder2"></i> 
+                                    <span class="ps-2">
+                                        <?= htmlspecialchars($b['kategori']) ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr>
+                            <a href="berita_detail.php?id=<?= $b['berita_id'] ?>" 
+                              class="readmore stretched-link">
+                              <span>Read More</span><i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
         </div>
+            <?php endforeach; ?><?php else: ?>
+              <p class="text-center">Belum ada berita.</p>
+            <?php endif; ?>
+
+          </div>
       </div>
     </section><!-- /Recent Posts Section -->
+
     <!-- Team Section -->
     <section id="team" class="team section">
 
@@ -285,95 +310,46 @@ ob_start(); ?>
         <h2>Team</h2>
         <p>Anggota Lab</p>
       </div><!-- End Section Title -->
-
       <div class="container">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="../../../public/assets/img/team/team-1.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum exercitationem iure minima enim corporis et voluptate.</p>
-              </div>
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+            <?php if (!empty($dosen)): ?>
+              <?php foreach ($dosen as $d): ?>
+                  <div class="swiper-slide">
+                      <div class="team-member">
+                          <div class="member-img">
+                              <img src="public/uploads/dosen/<?php echo htmlspecialchars($d['foto']); ?>"
+                                  class="img-fluid"
+                                  alt="<?php echo htmlspecialchars($d['nama']); ?>">
+                          </div>
+                          <div class="member-info">
+                              <h4><?php echo htmlspecialchars($d['nama']); ?></h4>
+                              <span><?php echo htmlspecialchars($d['jabatan']); ?></span>
+                              <p><?php echo htmlspecialchars($d['nidn']); ?></p>
+                              <p><?php echo htmlspecialchars($d['email']); ?></p>
+                          </div>
+                      </div>
+                  </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p class="text-center">Belum ada dosen.</p>
+            <?php endif; ?>
             </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="../../../public/assets/img/team/team-2.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="../../../public/assets/img/team/team-3.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="../../../public/assets/img/team/team-4.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Amanda Jepson</h4>
-                <span>Accountant</span>
-                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-        </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+          </div>
+          <div class="text-center mt-3">
+            <a href="anggota.php" class="btn btn-primary">Lihat Semua Anggota</a>
+          </div>
       </div>
-    </section><!-- /Team Section -->
+    </section> <!-- /Team Section -->
+
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio section">
-
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Portfolio</h2>
+        <h2>Fasilitas</h2>
         <p>Fasilitas & Peralatan</p>
       </div><!-- End Section Title -->
 
@@ -383,159 +359,47 @@ ob_start(); ?>
 
           <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
             <li data-filter="*" class="filter-active">All</li>
-            <li data-filter=".filter-app">App</li>
-            <li data-filter=".filter-product">Product</li>
-            <li data-filter=".filter-branding">Branding</li>
-            <li data-filter=".filter-books">Books</li>
+            <li data-filter=".filter-app">Peralatan</li>
+            <li data-filter=".filter-product">Fasilitas</li>
+            <li data-filter=".filter-branding">Ruangan</li>
           </ul><!-- End Portfolio Filters -->
 
           <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/app-1.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/app-1.jpg" title="App 1" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+            <?php foreach ($fasilitas as $f): ?>
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/product-1.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/product-1.jpg" title="Product 1" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+              <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-<?=
+                htmlspecialchars($f['kategori'])
+              ?>">
+                <div class="portfolio-content h-100">
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/branding-1.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/branding-1.jpg" title="Branding 1" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+                  <img src="<?= htmlspecialchars($f['foto']) ?>" class="img-fluid" alt="">
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/books-1.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 1</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/books-1.jpg" title="Branding 1" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+                  <div class="portfolio-info">
+                    <h4><?= htmlspecialchars($f['nama']) ?></h4>
+                    <p><?= htmlspecialchars($f['deskripsi']) ?></p>
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/app-2.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/app-2.jpg" title="App 2" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+                    <a href="<?= htmlspecialchars($f['foto']) ?>"
+                        title="<?= htmlspecialchars($f['nama']) ?>"
+                        data-gallery="portfolio-gallery-<?= htmlspecialchars($f['kategori']) ?>"
+                        class="glightbox preview-link">
+                        <i class="bi bi-zoom-in"></i>
+                    </a>
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/product-2.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/product-2.jpg" title="Product 2" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+                    <a href="portfolio-details.php?id=<?= $f['fasilitas_id'] ?>"
+                        title="More Details"
+                        class="details-link">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                    </div>
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/branding-2.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/branding-2.jpg" title="Branding 2" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
+                  </div>
               </div>
-            </div><!-- End Portfolio Item -->
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/books-2.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 2</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/books-2.jpg" title="Branding 2" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
+              <?php endforeach; ?>
 
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/app-3.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>App 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/app-3.jpg" title="App 3" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/product-3.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Product 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/product-3.jpg" title="Product 3" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-              <div class="portfolio-content h-100">
-                <img src="../../../public/assets/img/portfolio/branding-3.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Branding 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="../../../public/assets/img/portfolio/branding-3.jpg" title="Branding 2" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/portfolio/books-3.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Books 3</h4>
-                  <p>Lorem ipsum, dolor sit amet consectetur</p>
-                  <a href="assets/img/portfolio/books-3.jpg" title="Branding 3" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="portfolio-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-          </div><!-- End Portfolio Container -->
+          </div>
+          <!-- End Portfolio Container -->
 
         </div>
 
@@ -548,8 +412,8 @@ ob_start(); ?>
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Testimonials</h2>
-        <p>perkuliahan terkait<br></p>
+        <h2>Perkuliahan</h2>
+        <p>Mata Kuliah terkait<br></p>
       </div><!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -582,85 +446,30 @@ ob_start(); ?>
           </script>
           <div class="swiper-wrapper">
 
+          <?php foreach ($matkul as $m): ?>
             <div class="swiper-slide">
               <div class="testimonial-item">
                 <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
                 </div>
                 <p>
-                  Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+                  Mata kuliah <strong><?= htmlspecialchars($m['nama_matkul']) ?></strong>  
+                  ditawarkan pada semester <strong><?= htmlspecialchars($m['semester']) ?></strong>  
+                  untuk prodi <strong><?= htmlspecialchars($m['prodi']) ?></strong>.  
+                  Total SKS: <strong><?= htmlspecialchars($m['sks']) ?></strong>.
                 </p>
                 <div class="profile mt-auto">
-                  <img src="assets/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                  <h3>Saul Goodman</h3>
-                  <h4>Ceo &amp; Founder</h4>
+                  <img src="assets/img/default-profile.png"
+                      class="testimonial-img" alt="">
+                  <h3><?= htmlspecialchars($m['nama_matkul']) ?></h3>
+                  <h4>Dosen: <?= htmlspecialchars($m['nip'] ?: 'Belum diisi') ?></h4>
                 </div>
               </div>
-            </div><!-- End testimonial item -->
+            </div>
 
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                </p>
-                <div class="profile mt-auto">
-                  <img src="assets/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                  <h3>Sara Wilsson</h3>
-                  <h4>Designer</h4>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                </p>
-                <div class="profile mt-auto">
-                  <img src="assets/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                  <h3>Jena Karlis</h3>
-                  <h4>Store Owner</h4>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                </p>
-                <div class="profile mt-auto">
-                  <img src="assets/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                  <h3>Matt Brandon</h3>
-                  <h4>Freelancer</h4>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
-
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                </p>
-                <div class="profile mt-auto">
-                  <img src="assets/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                  <h3>John Larson</h3>
-                  <h4>Entrepreneur</h4>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
+          <?php endforeach; ?>
 
           </div>
           <div class="swiper-pagination"></div>
@@ -680,85 +489,134 @@ ob_start(); ?>
 
         <div class="row gy-4">
 
-          <div class="col-lg-6">
+          <!-- LEFT SIDE — CONTACT INFO -->
+      <div class="col-lg-6">
 
-            <div class="row gy-4">
-              <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="200">
-                  <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
-                  <p>A108 Adam Street</p>
-                  <p>New York, NY 535022</p>
-                </div>
-              </div><!-- End Info Item -->
+        <!-- Left Title -->
+        <div class="mb-4" data-aos="fade-right" data-aos-delay="150">
+          <h3 class="fw-bold">Informasi Kontak</h3>
+          <p class="text-muted">Anda dapat menghubungi kami melalui kontak berikut.</p>
+        </div>
 
-              <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="300">
-                  <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
-                  <p>+1 6678 254445 41</p>
-                </div>
-              </div><!-- End Info Item -->
+        <div class="row gy-4">
 
-              <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="400">
-                  <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>info@example.com</p>
-                  <p>contact@example.com</p>
-                </div>
-              </div><!-- End Info Item -->
-
-              <div class="col-md-6">
-                <div class="info-item" data-aos="fade" data-aos-delay="500">
-                  <i class="bi bi-clock"></i>
-                  <h3>Open Hours</h3>
-                  <p>Monday - Friday</p>
-                  <p>9:00AM - 05:00PM</p>
-                </div>
-              </div><!-- End Info Item -->
-
+          <div class="col-md-6">
+            <div class="info-item" data-aos="fade" data-aos-delay="200">
+              <i class="bi bi-geo-alt"></i>
+              <h3>Address</h3>
+              <p>
+                <?php 
+                if (!empty($lab['alamat'])) {
+                    echo htmlspecialchars($lab['alamat']);
+                } else {
+                    echo 'Belum ada alamat';
+                }
+                ?>
+              </p>
             </div>
+          </div><!-- End Info Item -->
 
-          </div>
+          <div class="col-md-6">
+            <div class="info-item" data-aos="fade" data-aos-delay="300">
+              <i class="bi bi-telephone"></i>
+              <h3>Call Us</h3>
+              <p>
+              <?php 
+                if (!empty($lab['no_telp'])) {
+                    echo htmlspecialchars($lab['no_telp']);
+                } else {
+                    echo 'Belum ada nomor telepon';
+                }
+                ?>
+              </p>
+            </div>
+          </div><!-- End Info Item -->
 
-          <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-              <div class="row gy-4">
+          <div class="col-md-6">
+            <div class="info-item" data-aos="fade" data-aos-delay="400">
+              <i class="bi bi-envelope"></i>
+              <h3>Email Us</h3>
+              <p>
+              <?php 
+                if (!empty($lab['email'])) {
+                    echo htmlspecialchars($lab['email']);
+                } else {
+                    echo 'Belum ada email';
+                }
+                ?>
+              </p>
+            </div>
+          </div><!-- End Info Item -->
 
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
-                </div>
-
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                </div>
-
-                <div class="col-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                </div>
-
-                <div class="col-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Contact Form -->
+          <div class="col-md-6">
+            <div class="info-item" data-aos="fade" data-aos-delay="500">
+              <i class="bi bi-clock"></i>
+              <h3>Open Hours</h3>
+              <p>Monday - Friday</p>
+              <p>8:00AM - 04:00PM</p>
+            </div>
+          </div><!-- End Info Item -->
 
         </div>
 
-      </div>
+      </div><!-- End Left Column -->
 
+      <!-- RIGHT SIDE — CONTACT FORM -->
+      <div class="col-lg-6" id="form-pendaftaran">
+
+        <!-- Right Title -->
+        <div class="mb-4" data-aos="fade-left" data-aos-delay="150">
+          <h3 class="fw-bold">Form Pendaftaran</h3>
+          <p class="text-muted">Silakan bergabung dengan mengisi form berikut.</p>
+        </div>
+
+        <form action="registrasi_add.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+          <div class="row gy-4">
+
+            <!-- NAMA (required) -->
+            <div class="col-md-6">
+              <input type="text" name="nama" class="form-control" placeholder="Nama Lengkap" required>
+            </div>
+
+            <!-- NIM (opsional) -->
+            <div class="col-md-6">
+              <input type="text" name="nim" class="form-control" placeholder="NIM">
+            </div>
+
+            <!-- EMAIL (required) -->
+            <div class="col-md-6">
+              <input type="email" name="email" class="form-control" placeholder="Email Aktif" required>
+            </div>
+
+            <!-- PRODI (opsional) -->
+            <div class="col-md-6">
+              <input type="text" name="prodi" class="form-control" placeholder="Program Studi">
+            </div>
+
+            <!-- ANGKATAN (opsional) -->
+            <div class="col-12">
+              <input type="number" name="angkatan" class="form-control"
+                    placeholder="Angkatan (contoh: 2022)"
+                    min="2020" max="2050">
+            </div>
+            <!-- ALASAN (opsional, sesuai tabel bisa null) -->
+            <div class="col-12">
+              <textarea class="form-control" name="alasan" rows="5" placeholder="Alasan mendaftar"></textarea>
+            </div>
+
+            <div class="col-12 text-center">
+              <div class="loading">Loading</div>
+              <div class="error-message"></div>
+              <div class="sent-message">Pendaftaran berhasil dikirim!</div>
+
+              <button type="submit">Daftar Sekarang</button>
+            </div>
+
+          </div>
+        </form>
+      </div><!-- End Right Column -->
+        </div>
+      </div>
     </section><!-- /Contact Section -->
 <?php
 $content = ob_get_clean();
