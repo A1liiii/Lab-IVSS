@@ -5,8 +5,13 @@ class Database {
         $host = "localhost";
         $port = "5432"; 
         $user = "postgres"; 
+<<<<<<< HEAD
         $pass = "258369";        
         $db   = "labIVSS";
+=======
+        $pass = "1";        
+        $db   = "labivss";
+>>>>>>> df634fff9d713c444de86051229784fe5a2d57ec
 
         try {
             $dsn = "pgsql:host=$host;port=$port;dbname=$db;";
