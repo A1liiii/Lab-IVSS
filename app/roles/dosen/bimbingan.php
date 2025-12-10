@@ -10,7 +10,9 @@ $conn = Database::connect();
 $active = "bimbingan";
 $title = "Daftar Bimbingan";
 
-function safe($v){ return htmlspecialchars($v ?? "-", ENT_QUOTES, 'UTF-8'); }
+function safe($v){
+    return htmlspecialchars(!empty($v) ? $v : "-", ENT_QUOTES, 'UTF-8');
+}
 function now_ts(){ return date("Y-m-d H:i:s"); }
 
 // ====================== HANDLE POSTS (add / update / delete) ======================
@@ -20,11 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ========================= ADD BIMBINGAN =========================
     if (isset($_POST['action']) && $_POST['action'] === 'add') {
 
-        $nim      = trim($_POST['nim'] ?? '');
-        $nama     = trim($_POST['nama'] ?? '');
-        $email    = trim($_POST['email'] ?? '');
-        $prodi    = trim($_POST['prodi'] ?? '');
-        $angkatan = trim($_POST['angkatan'] ?? '');
+        $nim      = trim(isset($_POST['nim']) ? $_POST['nim'] : '');
+        $nama     = trim(isset($_POST['nama']) ? $_POST['nama'] : '');
+        $email    = trim(isset($_POST['email']) ? $_POST['email'] : '');
+        $prodi    = trim(isset($_POST['prodi']) ? $_POST['prodi'] : '');
+        $angkatan = trim(isset($_POST['angkatan']) ? $_POST['angkatan'] : '');
 
         // --- VALIDASI DASAR ---
         if ($nim === '' || $nama === '') {
@@ -86,12 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update mahasiswa (detail modal)
     if (isset($_POST['action']) && $_POST['action'] === 'update') {
 
-        $nim = $_POST['nim_old'] ?? null; // identify by nim_old
-        $nama = trim($_POST['nama'] ?? '');
-        $email = trim($_POST['email'] ?? '');
-        $prodi = trim($_POST['prodi'] ?? '');
-        $angkatan = trim($_POST['angkatan'] ?? '');
-        $status = trim($_POST['status'] ?? 'aktif');
+        $nim = isset($_POST['nim_old']) ? $_POST['nim_old'] : null; // identify by nim_old
+        $nama = isset($_POST['nama']) ? trim($_POST['nama']) : '';
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $prodi = isset($_POST['prodi']) ? trim($_POST['prodi']) : '';
+        $angkatan = isset($_POST['angkatan']) ? trim($_POST['angkatan']) : '';
+        $status = isset($_POST['status']) ? trim($_POST['status']) : 'aktif';
 
         if (!$nim) {
             $_SESSION['flash_error'] = "Identifier tidak ditemukan.";
@@ -108,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Hapus mahasiswa bimbingan
     if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-        $nim = $_POST['nim'] ?? null;
+        $nim = isset($_POST['nim']) ? $_POST['nim'] : null;
         if ($nim) {
             $stmt = $conn->prepare("DELETE FROM mahasiswa WHERE nim = ? AND kategori = 'bimbingan'");
             $stmt->execute([$nim]);
@@ -122,11 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // ====================== LIST + SEARCH + PAGINATION ======================
-$page = max(1, (int)($_GET['page'] ?? 1));
+$page = max(1, isset($_GET['page']) ? (int)$_GET['page'] : 1);
 $perPage = 8;
 $offset = ($page - 1) * $perPage;
 
-$search = trim($_GET['q'] ?? '');
+$search = isset($_GET['q']) ? trim($_GET['q']) : "";
 $where = "WHERE kategori = 'bimbingan'";
 $params = [];
 
@@ -162,8 +164,8 @@ $stmt->execute();
 $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // flash messages
-$flash_success = $_SESSION['flash_success'] ?? null;
-$flash_error = $_SESSION['flash_error'] ?? null;
+$flash_success = (isset($_SESSION['flash_success'])) ? $_SESSION['flash_success'] : null;
+$flash_error   = (isset($_SESSION['flash_error'])) ? $_SESSION['flash_error'] : null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 ob_start();

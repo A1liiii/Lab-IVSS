@@ -12,8 +12,8 @@ if (isset($_SESSION['user']) && isset($_SESSION['active_role'])) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $username = trim(isset($_POST['username']) ? $_POST['username'] : '');
+    $password = trim(isset($_POST['password']) ? $_POST['password'] : '');
 
     // Ambil user by username
     $stmt = $conn->prepare("

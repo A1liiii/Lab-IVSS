@@ -1,17 +1,17 @@
 <?php
-session_start();
-require_once __DIR__ . "/../../core/auth.php";
-requireRole("operator");
+// app/roles/operator/_layout.php
+// Session, auth, dan $conn sudah di-handle di file halaman (dashboard.php, berita.php, dst)
 
-require_once __DIR__ . "/../../core/database.php";
-$conn = Database::connect();
+$username = isset($_SESSION['user']['username']) ? $_SESSION['user']['username'] : 'Operator';
+$active   = isset($active) ? $active : '';
+$title    = isset($title)  ? $title  : 'Operator Panel';
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Operator Panel</title>
+    <title><?= htmlspecialchars($title) ?></title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -78,6 +78,11 @@ $conn = Database::connect();
             transform: translateX(5px);
         }
 
+        .sidebar a.active {
+            background: #ffde59;
+            color: #000;
+        }
+
         .logout-btn {
             background: var(--blue);
             color: #fff;
@@ -101,7 +106,7 @@ $conn = Database::connect();
 
         <div class="d-flex align-items-center gap-3">
             <span class="text-secondary">
-                <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
+                <i class="bi bi-person-circle"></i> <?= htmlspecialchars($username) ?>
             </span>
 
             <a href="../../../logout.php" class="btn logout-btn btn-sm px-3">
@@ -116,27 +121,27 @@ $conn = Database::connect();
         <div class="sidebar">
             <h5>Menu Operator</h5>
 
-            <a href="dashboard.php">
+            <a href="dashboard.php" class="<?= $active === 'dashboard' ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
 
-            <a href="berita.php">
+            <a href="berita.php" class="<?= $active === 'berita' ? 'active' : '' ?>">
                 <i class="bi bi-newspaper"></i> Berita
             </a>
 
-            <a href="proyek.php">
+            <a href="proyek.php" class="<?= $active === 'proyek' ? 'active' : '' ?>">
                 <i class="bi bi-kanban"></i> Proyek
             </a>
 
-            <a href="fasilitas.php">
+            <a href="fasilitas.php" class="<?= $active === 'fasilitas' ? 'active' : '' ?>">
                 <i class="bi bi-building-gear"></i> Fasilitas
             </a>
 
-            <a href="dokumentasi.php">
+            <a href="dokumentasi.php" class="<?= $active === 'dokumentasi' ? 'active' : '' ?>">
                 <i class="bi bi-camera-reels"></i> Dokumentasi
             </a>
 
-            <a href="profile.php">
+            <a href="profile.php" class="<?= $active === 'profile' ? 'active' : '' ?>">
                 <i class="bi bi-gear"></i> Profil Saya
             </a>
 
@@ -153,13 +158,11 @@ $conn = Database::connect();
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <div class="text-center text-secondary mt-5">
-                <h3><i class="bi bi-person-workspace"></i> Selamat Datang, Operator</h3>
-                <p>Pilih menu di sebelah kiri untuk mengelola konten dan fasilitas lab.</p>
-            </div>
+        <?= !empty($content) ? $content : "" ?>
         </main>
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

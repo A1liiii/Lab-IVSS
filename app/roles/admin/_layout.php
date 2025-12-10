@@ -11,7 +11,7 @@ requireRole("admin");
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= $title ?? 'Admin Panel' ?></title>
+    <title><?= !empty($title) ? $title : 'Admin Panel' ?></title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -182,7 +182,7 @@ requireRole("admin");
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <?= $content ?? "" ?>
+        <?= !empty($content) ? $content : "" ?>
         </main>
 
     </div>
