@@ -1,5 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . "/../../core/auth.php";
 requireRole("mahasiswa");
 
@@ -139,13 +142,21 @@ $conn = Database::connect();
             </a>
         </div>
 
-        <!-- MAIN CONTENT -->
-        <main class="flex-grow-1 p-4">
-            <div class="text-center text-secondary mt-5">
-                <h3><i class="bi bi-mortarboard"></i> Selamat Datang, Mahasiswa</h3>
-                <p>Gunakan menu di sisi kiri untuk mengelola profil dan aktivitas Anda.</p>
-            </div>
-        </main>
+        <div class="col">
+  <?php if (!empty($content)): ?>
+    <?= $content ?>
+  <?php else: ?>
+    <div class="text-center py-5">
+      <h2 class="fw-bold text-secondary">
+        <i class="bi bi-mortarboard"></i> Selamat Datang, Mahasiswa
+      </h2>
+      <p class="text-muted">
+        Gunakan menu di sisi kiri untuk mengelola profil dan aktivitas Anda.
+      </p>
+    </div>
+  <?php endif; ?>
+</div>
+
 
     </div>
 

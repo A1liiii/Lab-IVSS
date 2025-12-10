@@ -70,13 +70,9 @@ if (!$lab) {
          <li class="dropdown <?= ($active === 'riset') ? 'active' : '' ?>">
             <a href="riset.php"><span>Riset</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
-<<<<<<< HEAD
               <li><a href="proyek.php">Proyek</a></li>
               <li><a href="publikasi.php">Publikasi</a></li>
-=======
-              <li><a href="../public/proyek.php">Projek</a></li>
-              <li><a href="../public/publikasi.php">Publikasi</a></li>
->>>>>>> 11b0175e60f637230d2d7fe3477d9856ed91affc
+
             </ul>
           </li>
           <li class="dropdown"><a href="#"><span>Fasilitas</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
@@ -91,18 +87,9 @@ if (!$lab) {
               </li>
             </ul>
           </li>
-<<<<<<< HEAD
           <li class="dropdown"><a href="../Public/berita.php"><span>Berita</span></i></a>
           <li class="dropdown"><a href="../Public/dokumentasi.php"><span>Galeri</span></a></li>
-=======
-          <li class="dropdown"><a href="../public/berita.php"><span>Berita</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Pengumuman</a></li>
-              <li><a href="#">Penghargaan</a></li>
-            </ul>
-          </li>
-          <li class="dropdown"><a href="../public/dokumentasi.php"><span>Galeri</span></a></li>
->>>>>>> 11b0175e60f637230d2d7fe3477d9856ed91affc
+
           <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
