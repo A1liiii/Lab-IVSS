@@ -59,12 +59,60 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
-/*PROYEK*/
-/* Badge status pojok kiri atas */
-.recent-posts .post-item .status-badge {
-    position: static;
-  top: 14px;
-  left: 14px;
+/* ==================== PROYEK – CARD LIST ==================== */
+
+/* Card dasar di section proyek saja */
+#projects .post-item {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 260px;           /* tinggi minimum sama untuk semua card */
+  overflow: hidden;
+}
+
+/* Efek hover card */
+#projects .post-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.10);
+}
+
+/* Isi card (atas) */
+#projects .post-item .post-content {
+  padding: 24px 24px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Judul proyek: tetap area tinggi 3 baris */
+#projects .post-item .post-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;        /* maksimal 3 baris */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  min-height: 72px;             /* kira² tinggi 3 baris */
+}
+
+/* Meta (dosen dan tanggal) */
+#projects .post-item .meta i {
+  color: #fbbf24;               /* ikon kuning */
+}
+
+#projects .post-item .meta span {
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+/* Badge status di dalam flow (bukan pojok) */
+#projects .post-item .status-badge {
+  position: static;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 4px 10px;
@@ -72,6 +120,7 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
   text-transform: uppercase;
 }
 
+/* Warna status */
 .status-running {
   background: #e0f2fe;
   color: #0369a1;
@@ -86,9 +135,44 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
   background: #e5e7eb;
   color: #374151;
 }
-/* Header modal proyek: biru + teks putih */
+
+/* Wrapper status jaraknya kecil */
+#projects .post-item .mt-1.mb-2 {
+  margin-top: 4px !important;
+  margin-bottom: 6px !important;
+}
+
+/* Bar biru Detail Proyek di bawah card */
+#projects .post-item .readmore-box {
+  background: #0F2F8A;
+  padding: 14px 20px;
+  margin: 0 -24px -18px -24px;      /* full width, nempel ke kiri-kanan & bawah */
+  border-radius: 0 0 12px 12px;
+  transition: background 0.3s ease;
+  margin-top: auto;                  /* dorong bar biru ke paling bawah card */
+}
+
+#projects .post-item:hover .readmore-box {
+  background: #0C256E;
+}
+
+#projects .post-item .readmore-box .readmore {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #ffffff !important;
+  text-decoration: none;
+}
+
+#projects .post-item .readmore-box .readmore i {
+  margin-left: 6px;
+  font-size: 1rem;
+}
+
+/* ==================== MODAL DETAIL PROYEK ==================== */
+
 .proyek-modal-header {
-  background: #0F2F8A;   /* biru tua IVSS */
+  background: #0F2F8A;
   color: #ffffff;
   border-bottom: none;
 }
@@ -99,9 +183,10 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 .proyek-modal-header .btn-close {
-  filter: brightness(0) invert(1); /* bikin tombol close jadi putih */
+  filter: brightness(0) invert(1);
   opacity: 0.95;
 }
+
 /* Status badge di modal */
 .modal-status-badge {
   padding: 4px 12px;
@@ -112,7 +197,6 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
   display: inline-block;
 }
 
-/* Warna mengikuti status */
 .modal-status-running {
   background: #e0f2fe;
   color: #0369a1;
@@ -122,27 +206,10 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
   background: #dcfce7;
   color: #15803d;
 }
+
 .modal-status-other {
   background: #e5e7eb;
   color: #374151;
-}
-
-/* Judul proyek boleh sampai 3 baris, sisanya dipotong */
-.recent-posts .post-item .post-title {
-  display: -webkit-box;
-  -webkit-line-clamp: 3; 
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 72px; /* 3 baris @ 24px, sesuaikan dengan font size */
-}
-/* Di proyek, garis pemisah jangan terlalu jauh dari status & tombol */
-#projects .post-item hr {
-  margin: 10px 0 6px;   /* dari sebelumnya 20px 0 */
-}
-/* Wrapper status di kartu proyek: jarak bawah kecil aja */
-#projects .post-item .mt-1.mb-2 {
-  margin-top: 4px !important;
-  margin-bottom: 6px !important;
 }
 
 /*--------------------------------------------------------------
@@ -209,15 +276,11 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
   flex-direction: column;
   min-height: 180px; /* --- tambahkan ini --- */
 }
-
 </style>
-
-
 <?php
 ob_start();
 ?>
-
-
+<!-- ==================== PROYEK SECTION ==================== -->
 <!-- Proyek Section -->
 <section id="projects" class="recent-posts section">
 
@@ -287,8 +350,6 @@ ob_start();
   </div>
 
 </div>
-
-
           </div>
         </div>
 
@@ -422,7 +483,7 @@ ob_start();
 
 </section><!-- /Projects Section -->
 
-
+<!-- ==================== PUBLIKASI SECTION ==================== -->
 
 <!-- Publikasi Section -->
     <section id="recent-posts" class="recent-posts section">

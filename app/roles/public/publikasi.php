@@ -31,6 +31,7 @@ $stmt = $db->prepare($sql);
 $stmt->execute();
 $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <style>
 /*--------------------------------------------------------------
 # Publikasi Section
