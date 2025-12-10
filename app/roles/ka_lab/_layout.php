@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . "/../../core/auth.php";
 requireRole("ketua lab");
 require_once __DIR__ . "/../../core/database.php";
@@ -130,10 +132,7 @@ $conn = Database::connect();
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <div class="text-center text-secondary mt-5">
-                <h3><i class="bi bi-mortarboard-fill"></i> Selamat Datang Ketua Lab</h3>
-                <p>Pilih menu di sebelah kiri untuk mengelola sistem laboratorium.</p>
-            </div>
+            <?= $content ?? "" ?>
         </main>
 
     </div>

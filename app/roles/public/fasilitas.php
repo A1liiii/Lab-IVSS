@@ -13,9 +13,8 @@ $kategoriList = $qKategori->fetchAll(PDO::FETCH_ASSOC);
 $qFasilitas = $db->query("SELECT * FROM fasilitas ORDER BY fasilitas_id DESC");
 $fasilitas = $qFasilitas->fetchAll(PDO::FETCH_ASSOC);
 
-ob_start();
-?>
 
+ob_start(); ?>
 <!-- Portfolio Section -->
 <section id="portfolio" class="portfolio section">
 
@@ -86,8 +85,16 @@ ob_start();
   </div>
 
 </section>
+<<<<<<< HEAD
 
 <?php
 $content = ob_get_clean();
 include __DIR__ . "/_layout.php";
 ?>
+=======
+<!-- /Portfolio Section -->
+<?php
+$content = ob_get_clean();
+include __DIR__ . "/_layout.php";
+?>
+>>>>>>> 11b0175e60f637230d2d7fe3477d9856ed91affc

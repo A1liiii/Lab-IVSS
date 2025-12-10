@@ -1,10 +1,28 @@
+<?php 
+require_once __DIR__ . "/../../core/database.php";
+
+$conn = Database::connect(); // ini WAJIB
+
+// Query 1 data lab
+$sql = "SELECT * FROM lab_info LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+
+$lab = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$lab) {
+    $lab = []; // biar aman kalo kosong
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title><?= $title ?? 'IVSS' ?></title>
+  <title><?= isset($title) ? $title : 'IVSS' ?></title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -12,7 +30,7 @@
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <link href="../../../public/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -30,13 +48,13 @@
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
       <a href="../Public/home.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="../../../public/assets/img/logo-fix.png" alt="">
+        <img src="../../../public/assets/img/logo_ivss2.png" alt="">
         <h1 class="sitename">IVSS</h1>
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="/lab-ivss/index.php?page=home" class="active">Beranda<br></a></li>
-            <li class="dropdown"><a href="../Public/about.php"><span>Tentang Kami</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <li class="dropdown"><a href="../public/about.php"><span>Tentang Kami</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Lab</a></li>
               <li><a href="#">Visi & Misi</a></li>
@@ -52,8 +70,13 @@
          <li class="dropdown <?= ($active === 'riset') ? 'active' : '' ?>">
             <a href="riset.php"><span>Riset</span> <i class="bi bi-chevron-down"></i></a>
             <ul>
+<<<<<<< HEAD
               <li><a href="proyek.php">Proyek</a></li>
               <li><a href="publikasi.php">Publikasi</a></li>
+=======
+              <li><a href="../public/proyek.php">Projek</a></li>
+              <li><a href="../public/publikasi.php">Publikasi</a></li>
+>>>>>>> 11b0175e60f637230d2d7fe3477d9856ed91affc
             </ul>
           </li>
           <li class="dropdown"><a href="#"><span>Fasilitas</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
@@ -68,8 +91,18 @@
               </li>
             </ul>
           </li>
+<<<<<<< HEAD
           <li class="dropdown"><a href="../Public/berita.php"><span>Berita</span></i></a>
           <li class="dropdown"><a href="../Public/dokumentasi.php"><span>Galeri</span></a></li>
+=======
+          <li class="dropdown"><a href="../public/berita.php"><span>Berita</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Pengumuman</a></li>
+              <li><a href="#">Penghargaan</a></li>
+            </ul>
+          </li>
+          <li class="dropdown"><a href="../public/dokumentasi.php"><span>Galeri</span></a></li>
+>>>>>>> 11b0175e60f637230d2d7fe3477d9856ed91affc
           <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -83,7 +116,7 @@
 <main class="main">
 
     <!-- INI BAGIAN KONTEN DINAMIS -->
-    <?= $content ?? '' ?>
+    <?= isset($content) ? $content : '' ?>
 
 </main>
 
@@ -96,45 +129,87 @@
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
-          <a href="index.html" class="d-flex align-items-center">
-            <span class="sitename">Intelligence Vision and Smart System</span>
-          </a>
+        <a href="public/home.php" class="d-flex align-items-center">
+        <span class="sitename">IVSS</span>
+        </a>
           <div class="footer-contact pt-3">
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
-            <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-            <p><strong>Email:</strong> <span>info@example.com</span></p>
+          <p>
+            <?php 
+            if (!empty($lab['alamat'])) {
+                echo htmlspecialchars($lab['alamat']);
+            } else {
+                echo 'Belum ada alamat';
+            }
+            ?>
+          </p>
+          <p class="mt-3">
+            <strong>Phone:</strong>
+            <span>
+                <?php 
+                if (!empty($lab['no_telp'])) {
+                    echo htmlspecialchars($lab['no_telp']);
+                } else {
+                    echo 'Belum ada nomor telepon';
+                }
+                ?>
+            </span>
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <span>
+                <?php 
+                if (!empty($lab['email'])) {
+                    echo htmlspecialchars($lab['email']);
+                } else {
+                    echo 'Belum ada email';
+                }
+                ?>
+            </span>
+          </p>
           </div>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
           <h4>Useful Links</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/home.php">Beranda</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/about.php">Tentang Kami</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/riset.php">Riset</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/fasilitas.php">Fasilitas</a></li>
           </ul>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
           <h4>Our Services</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/berita.php">Berita</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="public/dokumentasi.php">Galeri</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="#">Kontak</a></li>
           </ul>
         </div>
 
         <div class="col-lg-4 col-md-12">
           <h4>Follow Us</h4>
-          <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>
+          <p>Dapatkan pembaruan tentang penelitian, publikasi, dan program kolaborasi melalui kanal resmi kami.</p>
           <div class="social-links d-flex">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
+              <!-- Instagram -->
+              <?php if (!empty($lab['instagram'])): ?>
+                  <a href="<?= htmlspecialchars($lab['instagram']) ?>" target="_blank">
+                      <i class="bi bi-instagram"></i>
+                  </a>
+              <?php endif; ?>
+              <!-- YouTube -->
+              <?php if (!empty($lab['youtube'])): ?>
+                  <a href="<?= htmlspecialchars($lab['youtube']) ?>" target="_blank">
+                      <i class="bi bi-youtube"></i>
+                  </a>
+              <?php endif; ?>
+              <!-- TikTok -->
+              <?php if (!empty($lab['tiktok'])): ?>
+                  <a href="<?= htmlspecialchars($lab['tiktok']) ?>" target="_blank">
+                      <i class="bi bi-tiktok"></i>
+                  </a>
+              <?php endif; ?>
           </div>
         </div>
 
@@ -142,7 +217,7 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">FlexStart</strong> <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Intelligence Vision and Smart System</strong> <span>All Rights Reserved</span></p>
     </div>
 
   </footer>
@@ -162,5 +237,16 @@
 
   <!-- Main JS File -->
   <script src="../../../public/assets/js/main.js"></script>
+
+  <!-- js scroolss navbar -->
+  <script>
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 10) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  });
+</script>
 </body>
 </html>

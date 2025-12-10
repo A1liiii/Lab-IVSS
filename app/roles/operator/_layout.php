@@ -124,10 +124,6 @@ $conn = Database::connect();
                 <i class="bi bi-newspaper"></i> Berita
             </a>
 
-            <a href="publikasi.php">
-                <i class="bi bi-journal-text"></i> Publikasi
-            </a>
-
             <a href="proyek.php">
                 <i class="bi bi-kanban"></i> Proyek
             </a>

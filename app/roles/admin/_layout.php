@@ -1,5 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once __DIR__ . "/../../core/auth.php";
 requireRole("admin");
 ?>
@@ -8,7 +11,7 @@ requireRole("admin");
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
+    <title><?= $title ?? 'Admin Panel' ?></title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,13 +20,22 @@ requireRole("admin");
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        :root {
-            --blue: #004aad;
-            --yellow: #ffde59;
+        /* GLOBAL LAYOUT FIX */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* agar sidebar tidak nge-scroll body */
         }
 
         body {
+            display: flex;
+            flex-direction: column;
             background-color: #f5f8ff;
+        }
+
+        /* ROOT COLORS */
+        :root {
+            --blue: #004aad;
+            --yellow: #ffde59;
         }
 
         /* TOPBAR */
@@ -42,18 +54,25 @@ requireRole("admin");
             color: var(--blue);
         }
 
+        /* LAYOUT WRAPPER / CONTENT BODY */
+        .layout-wrapper {
+            height: calc(100vh - 63px); /* full layout minus topbar */
+            display: flex;
+            overflow: hidden;
+        }
+
         /* SIDEBAR */
         .sidebar {
+            flex-shrink: 0;
             width: 240px;
-            min-height: 100vh;
             background: var(--blue);
             padding: 25px 15px;
             color: #fff;
-        }
-
-        .sidebar h5 {
-            font-weight: 600;
-            margin-bottom: 15px;
+            height: 100%;
+            overflow-y: auto;           /* kalau menu panjang, sidebar bisa scroll */
+            scrollbar-width: thin;
+            min-height: calc(100vh - 63px);
+            box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
         }
 
         .sidebar a {
@@ -75,16 +94,36 @@ requireRole("admin");
             transform: translateX(5px);
         }
 
-        .logout-btn {
-            background: var(--blue);
-            color: #fff;
-            border: none;
+        .sidebar .active {
+            background: var(--yellow);
+            color: #000 !important;
+            font-weight: 700;
         }
 
-        .logout-btn:hover {
-            background: #00378a;
-            color: #fff;
+        /* MAIN CONTENT */
+        main {
+            flex-grow: 1;
+            padding-bottom: 0 !important;
+            overflow-y: auto;            /* scroll hanya area konten */
+            scrollbar-width: thin;
         }
+
+        main::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        main::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+        }
+
+        main::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
     </style>
 </head>
 
@@ -101,46 +140,39 @@ requireRole("admin");
                 <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
             </span>
 
-            <a href="../../../logout.php" class="btn logout-btn btn-sm px-3">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 
-    <div class="d-flex">
+    <div class="layout-wrapper">
 
         <!-- SIDEBAR -->
         <div class="sidebar">
             <h5>Menu Admin</h5>
 
-            <a href="dashboard.php">
+            <a href="dashboard.php" class="<?= ($active=='dashboard'?'active':'') ?>">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
 
-            <a href="user.php">
-                <i class="bi bi-people-fill"></i> User Management
+            <a href="user.php" class="<?= ($active=='user'?'active':'') ?>">
+                <i class="bi bi-people-fill"></i> Manajemen Anggota
             </a>
 
-            <a href="role.php">
-                <i class="bi bi-shield-check"></i> Role Management
+            <a href="approvals.php" class="<?= ($active=='approvals'?'active':'') ?>">
+                <i class="bi bi-check2-circle"></i> Pendaftaran
             </a>
 
-            <a href="approvals.php">
-                <i class="bi bi-check2-circle"></i> Approvals
+            <a href="logs.php" class="<?= ($active=='logs'?'active':'') ?>">
+                <i class="bi bi-clock-history"></i> Aktifitas
             </a>
 
-            <a href="logs.php">
-                <i class="bi bi-clock-history"></i> Logs
-            </a>
-
-            <a href="profile.php">
-                <i class="bi bi-gear"></i> My Profile
+            <a href="profile.php" class="<?= ($active=='profile'?'active':'') ?>">
+                <i class="bi bi-gear"></i> Profil
             </a>
 
             <hr style="border-color: rgba(255,255,255,0.3)">
 
             <a href="../../../select_role.php">
-                <i class="bi bi-arrow-left-right"></i> Switch Role
+                <i class="bi bi-arrow-left-right"></i> Portal Anggota
             </a>
 
             <a href="../../../logout.php">
@@ -150,10 +182,7 @@ requireRole("admin");
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <div class="text-center text-secondary mt-5">
-                <h3><i class="bi bi-person-workspace"></i> Selamat Datang, Admin</h3>
-                <p>Gunakan menu di sisi kiri untuk mengelola sistem.</p>
-            </div>
+            <?= $content ?? "" ?>
         </main>
 
     </div>
