@@ -290,7 +290,6 @@ ob_start();
                 <option value="berita">Berita</option>
                 <option value="pengumuman">Pengumuman</option>
                 <option value="aktivitas">Aktivitas</option>
-                <option value="lainnya">Lainnya</option>
             </select>
         </div>
 
@@ -481,7 +480,6 @@ ob_start();
                                 <option value="berita">Berita</option>
                                 <option value="pengumuman">Pengumuman</option>
                                 <option value="aktivitas">Aktivitas</option>
-                                <option value="lainnya">Lainnya</option>
                             </select>
                         </div>
                         <div class="col-md-6">

@@ -1,4 +1,5 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) session_start();
 $active = "dashboard";
 $title  = "Dashboard Operator";
 
@@ -48,7 +49,7 @@ ob_start();
                 <h6 class="text-muted mb-1">Total Berita</h6>
                 <h3 class="fw-bold text-primary mb-0"><?= $totalBerita ?></h3>
             </div>
-            <i class="bi bi-newspaper fs-3 text-primary ms-3"></i>
+            <i class="bi bi-newspaper fs-3 m-3 mb-1 text-primary ms-3"></i>
         </div>
     </div>
 
@@ -60,7 +61,7 @@ ob_start();
                 <h6 class="text-muted mb-1">Total Proyek</h6>
                 <h3 class="fw-bold text-warning mb-0"><?= $totalProyek ?></h3>
             </div>
-            <i class="bi bi-kanban fs-3 text-warning ms-3"></i>
+            <i class="bi bi-kanban fs-3 m-3 mb-1 text-warning ms-3"></i>
         </div>
     </div>
 
@@ -72,7 +73,7 @@ ob_start();
                 <h6 class="text-muted mb-1">Total Fasilitas</h6>
                 <h3 class="fw-bold text-success mb-0"><?= $totalFasilitas ?></h3>
             </div>
-            <i class="bi bi-building fs-3 text-success ms-3"></i>
+            <i class="bi bi-building fs-3 m-3 mb-1 text-success ms-3"></i>
         </div>
     </div>
 
@@ -84,7 +85,7 @@ ob_start();
                 <h6 class="text-muted mb-1">Total Dokumentasi</h6>
                 <h3 class="fw-bold text-danger mb-0"><?= $totalDokumentasi ?></h3>
             </div>
-            <i class="bi bi-image-fill fs-3 text-danger ms-3"></i>
+            <i class="bi bi-image-fill fs-3 m-3 mb-1 text-danger ms-3"></i>
         </div>
     </div>
 </div>
@@ -92,7 +93,7 @@ ob_start();
 <hr class="my-4">
 
 <!-- GRAPH SECTION -->
-<div class="card shadow-sm border-0 p-4 position-relative">
+<!-- <div class="card shadow-sm border-0 p-4 position-relative">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-semibold m-0">
@@ -120,7 +121,7 @@ ob_start();
     <div style="height: 240px;">
         <canvas id="activityChart"></canvas>
     </div>
-</div>
+</div> -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

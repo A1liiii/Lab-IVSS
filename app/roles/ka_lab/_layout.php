@@ -130,8 +130,12 @@ $conn = Database::connect();
 
         </div>
 
-        <!-- MAIN CONTENT -->
-        <main class="flex-grow-1 p-4">
+        <main>
+            <?php 
+            require_once __DIR__ . "/../../core/notification.php";
+            echo showReminder();
+            ?>
+
             <?= $content ?? "" ?>
         </main>
 

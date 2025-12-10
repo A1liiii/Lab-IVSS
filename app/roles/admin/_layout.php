@@ -165,10 +165,6 @@ requireRole("admin");
                 <i class="bi bi-clock-history"></i> Aktifitas
             </a>
 
-            <a href="profile.php" class="<?= ($active=='profile'?'active':'') ?>">
-                <i class="bi bi-gear"></i> Profil
-            </a>
-
             <hr style="border-color: rgba(255,255,255,0.3)">
 
             <a href="../../../select_role.php">
@@ -180,8 +176,14 @@ requireRole("admin");
             </a>
         </div>
 
+        
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
+            <?php 
+            require_once __DIR__ . "/../../core/notification.php";
+            echo showReminder();
+            ?>
+
             <?= $content ?? "" ?>
         </main>
 

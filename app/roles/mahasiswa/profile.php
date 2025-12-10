@@ -9,68 +9,77 @@ $conn = Database::connect();
 
 function safe($x){ return htmlspecialchars($x ?? "-", ENT_QUOTES, 'UTF-8'); }
 
-// ===========================
-//  AMBIL IDENTITAS LOGIN
-// ===========================
+// Ambil identitas dari session
 $user_id = $_SESSION['user']['user_id'] ?? null;
-$nim     = $_SESSION['user']['nim'] ?? null;  // mahasiswa login selalu punya NIM
+$nim     = $_SESSION['user']['nim'] ?? null;
 
 if(!$nim){
-    die("<div class='alert alert-danger'>NIM tidak ditemukan dalam session.</div>");
+    die("<div class='alert alert-danger'>Session error: NIM tidak ditemukan.</div>");
 }
 
-// ===========================
-//  HANDLE POST UPDATE
-// ===========================
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+// =======================================================
+// ================ HANDLE UPDATE REQUESTS ================
+// =======================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // update nama & email
-    if(isset($_POST['update_profile'])){
-        $stmt = $conn->prepare("
-            UPDATE mahasiswa SET nama=?, email=? WHERE nim=?
-        ");
-        $stmt->execute([$_POST['nama'], $_POST['email'], $nim]);
-    }
+    // ---------- UPDATE FOTO ----------
+    if (isset($_POST['update_foto'])) {
 
-    // upload foto
-    if(isset($_POST['upload_foto'])){
-        if(isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK){
+        if (!empty($_FILES['foto']['name'])) {
 
-            $f = $_FILES['foto'];
-            $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
+            $foto = $_FILES['foto'];
+            $ext  = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
 
-            if(!in_array($ext, ['jpg','jpeg','png'])){
-                $_SESSION['flash_error'] = "Foto harus JPG atau PNG.";
-            } else {
+            if (in_array($ext, ['jpg','jpeg','png'])) {
+
                 $dir = __DIR__ . "/../../../public/uploads/profiles/";
                 if(!is_dir($dir)) mkdir($dir, 0777, true);
 
-                $filename = $nim.".".$ext;
-                move_uploaded_file($f['tmp_name'], $dir . $filename);
+                $filename = $nim . "." . $ext;
+                move_uploaded_file($foto['tmp_name'], $dir . $filename);
 
                 $stmt = $conn->prepare("UPDATE mahasiswa SET foto=? WHERE nim=?");
                 $stmt->execute([$filename, $nim]);
 
                 $_SESSION['flash_success'] = "Foto berhasil diperbarui.";
+            } else {
+                $_SESSION['flash_error'] = "Format foto harus JPG atau PNG.";
             }
         }
+
         header("Location: profile.php");
         exit;
     }
 
-    header("Location: profile.php");
-    exit;
+    // ---------- UPDATE DATA MAHASISWA ----------
+    if (isset($_POST['update_profile'])) {
+
+        $stmt = $conn->prepare("
+            UPDATE mahasiswa 
+            SET nama=?, email=?, prodi=?, angkatan=?, status=?
+            WHERE nim=?
+        ");
+
+        $stmt->execute([
+            $_POST['nama'] ?? '',
+            $_POST['email'] ?? '',
+            $_POST['prodi'] ?? '',
+            $_POST['angkatan'] ?? '',
+            $_POST['status'] ?? 'aktif',
+            $nim
+        ]);
+
+        $_SESSION['flash_success'] = "Profil berhasil diperbarui.";
+        header("Location: profile.php");
+        exit;
+    }
 }
 
-// ===========================
-//  FETCH DATA MAHASISWA
-// ===========================
-$stmt = $conn->prepare("
-    SELECT *
-    FROM mahasiswa
-    WHERE nim = ?
-    LIMIT 1
-");
+// =======================================================
+// ===================== FETCH DATA =======================
+// =======================================================
+
+$stmt = $conn->prepare("SELECT * FROM mahasiswa WHERE nim=? LIMIT 1");
 $stmt->execute([$nim]);
 $m = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -78,64 +87,87 @@ if(!$m){
     die("<div class='alert alert-danger'>Data mahasiswa tidak ditemukan.</div>");
 }
 
-// ===========================
-//  FETCH PEMBIMBING (optional)
-// ===========================
+// Pembimbing jika ada
 $pembimbing = null;
-if(!empty($m['pembimbing_user_id'])){
-    $stmt = $conn->prepare("
-        SELECT d.nama
+if (!empty($m['pembimbing_user_id'])) {
+
+    $stmtP = $conn->prepare("
+        SELECT d.nama 
         FROM users u
         LEFT JOIN dosen d ON d.nip = u.nip
-        WHERE u.user_id = ?
+        WHERE u.user_id=?
     ");
-    $stmt->execute([$m['pembimbing_user_id']]);
-    $pembimbing = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmtP->execute([$m['pembimbing_user_id']]);
+    $pembimbing = $stmtP->fetch(PDO::FETCH_ASSOC);
 }
 
-// ===========================
-//  RENDER PAGE
-// ===========================
+$flash_success = $_SESSION['flash_success'] ?? null;
+$flash_error   = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+
 ob_start();
 ?>
 
+<style>
+.edit-icon {
+    cursor: pointer;
+    margin-left: 8px;
+    color: #0d6efd;
+}
+.save-btn, .cancel-btn {
+    display: none;
+    margin-left: 6px;
+    cursor: pointer;
+}
+.edit-row.editing .text-value { display:none; }
+.edit-row.editing .edit-input { display:block !important; }
+.edit-row.editing .save-btn,
+.edit-row.editing .cancel-btn { display:inline-block !important; }
+</style>
+
 <h2 class="fw-bold mb-4 text-primary">
-    <i class="bi bi-person-circle"></i> Profil Saya
+    <i class="bi bi-person-circle"></i> Profil Mahasiswa
 </h2>
 
-<!-- FLASH MESSAGES -->
-<?php if(isset($_SESSION['flash_success'])): ?>
-<div class="alert alert-success"><?= safe($_SESSION['flash_success']); unset($_SESSION['flash_success']); ?></div>
+<?php if($flash_success): ?>
+<div class="alert alert-success"><?= safe($flash_success) ?></div>
 <?php endif; ?>
 
-<?php if(isset($_SESSION['flash_error'])): ?>
-<div class="alert alert-danger"><?= safe($_SESSION['flash_error']); unset($_SESSION['flash_error']); ?></div>
+<?php if($flash_error): ?>
+<div class="alert alert-danger"><?= safe($flash_error) ?></div>
 <?php endif; ?>
 
-<div class="card p-4 shadow-sm">
+<div class="card shadow-sm border-0 p-4">
 
-    <!-- FOTO PROFIL + UPLOAD INLINE -->
+    <!-- FOTO PROFIL -->
     <div class="text-center mb-4">
-        <img src="../../../public/uploads/profiles/<?= safe($m['foto'] ?: $user_id.'.jpg') ?>"
-             onerror="this.src='../../../public/assets/img/default-user.png';"
+        <img id="previewFoto"
+             src="/lab-ivss/public/uploads/profiles/<?= safe($m['foto'] ?: $nim.'.jpg') ?>"
+             onerror="this.src='/lab-ivss/public/assets/img/default-user.png';"
              class="rounded-circle border shadow-sm"
-             style="width:130px;height:130px;object-fit:cover;display:block;margin:auto;">
+             style="width:140px;height:140px;object-fit:cover;">
 
-        <!-- Upload foto langsung di bawah gambar -->
         <form method="POST" enctype="multipart/form-data" class="mt-3">
-            <input type="hidden" name="upload_foto">
-            <input type="file" name="foto" accept=".jpg,.jpeg,.png" class="form-control mb-2" required>
+            <input type="hidden" name="update_foto" value="1">
+
+            <label class="btn btn-sm btn-outline-primary">
+                Ganti Foto
+                <input type="file" name="foto" accept=".jpg,.jpeg,.png" hidden onchange="previewImg(this)">
+            </label>
+
             <button class="btn btn-sm btn-primary">
-                <i class="bi bi-upload"></i> Ganti Foto
+                <i class="bi bi-upload"></i> Upload
             </button>
         </form>
 
-        <!-- Nama -->
         <h5 class="fw-bold mt-3"><?= safe($m['nama']) ?></h5>
 
-        <!-- Pembimbing jika ada -->
+        <span class="badge bg-primary px-3 py-2">
+            Mahasiswa <?= safe(ucfirst($m['kategori'])) ?>
+        </span>
+
         <?php if($pembimbing): ?>
-            <div class="small text-muted">
+            <div class="small text-muted mt-1">
                 <i class="bi bi-person-check"></i> Pembimbing: <?= safe($pembimbing['nama']) ?>
             </div>
         <?php endif; ?>
@@ -143,47 +175,92 @@ ob_start();
 
     <hr>
 
-    <!-- DATA MAHASISWA FULL -->
+    <!-- DATA PROFIL -->
     <h6 class="fw-semibold text-primary mb-3">
         <i class="bi bi-card-list"></i> Data Mahasiswa
     </h6>
 
+    <form method="POST">
+    <input type="hidden" name="update_profile" value="1">
+
     <table class="table table-borderless">
-        <tr><th width="30%">NIM</th><td><?= safe($m['nim']) ?></td></tr>
-        <tr><th>Nama</th><td><?= safe($m['nama']) ?></td></tr>
-        <tr><th>Email</th><td><?= safe($m['email']) ?></td></tr>
-        <tr><th>Prodi</th><td><?= safe($m['prodi']) ?></td></tr>
-        <tr><th>Angkatan</th><td><?= safe($m['angkatan']) ?></td></tr>
-        <tr><th>Status</th><td><?= safe($m['status']) ?></td></tr>
-        <tr><th>Kategori</th><td><?= safe($m['kategori']) ?></td></tr>
-        <tr><th>Tanggal Join</th><td><?= safe($m['tanggal_join']) ?></td></tr>
+
+        <tr>
+            <th width="30%">NIM</th>
+            <td><strong><?= safe($m['nim']) ?></strong></td>
+        </tr>
+
+        <?php
+        $fields = [
+            "Nama"     => ["nama",     $m["nama"]],
+            "Email"    => ["email",    $m["email"]],
+            "Prodi"    => ["prodi",    $m["prodi"]],
+            "Angkatan" => ["angkatan", $m["angkatan"]],
+        ];
+
+        foreach ($fields as $label => $data):
+            [$field, $value] = $data;
+        ?>
+        <tr class="edit-row">
+            <th><?= $label ?></th>
+            <td>
+                <span class="text-value"><?= safe($value) ?></span>
+
+                <!-- editable -->
+                <input class="form-control edit-input" 
+                       style="display:none"
+                       name="<?= $field ?>" 
+                       value="<?= safe($value) ?>">
+
+                <i class="bi bi-pencil-square edit-icon"></i>
+
+                <button type="button" class="btn btn-sm btn-danger cancel-btn mt-2">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+
+        <tr>
+            <th>Tanggal Join</th>
+            <td><?= safe($m['tanggal_join']) ?></td>
+        </tr>
+
     </table>
 
-    <hr>
+    <button class="btn btn-primary mt-3">
+        <i class="bi bi-save"></i> Simpan Perubahan
+    </button>
 
-    <!-- EDIT NAMA + EMAIL -->
-    <h6 class="fw-semibold text-primary mb-3">
-        <i class="bi bi-pencil-square"></i> Edit Data Diri
-    </h6>
-
-    <form method="POST" class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label small">Nama</label>
-            <input name="nama" class="form-control" value="<?= safe($m['nama']) ?>">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label small">Email</label>
-            <input name="email" class="form-control" value="<?= safe($m['email']) ?>">
-        </div>
-
-        <div class="col-12">
-            <button class="btn btn-primary" name="update_profile">
-                <i class="bi bi-save"></i> Simpan Perubahan
-            </button>
-        </div>
     </form>
 
 </div>
+
+<script>
+// PREVIEW FOTO
+function previewImg(input){
+    if(input.files && input.files[0]){
+        const reader = new FileReader();
+        reader.onload = e => document.getElementById('previewFoto').src = e.target.result;
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// TOGGLE EDIT
+document.querySelectorAll(".edit-icon").forEach(icon => {
+    icon.addEventListener("click", () => {
+        const row = icon.closest(".edit-row");
+        row.classList.add("editing");
+    });
+});
+
+document.querySelectorAll(".cancel-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const row = btn.closest(".edit-row");
+        row.classList.remove("editing");
+    });
+});
+</script>
 
 <?php
 $content = ob_get_clean();

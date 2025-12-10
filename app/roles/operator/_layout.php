@@ -1,10 +1,12 @@
 <?php
-// app/roles/operator/_layout.php
-// Session, auth, dan $conn sudah di-handle di file halaman (dashboard.php, berita.php, dst)
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-$username = isset($_SESSION['user']['username']) ? $_SESSION['user']['username'] : 'Operator';
-$active   = isset($active) ? $active : '';
-$title    = isset($title)  ? $title  : 'Operator Panel';
+require_once __DIR__ . "/../../core/auth.php";
+requireRole("operator");
+
+$username = $_SESSION['user']['username'] ?? "Operator";
+$active   = $active ?? "";
+$title    = $title  ?? "Operator Panel";
 ?>
 
 <!DOCTYPE html>
@@ -15,85 +17,112 @@ $title    = isset($title)  ? $title  : 'Operator Panel';
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap Icons -->
+    <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <style>
-        :root {
-            --blue: #004aad;
-            --yellow: #ffde59;
-        }
+<style>
+/* ================= GLOBAL FIX ================= */
+html, body {
+    height: 100%;
+    overflow: hidden; /* Sidebar dan content scroll sendiri */
+}
 
-        body {
-            background-color: #f5f8ff;
-        }
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f8ff;
+}
 
-        /* TOPBAR */
-        .topbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e6e6e6;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+:root {
+    --blue: #004aad;
+    --yellow: #ffde59;
+}
 
-        .topbar-title {
-            font-size: 21px;
-            font-weight: 700;
-            color: var(--blue);
-        }
+/* ================= TOPBAR ================= */
+.topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #e6e6e6;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 240px;
-            min-height: 100vh;
-            background: var(--blue);
-            padding: 25px 15px;
-            color: #fff;
-        }
+.topbar-title {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--blue);
+}
 
-        .sidebar h5 {
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
+/* ================= LAYOUT WRAPPER ================= */
+.layout-wrapper {
+    height: calc(100vh - 63px);
+    display: flex;
+    overflow: hidden;
+}
 
-        .sidebar a {
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-weight: 500;
-            transition: .2s;
-        }
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 240px;
+    background: var(--blue);
+    padding: 25px 15px;
+    color: #fff;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
+}
 
-        .sidebar a:hover {
-            background: var(--yellow);
-            color: #000;
-            transform: translateX(5px);
-        }
+.sidebar a {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    transition: .2s;
+}
 
-        .sidebar a.active {
-            background: #ffde59;
-            color: #000;
-        }
+.sidebar a:hover {
+    background: var(--yellow);
+    color: black;
+    transform: translateX(5px);
+}
 
-        .logout-btn {
-            background: var(--blue);
-            color: #fff;
-            border: none;
-        }
+.sidebar .active {
+    background: var(--yellow);
+    color: black !important;
+    font-weight: 700;
+}
 
-        .logout-btn:hover {
-            background: #00378a;
-            color: #fff;
-        }
-    </style>
+/* ================= MAIN CONTENT ================= */
+main {
+    flex-grow: 1;
+    overflow-y: auto; /* hanya content yg scroll */
+    padding: 25px;
+    scrollbar-width: thin;
+}
+
+main::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+main::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+}
+
+main::-webkit-scrollbar-thumb:hover,
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.35);
+}
+</style>
 </head>
 
 <body>
@@ -108,18 +137,15 @@ $title    = isset($title)  ? $title  : 'Operator Panel';
             <span class="text-secondary">
                 <i class="bi bi-person-circle"></i> <?= htmlspecialchars($username) ?>
             </span>
-
-            <a href="../../../logout.php" class="btn logout-btn btn-sm px-3">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 
-    <div class="d-flex">
+    <!-- CONTENT WRAPPER -->
+    <div class="layout-wrapper">
 
         <!-- SIDEBAR -->
         <div class="sidebar">
-            <h5>Menu Operator</h5>
+            <h5 class="mb-3">Menu Operator</h5>
 
             <a href="dashboard.php" class="<?= $active === 'dashboard' ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i> Dashboard
@@ -141,10 +167,6 @@ $title    = isset($title)  ? $title  : 'Operator Panel';
                 <i class="bi bi-camera-reels"></i> Dokumentasi
             </a>
 
-            <a href="profile.php" class="<?= $active === 'profile' ? 'active' : '' ?>">
-                <i class="bi bi-gear"></i> Profil Saya
-            </a>
-
             <hr style="border-color: rgba(255,255,255,0.3)">
 
             <a href="../../../select_role.php">
@@ -157,12 +179,16 @@ $title    = isset($title)  ? $title  : 'Operator Panel';
         </div>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-grow-1 p-4">
-        <?= !empty($content) ? $content : "" ?>
+        <main>
+            <?php 
+            require_once __DIR__ . "/../../core/notification.php";
+            echo showReminder();
+            ?>
+
+            <?= $content ?? "" ?>
         </main>
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

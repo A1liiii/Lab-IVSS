@@ -412,8 +412,6 @@ ob_start();
             <div class="col-lg-5">
                 <h5 id="previewNama" class="fw-bold mb-1">-</h5>
                 <span class="badge bg-warning text-dark mb-2" id="previewKategori">-</span>
-                <div class="small text-muted mb-3" id="previewIdText"></div>
-
                 <h6 class="fw-semibold">Deskripsi</h6>
                 <p id="previewDeskripsi" class="small" style="white-space:pre-wrap;"></p>
             </div>
@@ -550,7 +548,6 @@ function openFasilitasPreview(card){
     document.getElementById('previewNama').innerHTML = nama;
     document.getElementById('previewKategori').innerHTML = kategori ? kategori.toUpperCase() : '-';
     document.getElementById('previewDeskripsi').innerHTML = deskripsi !== '' ? deskripsi : '-';
-    document.getElementById('previewIdText').innerHTML = "ID: " + id;
 
     // set data untuk tombol edit
     var btnEdit = document.getElementById('btnPreviewEdit');

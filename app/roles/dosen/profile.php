@@ -142,7 +142,6 @@ ob_start();
         <p><strong>NIDN:</strong> <?= safe($dosen['nidn']) ?></p>
         <p><strong>Email:</strong> <?= safe($dosen['email']) ?></p>
         <p><strong>Jabatan:</strong> <?= safe($dosen['jabatan']) ?></p>
-        <p><strong>Pendidikan Terakhir:</strong> <?= safe($dosen['pendidikan']) ?></p>
     </div>
 
     <form method="POST" id="dosenEdit" style="display:none;" class="mt-3">
@@ -165,10 +164,6 @@ ob_start();
             <div class="col-md-6">
                 <label class="form-label small">Jabatan</label>
                 <input name="jabatan" class="form-control" value="<?= safe($dosen['jabatan']) ?>">
-            </div>
-            <div class="col-md-12">
-                <label class="form-label small">Pendidikan Terakhir</label>
-                <input name="pendidikan" class="form-control" value="<?= safe($dosen['pendidikan']) ?>">
             </div>
         </div>
 
@@ -199,8 +194,7 @@ ob_start();
                 <input name="username" class="form-control" value="<?= safe($user['username']) ?>">
             </div>
             <div class="col-md-6">
-                <label class="form-label small">Password Baru (opsional)</label>
-                <input name="password" type="password" class="form-control" placeholder="Kosongkan jika tidak diganti">
+                <label class="form-label small">Silahkan request kepada admin untuk password baru</label>
             </div>
         </div>
 

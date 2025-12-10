@@ -451,7 +451,6 @@ ob_start();
                      class="preview-dok-img">
             </div>
             <div class="col-lg-5">
-                <div class="mb-1 small text-muted" id="dokPreviewIdText"></div>
                 <span class="badge bg-primary mb-2" id="dokPreviewTanggalBadge">-</span>
                 <span class="badge bg-warning text-dark mb-2" id="dokPreviewJenisBadge">-</span>
 
@@ -596,7 +595,6 @@ function openDokPreview(card){
     document.getElementById('dokPreviewCaption').innerHTML = caption !== '' ? caption : '-';
     document.getElementById('dokPreviewJenisBadge').innerHTML = jenis ? jenis.toUpperCase() : '-';
     document.getElementById('dokPreviewTanggalBadge').innerHTML = tanggal || '-';
-    document.getElementById('dokPreviewIdText').innerHTML = "ID: " + id;
 
     var btnEdit = document.getElementById('btnDokPreviewEdit');
     btnEdit.setAttribute('data-id', id);
