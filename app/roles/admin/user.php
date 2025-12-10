@@ -8,7 +8,7 @@ $conn = Database::connect();
 /* ===============================
    SEARCH + PAGINATION SETTINGS
 ================================ */
-$search = $_GET['q'] ?? "";
+$search = isset($_GET['q']) ? trim($_GET['q']) : "";
 $perPage = 8;
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $offset = ($page - 1) * $perPage;

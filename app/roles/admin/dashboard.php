@@ -5,10 +5,17 @@ $title = "Dashboard Admin";
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
 
-$totalUsers = $conn->query("SELECT COUNT(*) as total FROM users")->fetch()['total'] ?? 0;
-$totalLogs = $conn->query("SELECT COUNT(*) as total FROM log_activity")->fetch()['total'] ?? 0;
-$totalApprovals = $conn->query("SELECT COUNT(*) as total FROM registrations WHERE status='pending'")->fetch()['total'] ?? 0;
-$totalRoles = $conn->query("SELECT COUNT(*) as total FROM roles")->fetch()['total'] ?? 0;
+$result = $conn->query("SELECT COUNT(*) as total FROM users")->fetch();
+$totalUsers = isset($result['total']) ? $result['total'] : 0;
+
+$result = $conn->query("SELECT COUNT(*) as total FROM log_activity")->fetch();
+$totalLogs = isset($result['total']) ? $result['total'] : 0;
+
+$result = $conn->query("SELECT COUNT(*) as total FROM registrations WHERE status='pending'")->fetch();
+$totalApprovals = isset($result['total']) ? $result['total'] : 0;
+
+$result = $conn->query("SELECT COUNT(*) as total FROM roles")->fetch();
+$totalRoles = isset($result['total']) ? $result['total'] : 0;
 
 $stmtYear = $conn->query("
     SELECT DISTINCT EXTRACT(YEAR FROM waktu) AS tahun

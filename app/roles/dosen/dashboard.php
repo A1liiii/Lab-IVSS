@@ -11,12 +11,14 @@ $active = "dashboard";
 $title  = "Dashboard Dosen";
 
 // Ambil user_id & nip dosen
-$user_id = $_SESSION['user']['user_id'] ?? null;
+$user_id = (isset($_SESSION['user']) && isset($_SESSION['user']['user_id']))
+    ? $_SESSION['user']['user_id']
+    : null;
 
 $stmt = $conn->prepare("SELECT nip FROM users WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-$nip = $row['nip'] ?? null;
+$nip = (isset($row) && isset($row['nip'])) ? $row['nip'] : null;
 
 // Default nilai
 $totalMK = 0;

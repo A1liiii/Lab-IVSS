@@ -132,7 +132,7 @@ $conn = Database::connect();
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <?= $content ?? "" ?>
+        <?= !empty($content) ? $content : "" ?>
         </main>
 
     </div>

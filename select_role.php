@@ -9,7 +9,7 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['roles'])) {
 
 // POST handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $selected = $_POST['role'] ?? '';
+    $selected = isset($_POST['role']) ? trim($_POST['role']) : '';
     if (in_array($selected, $_SESSION['roles'])) {
         $_SESSION['active_role'] = $selected;
         redirectByRole($selected);
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="role-card shadow-lg">
         <h2 class="mb-2">
             <i class="bi bi-people-fill"></i>
-            Halo, <?= htmlentities($_SESSION['user']['username'] ?? 'User') ?>
+            Halo, <?= htmlentities(isset($_SESSION['user']) && isset($_SESSION['user']['username']) ? $_SESSION['user']['username'] : 'User') ?>
         </h2>
 
         <p class="text-secondary">Pilih mode akses yang ingin Anda gunakan:</p>
