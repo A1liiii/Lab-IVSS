@@ -21,12 +21,14 @@ $conn = Database::connect();
 
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
    <style>
         /* GLOBAL LAYOUT FIX */
         html, body {
             height: 100%;
-            overflow: hidden; /* agar sidebar tidak nge-scroll body */
+            /* overflow: hidden; agar sidebar tidak nge-scroll body */
         }
 
         body {
@@ -142,10 +144,6 @@ $conn = Database::connect();
             <span class="text-secondary">
                 <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
             </span>
-
-            <a href="../../../logout.php" class="btn logout-btn btn-sm px-3">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 
@@ -165,6 +163,10 @@ $conn = Database::connect();
 
             <a href="publikasi.php">
                 <i class="bi bi-journal-text"></i> Publikasi Saya
+            </a>
+
+            <a href="mata_kuliah.php">
+                <i class="bi bi-journal-text"></i> Mata Kuliah
             </a>
 
             <a href="logs.php">
@@ -187,7 +189,7 @@ $conn = Database::connect();
         </div>
 
         <!-- MAIN CONTENT -->
-                <main>
+                  <main class="flex-grow-1 p-4">
                     <?= $content ?? "" ?>
                 </main>
             </div>

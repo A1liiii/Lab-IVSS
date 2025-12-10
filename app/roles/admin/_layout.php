@@ -140,9 +140,6 @@ requireRole("admin");
                 <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
             </span>
 
-            <a href="../../../logout.php" class="btn btn-danger btn-sm px-3">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 

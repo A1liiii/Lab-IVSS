@@ -50,6 +50,7 @@ body {
   color: var(--default-color);
   background-color: var(--background-color);
   font-family: var(--default-font);
+  padding-top: 90px !important;
 }
 
 a {
@@ -130,9 +131,11 @@ h6 {
 --------------------------------------------------------------*/
 .header {
   color: var(--default-color);
-  background-color: var(--background-color);
-  padding: 20px 0;
+  background: rgba(255, 255, 255, 1);
+  transition: all 0.3s ease;
+  padding: 25px 0;
   z-index: 997;
+  height: 100px;
 }
 
 .header .logo {
@@ -140,15 +143,18 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 95px;
-  margin-right: 8px;
+  height: 78px !important;
+  width: auto;
 }
 
 .header .logo h1 {
-  font-size: 30px;
-  margin: 0;
-  font-weight: 700;
-  color: var(--heading-color);
+  font-size: 18px;
+  margin: 0 0 0 12px;
+  line-height: 1.2;
+  max-width: 180px;
+  white-space: normal;
+  word-break: break-word;
+  font-weight: 600; /* biar keliatan tegas tapi rapi */
 }
 
 .header .btn-getstarted,
@@ -186,7 +192,11 @@ h6 {
 }
 
 .scrolled .header {
-  box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 /* Index Page Header
@@ -827,17 +837,22 @@ section,
 }
 
 .hero h1 {
-  margin: 0;
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 56px;
+  max-width: 450px;    /* batas lebar teks */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 40px;
+  line-height: 48px;
+  font-family: var(--heading-font);
 }
 
 .hero p {
   color: color-mix(in srgb, var(--default-color), transparent 30%);
-  margin: 5px 0 30px 0;
-  font-size: 20px;
-  font-weight: 400;
+  max-width: 550px;    /* batas lebar teks */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 18px;
+  line-height: 26px;
+  font-family: var(--default-font);
 }
 
 .hero .btn-get-started {
@@ -1109,15 +1124,21 @@ section,
   border-radius: 5px;
 }
 
-.services .service-item .icon {
-  font-size: 36px;
-  padding: 20px 20px;
-  border-radius: 4px;
-  position: relative;
-  margin-bottom: 25px;
-  display: inline-block;
-  line-height: 0;
+.services .service-item .icon { 
+  width: 70px;             /* fix lebar  */
+  height: 70px;            /* fix tinggi */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;     /* warna kotak (opsional) */
+  border-radius: 6px;
+  margin: 0 auto 20px auto;
   transition: 0.3s;
+  font-size: 36px;         /* icon lebih besar */
+}
+
+.services .service-item .icon i {
+  font-size: 42px !important;  /* ukuran icon yang pas */
 }
 
 .services .service-item h3 {
@@ -1861,6 +1882,7 @@ section,
   font-size: 20px;
   font-weight: 700;
   margin: 20px 0 10px 0;
+  margin-bottom: 10px; 
 }
 
 .contact .info-item p {
@@ -1872,8 +1894,9 @@ section,
 
 .contact .php-email-form {
   background: color-mix(in srgb, var(--default-color), transparent 96%);
-  padding: 30px;
+  padding: 3px;
   height: 100%;
+  width: 100%;
 }
 
 .contact .php-email-form input[type=text],

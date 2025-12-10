@@ -149,8 +149,8 @@ ob_start();
 
             <!-- FOTO -->
             <div class="user-avatar-wrapper">
-                <img src="/public/uploads/profiles/<?=$u['user_id']?>.jpg"
-                     onerror="this.src='/public/assets/img/default-user.png';"
+                <img src="../../../public/uploads/profiles/<?=$u['user_id']?>.jpg"
+                     onerror="this.src='../../../public/assets/img/default-user.png';"
                      class="user-avatar">
             </div>
 
