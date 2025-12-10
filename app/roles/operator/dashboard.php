@@ -42,45 +42,49 @@ ob_start();
 <div class="row g-4 mb-4">
     <!-- Total Berita -->
     <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm border-0 p-3 stat-card" style="border-left: 6px solid #004aad;">
-            <div>
+        <div class="card shadow-sm border-0 p-3 stat-card d-flex align-items-center justify-content-between"
+            style="border-left: 6px solid #004aad;">
+            <div class="text-center w-100">
                 <h6 class="text-muted mb-1">Total Berita</h6>
                 <h3 class="fw-bold text-primary mb-0"><?= $totalBerita ?></h3>
             </div>
-            <i class="bi bi-newspaper fs-3 text-primary"></i>
+            <i class="bi bi-newspaper fs-3 text-primary ms-3"></i>
         </div>
     </div>
 
     <!-- Total Proyek -->
     <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm border-0 p-3 stat-card" style="border-left: 6px solid #ffb100;">
-            <div>
+        <div class="card shadow-sm border-0 p-3 stat-card d-flex align-items-center justify-content-between"
+            style="border-left: 6px solid #004aad;">
+            <div class="text-center w-100">
                 <h6 class="text-muted mb-1">Total Proyek</h6>
                 <h3 class="fw-bold text-warning mb-0"><?= $totalProyek ?></h3>
             </div>
-            <i class="bi bi-kanban fs-3 text-warning"></i>
+            <i class="bi bi-kanban fs-3 text-warning ms-3"></i>
         </div>
     </div>
 
     <!-- Total Fasilitas -->
     <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm border-0 p-3 stat-card" style="border-left: 6px solid #4caf50;">
-            <div>
+        <div class="card shadow-sm border-0 p-3 stat-card d-flex align-items-center justify-content-between"
+            style="border-left: 6px solid #004aad;">
+            <div class="text-center w-100">
                 <h6 class="text-muted mb-1">Total Fasilitas</h6>
                 <h3 class="fw-bold text-success mb-0"><?= $totalFasilitas ?></h3>
             </div>
-            <i class="bi bi-building fs-3 text-success"></i>
+            <i class="bi bi-building fs-3 text-success ms-3"></i>
         </div>
     </div>
 
     <!-- Total Dokumentasi -->
     <div class="col-lg-3 col-md-6">
-        <div class="card shadow-sm border-0 p-3 stat-card" style="border-left: 6px solid #ff4d4d;">
-            <div>
+        <div class="card shadow-sm border-0 p-3 stat-card d-flex align-items-center justify-content-between"
+            style="border-left: 6px solid #004aad;">
+            <div class="text-center w-100">
                 <h6 class="text-muted mb-1">Total Dokumentasi</h6>
                 <h3 class="fw-bold text-danger mb-0"><?= $totalDokumentasi ?></h3>
             </div>
-            <i class="bi bi-image-fill fs-3 text-danger"></i>
+            <i class="bi bi-image-fill fs-3 text-danger ms-3"></i>
         </div>
     </div>
 </div>

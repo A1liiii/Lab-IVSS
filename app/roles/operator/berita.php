@@ -12,26 +12,34 @@ $active = "berita";
 $title  = "Manajemen Berita";
 
 function safe($v){
-    return htmlspecialchars((string)($v ?? ""), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)(isset($v) ? $v : ""), ENT_QUOTES, 'UTF-8');
 }
 function excerpt($text, $len = 120){
-    $text = trim(strip_tags($text ?? ""));
+    $text = trim(strip_tags(isset($text) ? $text : ""));
     if (mb_strlen($text) <= $len) return $text;
     return mb_substr($text, 0, $len) . "...";
 }
+function text_length($s){
+    $s = isset($s) ? (string)$s : '';
+    if (function_exists('mb_strlen')) {
+        return mb_strlen($s, 'UTF-8');
+    }
+    return strlen($s);
+}
 
-$currentUserId = $_SESSION['user_id'] ?? null;
+
+$currentUserId = (isset($_SESSION['user_id'])) ? $_SESSION['user_id'] : null;
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
+    $action    = isset($_POST['action']) ? $_POST['action'] : '';
 
     // ---------- TAMBAH BERITA ----------
     if ($action === 'add') {
-        $judul    = trim($_POST['judul'] ?? '');
-        $kategori = trim($_POST['kategori'] ?? '');
-        $tgl_post = trim($_POST['tgl_post'] ?? '');
-        $deskripsi = trim($_POST['deskripsi'] ?? '');
+        $judul     = isset($_POST['judul']) ? trim($_POST['judul']) : '';
+        $kategori  = isset($_POST['kategori']) ? trim($_POST['kategori']) : '';
+        $tgl_post  = isset($_POST['tgl_post']) ? trim($_POST['tgl_post']) : '';
+        $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
 
         if ($judul === '' || $kategori === '') {
             $_SESSION['flash_error'] = "Judul dan kategori wajib diisi.";
@@ -84,11 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ---------- UPDATE BERITA ----------
     if ($action === 'update') {
-        $id       = $_POST['berita_id'] ?? null;
-        $judul    = trim($_POST['judul'] ?? '');
-        $kategori = trim($_POST['kategori'] ?? '');
-        $tgl_post = trim($_POST['tgl_post'] ?? '');
-        $deskripsi = trim($_POST['deskripsi'] ?? '');
+
+        $id        = isset($_POST['berita_id']) ? $_POST['berita_id'] : null;
+        $judul     = isset($_POST['judul']) ? trim($_POST['judul']) : '';
+        $kategori  = isset($_POST['kategori']) ? trim($_POST['kategori']) : '';
+        $tgl_post  = isset($_POST['tgl_post']) ? trim($_POST['tgl_post']) : '';
+        $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
 
         if (!$id) {
             $_SESSION['flash_error'] = "ID berita tidak ditemukan.";
@@ -106,22 +115,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tgl_post = date("Y-m-d");
         }
 
-        // (opsional) kalau nanti mau ganti foto dari modal, di sini logic-nya
-        $stmt = $conn->prepare("
-            UPDATE berita
-            SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?
-            WHERE berita_id = ?
-        ");
-        $stmt->execute([$judul, $kategori, $tgl_post, $deskripsi, $id]);
+        // ===================== CEK FOTO BARU ======================
+        $fotoName = null;
+
+        if (!empty($_FILES['foto_baru']) && $_FILES['foto_baru']['error'] === UPLOAD_ERR_OK) {
+
+            $foto = $_FILES['foto_baru'];
+            $allowed = ['image/jpeg','image/png','image/webp'];
+
+            if (in_array($foto['type'], $allowed)) {
+                $ext = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
+
+                if (in_array($ext, ['jpg','jpeg','png','webp'])) {
+
+                    $newName = 'berita_' . time() . '_' . rand(100,999) . '.' . $ext;
+                    $uploadPath = __DIR__ . "/../../../public/uploads/berita/" . $newName;
+
+                    move_uploaded_file($foto['tmp_name'], $uploadPath);
+
+                    // ambil foto lama
+                    $stmtFoto = $conn->prepare("SELECT foto FROM berita WHERE berita_id = ?");
+                    $stmtFoto->execute([$id]);
+                    $old = $stmtFoto->fetchColumn();
+
+                    if ($old && is_file(__DIR__ . "/../../../public/uploads/berita/" . $old)) {
+                        unlink(__DIR__ . "/../../../public/uploads/berita/" . $old);
+                    }
+
+                    $fotoName = $newName;
+                }
+            }
+        }
+
+        // ===================== UPDATE BERITA ======================
+        if ($fotoName) {
+            $stmt = $conn->prepare("
+                UPDATE berita
+                SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?, foto = ?
+                WHERE berita_id = ?
+            ");
+            $stmt->execute([$judul, $kategori, $tgl_post, $deskripsi, $fotoName, $id]);
+        } else {
+            $stmt = $conn->prepare("
+                UPDATE berita
+                SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?
+                WHERE berita_id = ?
+            ");
+            $stmt->execute([$judul, $kategori, $tgl_post, $deskripsi, $id]);
+        }
 
         $_SESSION['flash_success'] = "Berita berhasil diperbarui.";
         header("Location: berita.php");
         exit;
     }
 
+
     // ---------- HAPUS BERITA ----------
     if ($action === 'delete') {
-        $id = $_POST['berita_id'] ?? null;
+        $id = isset($_POST['berita_id']) ? $_POST['berita_id'] : null;
         if ($id) {
             // ambil nama file dulu agar bisa dihapus
             $stmt = $conn->prepare("SELECT foto FROM berita WHERE berita_id = ?");
@@ -148,11 +199,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // ====================== LIST + SEARCH + PAGINATION ======================
-$page   = max(1, (int)($_GET['page'] ?? 1));
+$page = max(1, isset($_GET['page']) ? (int)$_GET['page'] : 1);
 $perPage = 6; // 3 kolom x 2 baris
 $offset = ($page - 1) * $perPage;
 
-$search = trim($_GET['q'] ?? "");
+$search = isset($_GET['q']) ? trim($_GET['q']) : "";
 $where  = "WHERE 1=1";
 $params = [];
 
@@ -189,8 +240,8 @@ $stmt->execute();
 $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // flash messages
-$flash_success = $_SESSION['flash_success'] ?? null;
-$flash_error   = $_SESSION['flash_error'] ?? null;
+$flash_success = isset($_SESSION['flash_success']) ? $_SESSION['flash_success'] : null;
+$flash_error   = isset($_SESSION['flash_error']) ? $_SESSION['flash_error'] : null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 ob_start();
@@ -295,9 +346,8 @@ ob_start();
                      data-fileurl="<?= safe($b['file_url']) ?>">
                     
                     <img src="<?= $imgSrc ?>" class="card-img-top"
-                         style="height:160px;object-fit:cover;"
-                         onerror="this.src='../../../public/assets/img/blog/blog-1.jpg';">
-
+                        style="height:160px;object-fit:cover;"
+                        onerror="this.onerror=null;this.src='../../../public/assets/img/blog/blog-1.jpg';">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="badge bg-primary text-uppercase small">
@@ -309,10 +359,19 @@ ob_start();
                         </div>
 
                         <h6 class="fw-bold mb-2"><?= safe($b['judul']) ?></h6>
+                        <?php
+                            $fullTextRaw  = isset($b['deskripsi']) ? $b['deskripsi'] : "";
+                            $fullText     = trim(strip_tags($fullTextRaw));
+                            $shortText    = excerpt($fullText, 150);
+                            $hasMore      = (text_length($fullText) > text_length($shortText));
+                        ?>
                         <p class="small text-muted mb-3 flex-grow-1">
-                            <?= safe(excerpt($b['deskripsi'])) ?>
+                            <span class="berita-short"><?= safe($shortText) ?></span>
+                            <?php if ($hasMore): ?>
+                                <span class="berita-full d-none"><?= safe($fullText) ?></span>
+                                <span class="toggle-view text-primary" style="cursor:pointer;">View more</span>
+                            <?php endif; ?>
                         </p>
-
                         <div class="d-flex gap-2">
                             <button type="button"
                                     class="btn btn-outline-primary btn-sm w-100"
@@ -375,7 +434,7 @@ ob_start();
 <div class="modal fade" id="beritaDetailModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
-      <form method="POST" id="beritaDetailForm">
+    <form method="POST" enctype="multipart/form-data" id="beritaDetailForm">
         <input type="hidden" name="action" value="update">
         <input type="hidden" name="berita_id" id="berita_id_field">
 
@@ -390,14 +449,24 @@ ob_start();
         <div class="modal-body">
             <div class="row g-3">
                 <div class="col-md-4 text-center">
-                    <img id="beritaPhoto"
-                         src="../../../public/assets/img/blog/blog-1.jpg"
-                         style="width:100%;max-width:220px;height:150px;object-fit:cover;border-radius:8px;">
-                    <div class="small text-muted mt-2">
-                        *Ganti foto bisa ditangani di fitur lanjutan kalau diperlukan.
+                <img id="beritaPhoto"
+                    src="../../../public/assets/img/blog/blog-1.jpg"
+                    style="width:100%;max-width:220px;height:150px;object-fit:cover;border-radius:8px;">
+
+                    <label class="mt-3 w-100 btn btn-outline-primary btn-sm">
+                        <input type="file"
+                            id="foto_input"
+                            name="foto_baru"
+                            accept=".jpg,.jpeg,.png,.webp"
+                            class="d-none"
+                            onchange="previewFotoBerita(event)">
+                        <i class="bi bi-image"></i> Pilih Foto Baru
+                    </label>
+
+                    <div class="small text-muted">
+                        Format: JPG/PNG/WebP — maks 2MB
                     </div>
                 </div>
-
                 <div class="col-md-8">
                     <div class="mb-2">
                         <label class="form-label small">Judul</label>
@@ -491,6 +560,56 @@ function openBeritaDetail(btn){
     const modal = new bootstrap.Modal(document.getElementById('beritaDetailModal'));
     modal.show();
 }
+
+function previewFotoBerita(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowed = ['image/jpeg','image/png','image/webp'];
+    if (!allowed.includes(file.type)) {
+        alert("Format file harus JPG/PNG/WebP");
+        e.target.value = "";
+        return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB
+        alert("Ukuran foto maksimal 2 MB");
+        e.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('beritaPhoto').src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var toggles = document.querySelectorAll('.toggle-view');
+    for (var i = 0; i < toggles.length; i++) {
+        toggles[i].addEventListener('click', function () {
+            var btn = this;
+            var p   = btn.parentNode;
+            var shortEl = p.querySelector('.berita-short');
+            var fullEl  = p.querySelector('.berita-full');
+
+            if (!shortEl || !fullEl) return;
+
+            if (fullEl.classList.contains('d-none')) {
+                fullEl.classList.remove('d-none');
+                shortEl.classList.add('d-none');
+                btn.innerHTML = 'View less';
+            } else {
+                fullEl.classList.add('d-none');
+                shortEl.classList.remove('d-none');
+                btn.innerHTML = 'View more';
+            }
+        });
+    }
+});
+
+
 </script>
 
 <style>
