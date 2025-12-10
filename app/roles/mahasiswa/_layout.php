@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . "/../../core/auth.php";
 requireRole("mahasiswa");
 
@@ -20,13 +22,21 @@ $conn = Database::connect();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        :root {
-            --blue: #004aad;
-            --yellow: #ffde59;
+        /* GLOBAL LAYOUT FIX */
+        html, body {
+            height: 100%;
         }
 
         body {
+            display: flex;
+            flex-direction: column;
             background-color: #f5f8ff;
+        }
+
+        /* ROOT COLORS */
+        :root {
+            --blue: #004aad;
+            --yellow: #ffde59;
         }
 
         /* TOPBAR */
@@ -45,18 +55,25 @@ $conn = Database::connect();
             color: var(--blue);
         }
 
+        /* LAYOUT WRAPPER / CONTENT BODY */
+        .layout-wrapper {
+            height: calc(100vh - 63px); /* full layout minus topbar */
+            display: flex;
+            overflow: hidden;
+        }
+
         /* SIDEBAR */
         .sidebar {
+            flex-shrink: 0;
             width: 240px;
-            min-height: 100vh;
             background: var(--blue);
             padding: 25px 15px;
             color: #fff;
-        }
-
-        .sidebar h5 {
-            font-weight: 600;
-            margin-bottom: 15px;
+            height: 100%;
+            overflow-y: auto;           /* kalau menu panjang, sidebar bisa scroll */
+            scrollbar-width: thin;
+            min-height: calc(100vh - 63px);
+            box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
         }
 
         .sidebar a {
@@ -78,16 +95,36 @@ $conn = Database::connect();
             transform: translateX(5px);
         }
 
-        .logout-btn {
-            background: var(--blue);
-            color: #fff;
-            border: none;
+        .sidebar .active {
+            background: var(--yellow);
+            color: #000 !important;
+            font-weight: 700;
         }
 
-        .logout-btn:hover {
-            background: #00378a;
-            color: #fff;
+        /* MAIN CONTENT */
+        main {
+            flex-grow: 1;
+            padding-bottom: 0 !important;
+            overflow-y: auto;            /* scroll hanya area konten */
+            scrollbar-width: thin;
         }
+
+        main::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        main::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+        }
+
+        main::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
     </style>
 </head>
 
@@ -104,9 +141,6 @@ $conn = Database::connect();
                 <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
             </span>
 
-            <a href="../../../logout.php" class="btn logout-btn btn-sm px-3">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 
@@ -141,10 +175,7 @@ $conn = Database::connect();
 
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1 p-4">
-            <div class="text-center text-secondary mt-5">
-                <h3><i class="bi bi-mortarboard"></i> Selamat Datang, Mahasiswa</h3>
-                <p>Gunakan menu di sisi kiri untuk mengelola profil dan aktivitas Anda.</p>
-            </div>
+            <?= $content ?? "" ?>
         </main>
 
     </div>

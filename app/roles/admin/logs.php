@@ -152,8 +152,8 @@ ob_start();
     <?php foreach($logs as $log): ?>
         <div class="log-card shadow-sm">
 
-            <img src="/public/uploads/profiles/<?=safe($log['user_id'])?>.jpg"
-                onerror="this.src='/public/assets/img/default-user.png';"
+            <img src="../../../public/uploads/profiles/<?=safe($log['user_id'])?>.jpg"
+                onerror="this.src='../../../public/assets/img/default-user.png';"
                 class="log-avatar">
 
             <div>
