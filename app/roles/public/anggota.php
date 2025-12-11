@@ -22,7 +22,8 @@ $conn = Database::connect();
      'mahasiswa'  -> urutan 3
 
    Sekaligus ambil:
-   - a.kategori   -> dari mahasiswa.kategori (riset / alumni), NULL untuk dosen
+   - kategori   -> dari mahasiswa.kategori (riset / alumni), NULL untuk dosen
+   - status_mhs -> dari mahasiswa.status (aktif / lulus / dll), NULL untuk dosen
 */
 
 $sql = "
@@ -33,6 +34,7 @@ $sql = "
         a.foto,
         a.jabatan,
         a.kategori,
+        a.status_mhs,
         a.tipe,
         r.role_name
     FROM (
@@ -44,6 +46,7 @@ $sql = "
             d.foto,
             d.jabatan,
             NULL::varchar AS kategori,
+            NULL::varchar AS status_mhs,
             'dosen'::varchar AS tipe
         FROM dosen d
 
@@ -57,6 +60,7 @@ $sql = "
             m.foto,
             'Mahasiswa'::varchar AS jabatan,
             m.kategori::varchar AS kategori,
+            m.status::varchar   AS status_mhs,
             'mahasiswa'::varchar AS tipe
         FROM mahasiswa m
     ) AS a
@@ -197,7 +201,7 @@ $anggota = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <!-- Section Title -->
   <div class="container section-title" data-aos="fade-up">
     <h2>Team</h2>
-    <p>ANGGOTA LAB</p>
+    <p>ANGGOTA TIM</p>
   </div>
   <!-- End Section Title -->
 
@@ -224,14 +228,19 @@ $anggota = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php foreach ($anggota as $row) : ?>
 
           <?php
-          // role & kategori lowercase
-          $roleNameLower  = strtolower($row['role_name'] ?? '');
-          $kategoriLower  = strtolower($row['kategori'] ?? '');
+          // lowercase helper
+          $roleNameLower = strtolower($row['role_name'] ?? '');
+          $kategoriLower = strtolower($row['kategori'] ?? '');
+          $statusLower   = strtolower($row['status_mhs'] ?? '');
 
-          // Tentukan jenis untuk filter: dosen / mahasiswa / alumni
+          // =========================
+          // TENTUKAN TYPE UNTUK FILTER
+          // =========================
           if ($roleNameLower === 'dosen' || $roleNameLower === 'ketua lab') {
               $filterType = 'dosen';
-          } elseif ($roleNameLower === 'mahasiswa' && $kategoriLower === 'alumni') {
+          } elseif ($roleNameLower === 'mahasiswa' &&
+                   ($kategoriLower === 'alumni' || $statusLower === 'lulus')) {
+              // mahasiswa kategori alumni ATAU status lulus => alumni
               $filterType = 'alumni';
           } elseif ($roleNameLower === 'mahasiswa') {
               $filterType = 'mahasiswa';
@@ -239,19 +248,21 @@ $anggota = $stmt->fetchAll(PDO::FETCH_ASSOC);
               $filterType = 'other';
           }
 
-          // Tentukan jabatan yang ditampilkan
+          // =========================
+          // TENTUKAN JABATAN TAMPILAN
+          // =========================
           $displayJabatan = $row['jabatan']; // default dari query
 
           if ($roleNameLower === 'dosen') {
               $displayJabatan = 'Dosen Peneliti';
           } elseif ($roleNameLower === 'mahasiswa') {
-              if ($kategoriLower === 'alumni') {
+              if ($kategoriLower === 'alumni' || $statusLower === 'lulus') {
                   $displayJabatan = 'Alumni';
               } else {
                   $displayJabatan = 'Mahasiswa Riset';
               }
           }
-          // Ketua lab tetap pakai jabatan asli (misal Kepala Lab)
+          // Ketua lab: tetap pakai jabatan asli dari tabel dosen
 
           // Link ke detail
           $link = "anggota_detail.php?tipe=" . urlencode($row['tipe']) .
@@ -303,15 +314,22 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', () => {
       const filter = btn.getAttribute('data-filter');
 
-      // active state
+      // aktifkan tombol
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // show/hide card
+      // show/hide card sesuai filter
       items.forEach(card => {
         const type = card.getAttribute('data-type'); // dosen / mahasiswa / alumni / other
 
-        if (filter === 'all' || filter === type) {
+        if (filter === 'all') {
+          // ALL: hanya dosen + mahasiswa aktif
+          if (type === 'alumni') {
+            card.classList.add('d-none');   // alumni (termasuk yg lulus) disembunyikan
+          } else {
+            card.classList.remove('d-none');
+          }
+        } else if (filter === type) {
           card.classList.remove('d-none');
         } else {
           card.classList.add('d-none');
