@@ -49,7 +49,7 @@ if (!$lab) {
       <a href="../Public/home.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <img src="../../../public/assets/img/logo_ivss2.png" alt="">
-        <h1 class="sitename">IVSS</h1>
+        <h1 class="sitename">Intelligence Vision and Smart System</h1>
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>
@@ -73,7 +73,7 @@ if (!$lab) {
               <li><a href="../public/publikasi.php">Publikasi</a></li>
             </ul>
           </li>
-          <li class="dropdown"><a href="#"><span>Fasilitas</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="../public/fasilitas.php"><span>Fasilitas</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="#">Ruangan</a></li>
               <li class="dropdown"><a href="#"><span>Peralatan</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
