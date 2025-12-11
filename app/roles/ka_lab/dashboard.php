@@ -21,7 +21,7 @@ ob_start();
 ?>
 
 <h2 class="fw-bold mb-4 text-primary">
-    <i class="bi bi-speedometer2"></i> Dashboard Kalab
+    <i class="bi bi-speedometer2"></i> Dashboard Ketua Lab
 </h2>
 
 <!-- STAT CARDS -->
