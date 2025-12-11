@@ -128,10 +128,6 @@ ob_start();
         <button class="btn btn-outline-primary">
             <i class="bi bi-search"></i>
         </button>
-        <a href="user.php" class="btn btn-outline-secondary d-flex align-items-center gap-1">
-            <i class="bi bi-arrow-left"></i>
-            <span>batal</span>
-        </a>
     </form>
     <!-- ADD BUTTON -->
     <a href="add_dosen_step1.php" class="btn btn-primary">

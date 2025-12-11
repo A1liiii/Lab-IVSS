@@ -58,8 +58,8 @@ ob_start();
 
     <!-- FOTO PROFIL -->
     <div class="text-center mb-4">
-        <img src="/public/uploads/profiles/<?= $user_id ?>.jpg"
-             onerror="this.src='/public/assets/img/default-user.png';"
+        <img src="../../../public/uploads/profiles/<?= $user_id ?>.jpg"
+             onerror="this.src='../../../public/assets/img/default-user.png';"
              class="rounded-circle border"
              style="width:120px;height:120px;object-fit:cover;">
         

@@ -1,17 +1,17 @@
 <?php 
 require_once __DIR__ . '/../../core/Database.php'; 
 
-$db = new Database();
-$pdo = $db->pdo;
+// Gunakan method connect() sesuai struktur project
+$pdo = Database::connect();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nama     = isset($_POST['nama']) ? $_POST['nama'] : '';
-    $nim      = isset($_POST['nim']) ? $_POST['nim'] : null;
-    $email    = isset($_POST['email']) ? $_POST['email'] : '';
-    $prodi    = isset($_POST['prodi']) ? $_POST['prodi'] : null;
-    $angkatan = isset($_POST['angkatan']) ? $_POST['angkatan'] : null;
-    $alasan   = isset($_POST['alasan']) ? $_POST['alasan'] : null;
+    $nama     = $_POST['nama'] ?? '';
+    $nim      = $_POST['nim'] ?? null;
+    $email    = $_POST['email'] ?? '';
+    $prodi    = $_POST['prodi'] ?? null;
+    $angkatan = $_POST['angkatan'] ?? null;
+    $alasan   = $_POST['alasan'] ?? null;
 
     // Validasi minimal
     if ($nama == '' || $email == '') {
