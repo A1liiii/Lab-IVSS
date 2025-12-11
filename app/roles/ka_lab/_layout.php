@@ -145,11 +145,6 @@ $conn = Database::connect();
             <span class="text-secondary">
                 <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
             </span>
-
-            <a href="../../../logout.php" class="btn btn-sm"
-               style="background: var(--blue); color: #fff;">
-               <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
         </div>
     </div>
 
@@ -190,23 +185,18 @@ $conn = Database::connect();
             <a href="../../../select_role.php">
                 <i class="bi bi-arrow-left-right"></i> Switch Role
             </a>
-
             <a href="../../../logout.php">
                 <i class="bi bi-box-arrow-right"></i> Keluar
             </a>
         </div>
-
         <!-- MAIN CONTENT -->
         <main>
             <?php 
             require_once __DIR__ . "/../../core/notification.php";
             echo showReminder();
             ?>
-
             <?= $content ?? "" ?>
         </main>
-
     </div>
-
 </body>
 </html>
