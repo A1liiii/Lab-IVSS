@@ -1,7 +1,6 @@
 <?php 
 require_once __DIR__ . '/../../core/Database.php'; 
 
-// Gunakan method connect() sesuai struktur project
 $pdo = Database::connect();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,9 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $angkatan = $_POST['angkatan'] ?? null;
     $alasan   = $_POST['alasan'] ?? null;
 
-    // Validasi minimal
-    if ($nama == '' || $email == '') {
-        echo "Nama dan Email wajib diisi.";
+    if (trim($nama) === '' || trim($email) === '') {
+        echo "ERROR: Nama dan Email wajib diisi.";
         exit;
     }
 
@@ -34,10 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':alasan', $alasan);
 
     if ($stmt->execute()) {
-        header("Location: /?success=1");
+        echo "OK"; // wajib pakai ini agar php-email-form tidak error
         exit;
     } else {
-        echo "Gagal menyimpan data pendaftaran.";
+        echo "ERROR: Gagal menyimpan data pendaftaran.";
+        exit;
     }
 }
+
+echo "ERROR: Invalid request.";
+exit;
 ?>

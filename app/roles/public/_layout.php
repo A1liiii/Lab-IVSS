@@ -26,7 +26,7 @@ if (!$lab) {
   <meta name="description" content="">
   <meta name="keywords" content="">
 
-  <link href="../../../public/assets/img/logo-fix-putih.jpg" rel="icon">
+  <link href="../../../public/assets/img/logo_ivss2.png" rel="icon">
 
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
@@ -132,19 +132,19 @@ if (!$lab) {
         <div class="col-lg-2 col-md-3 footer-links">
           <h4>Useful Links</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/home.php">Beranda</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/about.php">Tentang Kami</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/riset.php">Riset</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/fasilitas.php">Fasilitas</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="home.php">Beranda</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="about.php">Tentang Kami</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="riset.php">Riset</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="fasilitas.php">Fasilitas</a></li>
           </ul>
         </div>
 
         <div class="col-lg-2 col-md-3 footer-links">
           <h4>Our Services</h4>
           <ul>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/berita.php">Berita</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="public/dokumentasi.php">Galeri</a></li>
-            <li><i class="bi bi-chevron-right"></i> <a href="#">Kontak</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="berita.php">Berita</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="dokumentasi.php">Galeri</a></li>
+            <li><i class="bi bi-chevron-right"></i> <a href="home.php#contact">Kontak</a></li>
           </ul>
         </div>
 

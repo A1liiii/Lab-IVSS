@@ -372,8 +372,9 @@ ob_start();
                     <div class="col">
                         <label class="small">Status</label>
                         <select class="form-control mb-2" name="status" id="status_field">
-                            <option value="aktif">aktif</option>
-                            <option value="nonaktif">nonaktif</option>
+                            <option value="aktif">Aktif</option>
+                            <option value="lulus">Lulus</option>
+                            <option value="cuti">Cuti</option>
                         </select>
                     </div>
                 </div>
