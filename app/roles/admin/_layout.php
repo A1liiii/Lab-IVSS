@@ -19,6 +19,9 @@ requireRole("admin");
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
     <style>
         /* GLOBAL LAYOUT FIX */
         html, body {
@@ -124,6 +127,19 @@ requireRole("admin");
             background: rgba(0,0,0,0.35);
         }
 
+        .modal-dialog-scrollable .modal-body {
+            overflow-y: auto !important;
+            max-height: calc(100vh - 200px); /* bebas, tapi ini paling ideal */
+        }
+
+        .modal-open {
+            overflow: hidden !important; /* body di-lock seperti biasa */
+        }
+
+        body.modal-open main {
+            overflow: hidden !important; /* cegah double-scroll */
+        }
+
     </style>
 </head>
 
@@ -153,6 +169,9 @@ requireRole("admin");
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
 
+            <a href="lab.php" class="<?= ($active=='lab'?'active':'') ?>">
+                <i class="bi bi-building"></i> Informasi Lab
+            </a>
             <a href="user.php" class="<?= ($active=='user'?'active':'') ?>">
                 <i class="bi bi-people-fill"></i> Manajemen Anggota
             </a>

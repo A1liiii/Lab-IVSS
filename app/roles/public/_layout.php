@@ -151,7 +151,7 @@ if (!$lab) {
         <div class="col-lg-4 col-md-12">
           <h4>Follow Us</h4>
           <p>Dapatkan pembaruan tentang penelitian, publikasi, dan program kolaborasi melalui kanal resmi kami.</p>
-          <!-- <div class="social-links d-flex">
+          <div class="social-links d-flex">
               <?php if (!empty($lab['instagram'])): ?>
                   <a href="<?= htmlspecialchars($lab['instagram']) ?>" target="_blank">
                       <i class="bi bi-instagram"></i>
@@ -167,7 +167,7 @@ if (!$lab) {
                       <i class="bi bi-tiktok"></i>
                   </a>
               <?php endif; ?>
-          </div> -->
+          </div>
         </div>
 
       </div>

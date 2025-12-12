@@ -74,7 +74,7 @@ ob_start();
               <?= htmlspecialchars(isset($lab['nama']) ? $lab['nama'] : 'Nama Lab Belum Diisi'); ?>
             </h1>
             <p data-aos="fade-up" data-aos-delay="100" style="color:#FFFFFF;">
-              <?= htmlspecialchars(isset($lab['deskripsi']) ? $lab['deskripsi'] : 'Deskripsi belum diisi.'); ?>
+              <?= htmlspecialchars(isset($lab['deskripsi']) ? $lab['motto'] : 'Deskripsi belum diisi.'); ?>
             </p>
             <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
             <a href="#form-pendaftaran" class="btn-get-started">Bergabung <i class="bi bi-arrow-right"></i></a>
@@ -105,7 +105,7 @@ ob_start();
             </div>
           </div>
           <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="../../../public/assets/img/about1.jpeg" class="img-fluid" alt="">
+            <img src="../../../public/assets/img/about.jpg" class="img-fluid" alt="">
           </div>
         </div>
       </div>
@@ -173,39 +173,45 @@ ob_start();
         </div>
       </section><!-- /Clients Section -->
 
-    <!-- Values Section -->
-    <section id="values" class="values section">
+<!-- VALUES SECTION -->
+<section id="values" class="values section">
+    <div class="container section-title" data-aos="fade-up">
+        <p>Visi & Misi</p>
+    </div>
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Visi & Misi</h2>
-        <p>Visi & Misi<br></p>
-      </div><!-- End Section Title -->
+    <div class="container">
+        <div class="row gy-4 justify-content-center">
 
-      <div class="container">
-
-        <div class="row gy-4 container d-flex justify-content-center">
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card">
-              <h3>Visi</h3>
-              <p>
-              <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
-              </p>
+            <!-- VISI -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card">
+                    <h3>VISI</h3>
+                    <p style="text-align: justify;">
+                        <?= nl2br(htmlspecialchars($lab['visi'])) ?>
+                    </p>
+                </div>
             </div>
-          </div><!-- End Card Item -->
 
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card">
-              <h3>Misi</h3>
-              <p>
-              <?= !empty($lab['misi']) ? htmlspecialchars($lab['misi']) : 'Misi lab belum diisi.' ?>
-              </p>
+            <!-- MISI -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card">
+                    <h3>MISI</h3>
+                    <div style="text-align: justify;">
+                        <?php
+                        $misiList = explode("\n", $lab['misi']);
+                        echo "<ol>";
+                        foreach ($misiList as $m) {
+                            if (trim($m) !== "") echo "<li>" . htmlspecialchars($m) . "</li>";
+                        }
+                        echo "</ol>";
+                        ?>
+                    </div>
+                </div>
             </div>
-          </div><!-- End Card Item -->
+
         </div>
-      </div>
-    </section><!-- /Values Section -->
+    </div>
+</section>
 
     <!-- Services Section -->
     <section id="services" class="services section">
@@ -318,7 +324,7 @@ ob_start();
                   <div class="swiper-slide">
                       <div class="team-member">
                           <div class="member-img">
-                              <img src="public/uploads/dosen/<?php echo htmlspecialchars($d['foto']); ?>"
+                              <img src="../../../public/uploads/profiles/<?php echo htmlspecialchars($d['foto']); ?>"
                                   class="img-fluid"
                                   alt="<?php echo htmlspecialchars($d['nama']); ?>">
                           </div>
