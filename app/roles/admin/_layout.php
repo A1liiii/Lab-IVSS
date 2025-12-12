@@ -162,7 +162,7 @@ requireRole("admin");
             </a>
 
             <a href="logs.php" class="<?= ($active=='logs'?'active':'') ?>">
-                <i class="bi bi-clock-history"></i> Aktifitas
+                <i class="bi bi-clock-history"></i> Aktifitas Lab
             </a>
 
             <hr style="border-color: rgba(255,255,255,0.3)">

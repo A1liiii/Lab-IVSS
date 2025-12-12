@@ -66,24 +66,38 @@ ob_start();
 
             <td><?= date("d M Y", strtotime($r['tanggal_daftar'])) ?></td>
 
-            <td>
-                <a href="approval_detail.php?id=<?= $r['reg_id'] ?>"
-                   class="btn btn-sm btn-outline-primary">
-                    Detail
-                </a>
+           <td>
+  <div class="d-flex">
 
-                <?php if($r['status']=="pending"): ?>
-                    <a href="approve_action.php?id=<?= $r['reg_id'] ?>&action=approve"
-                       class="btn btn-sm btn-success">
-                       <i class="bi bi-check2"></i> Approve
-                    </a>
+    <!-- Kolom kiri (DETAIL) -->
+    <div class="me-2">
+      <a href="approval_detail.php?id=<?= $r['reg_id'] ?>"
+         class="btn btn-sm btn-outline-primary w-100 mb-1">
+        Detail
+      </a>
+    </div>
 
-                    <a href="approve_action.php?id=<?= $r['reg_id'] ?>&action=reject"
-                       class="btn btn-sm btn-danger">
-                       <i class="bi bi-x"></i> Reject
-                    </a>
-                <?php endif; ?>
-            </td>
+    <!-- Kolom kanan (APPROVE & REJECT) -->
+    <div class="d-flex flex-column">
+      <?php if($r['status']=="pending"): ?>
+
+        <a href="approve_action.php?id=<?= $r['reg_id'] ?>&action=approve"
+   class="btn btn-sm btn-success w-100 d-flex align-items-center justify-content-center gap-2">
+   <i class="bi bi-check2"></i> <span>Approve</span>
+</a>
+
+<a href="approve_action.php?id=<?= $r['reg_id'] ?>&action=reject"
+   class="btn btn-sm btn-danger w-100 d-flex align-items-center justify-content-center gap-2 mt-2">
+   <i class="bi bi-x"></i> <span>Reject</span>
+</a>
+
+
+      <?php endif; ?>
+    </div>
+
+  </div>
+</td>
+
         </tr>
         <?php endforeach; ?>
 
@@ -94,6 +108,14 @@ ob_start();
 
 <style>
 .table td { vertical-align: middle; }
+.table td { vertical-align: middle; }
+
+/* Samain ukuran tombol approve & reject */
+.approval-btn {
+  font-size: 0.85rem;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
 </style>
 
 <?php

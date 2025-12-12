@@ -147,41 +147,21 @@ $conn = Database::connect();
             </span>
         </div>
     </div>
-
     <!-- BODY WRAPPER -->
     <div class="layout-wrapper">
-
         <!-- SIDEBAR -->
         <div class="sidebar">
-
             <h5>Menu Ketua Lab</h5>
-
             <a href="dashboard.php" class="<?= ($active=='dashboard'?'active':'') ?>">
                 <i class="bi bi-bar-chart-line"></i> Dashboard
             </a>
-
             <a href="approvals.php" class="<?= ($active=='approvals'?'active':'') ?>">
                 <i class="bi bi-file-check"></i> Approval Anggota Baru
             </a>
-
-            <a href="bimbingan.php" class="<?= ($active=='bimbingan'?'active':'') ?>">
-                <i class="bi bi-people"></i> Monitoring Bimbingan
-            </a>
-
-            <a href="publikasi.php" class="<?= ($active=='publikasi'?'active':'') ?>">
-                <i class="bi bi-journal-text"></i> Publikasi Lab
-            </a>
-
             <a href="logs.php" class="<?= ($active=='logs'?'active':'') ?>">
-                <i class="bi bi-clock-history"></i> Log Sistem
+                <i class="bi bi-clock-history"></i> Aktifitas Lab
             </a>
-
-            <a href="profile.php" class="<?= ($active=='profile'?'active':'') ?>">
-                <i class="bi bi-gear"></i> Profil Saya
-            </a>
-
             <hr style="border-color: rgba(255,255,255,0.3)">
-
             <a href="../../../select_role.php">
                 <i class="bi bi-arrow-left-right"></i> Switch Role
             </a>
