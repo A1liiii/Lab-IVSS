@@ -48,11 +48,7 @@
 --------------------------------------------------------------*/
 body {
   color: var(--default-color);
-  background: linear-gradient(
-    180deg,
-    #f7f9fd 0%,
-    #eef3fb 100%
-  );
+  background: var(--background-color);
   font-family: var(--default-font);
   padding-top: 90px !important;
 }
@@ -592,7 +588,7 @@ h6 {
 }
 
 .footer .footer-top {
-  padding-top: 50px;
+  padding-top: 80px;
 }
 
 .footer .social-links a {
@@ -684,6 +680,80 @@ h6 {
   margin-top: 6px;
   font-size: 13px;
 }
+
+/* =========================================================
+   FOOTER BACKGROUND – COLORED (WHITE TOP FIX)
+   ========================================================= */
+
+.footer {
+    background: linear-gradient(
+      180deg,
+      #ffffff 5%,        /* PUTIH – nyatu bg */
+      #0b3c7a 22%,       /* mulai biru tua */
+      #0e4fa3 60%,       /* biru */
+      #ffde59 140%       /* aksen kuning */
+      );
+      color: #ffffff;
+}
+
+  
+  /* Judul footer */
+  .footer h4,
+  .footer .footer-about a {
+    color: #ffffff;
+  }
+  
+  /* Link footer */
+  .footer .footer-links ul a,
+  .footer .footer-contact p,
+  .footer p {
+    color: rgba(255,255,255,0.85);
+  }
+  
+  .footer .footer-links ul a:hover {
+    color: var(--accent-color);
+  }
+  
+  /* Newsletter */
+  .footer .footer-newsletter {
+    background: rgba(255,255,255,0.08);
+    border: 0;
+  }
+  
+  /* Form newsletter */
+  .footer .footer-newsletter .newsletter-form {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  
+  .footer .footer-newsletter input[type=email] {
+    color: #ffffff;
+  }
+  
+  .footer .footer-newsletter input::placeholder {
+    color: rgba(255,255,255,0.6);
+  }
+  
+  /* Social icons */
+  .footer .social-links a {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #ffffff;
+  }
+  
+  .footer .social-links a:hover {
+    background: var(--accent-color);
+    color: #0b1b2b;
+  }
+  
+  /* Copyright */
+  .footer .copyright {
+    border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  
+  .footer .credits {
+    color: rgba(255,255,255,0.65);
+  }
 
 /*--------------------------------------------------------------
 # Scroll Top Button
@@ -1002,6 +1072,7 @@ section,
 .about .content {
   background-color: color-mix(in srgb, var(--accent-color), transparent 95%);
   padding: 40px;
+  padding-right: 30px;
 }
 
 .about .content h3 {
@@ -1016,10 +1087,18 @@ section,
   font-weight: 700;
 }
 
-.about .content p {
-  margin: 15px 0 30px 0;
-  line-height: 24px;
+.about .content p {       
+  margin-bottom: 14px;     /* jarak antar paragraf */
+  font-size: 16px;
+  color: #444;
 }
+
+.about .content p br {
+  content: "";
+  display: block;
+  margin-bottom: 12px;
+}
+
 
 .about .content .btn-read-more {
   color: var(--contrast-color);
@@ -1048,39 +1127,80 @@ section,
   transform: translateX(5px);
 }
 
+.about .about-img {
+  border-radius: 12px;
+  overflow: hidden;        /* WAJIB biar img ikut rounded */
+}
+
+.about .about-img img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 991px) {
+  .about .content {
+    padding-right: 0;
+    margin-bottom: 24px;
+  }
+}
+
 /*--------------------------------------------------------------
-# Values Section
+# Values Section (Visi & Misi) - FIX
 --------------------------------------------------------------*/
-.values .card {
-  background-color: var(--surface-color);
+.values .values-card{
+  background: var(--surface-color);
   color: var(--default-color);
-  padding: 30px;
-  box-shadow: 0px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 28px 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  transition: 0.25s ease;
+  text-align: left;     /* biar rapi */
+  height: auto;         /* PENTING: card gak disamain tingginya */
+}
+
+.values .values-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.10);
+}
+
+.values .values-card h3{
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 14px;
   text-align: center;
-  transition: 0.3s;
-  height: 100%;
-  border: 0;
 }
 
-.values .card img {
-  padding: 30px 50px;
-  transition: 0.5s;
-  transform: scale(1.1);
+.values .values-text{
+  line-height: 1.8;
+  margin: 0;
+  color: rgba(0,0,0,0.72);
 }
 
-.values .card h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 18px;
+/* List misi biar terstruktur */
+.values .values-list{
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.75;
+  color: rgba(0,0,0,0.72);
 }
 
-.values .card:hover {
-  box-shadow: 0px 0 30px rgba(0, 0, 0, 0.1);
+.values .values-list li{
+  margin-bottom: 10px;
 }
 
-.values .card:hover img {
-  transform: scale(1);
+.values .values-list li:last-child{
+  margin-bottom: 0;
 }
+
+/* Responsive */
+@media (max-width: 991px){
+  .values .values-card{
+    padding: 22px;
+  }
+}
+
 
 /*--------------------------------------------------------------
 # Stats Section
@@ -1667,98 +1787,94 @@ section,
 }
 
 /*--------------------------------------------------------------
-# Testimonials Section
+# Courses (Perkuliahan Terkait) - Swiper Card
 --------------------------------------------------------------*/
-.testimonials .testimonial-item {
-  background-color: var(--surface-color);
-  box-shadow: 0px 0 20px rgba(0, 0, 0, 0.1);
-  box-sizing: content-box;
-  padding: 30px;
-  margin: 40px 30px;
-  min-height: 320px;
-  display: flex;
+.courses .course-card {
+  background: var(--surface-color);
+  border-radius: 14px;
+  padding: 24px 22px;
+  height: 100%;
+  min-height: 320px;              /* <<< KUNCI biar sejajar */
+  box-shadow: 0 8px 26px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: 0.25s ease;
+  text-align: left;
+
+  display: flex;                 /* <<< KUNCI */
   flex-direction: column;
-  text-align: center;
-  transition: 0.3s;
 }
 
-.testimonials .testimonial-item .stars {
-  margin-bottom: 15px;
+.courses .course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.10);
 }
 
-.testimonials .testimonial-item .stars i {
-  color: #ffc107;
-  margin: 0 1px;
+.courses .course-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent-color), transparent 90%);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
 }
 
-.testimonials .testimonial-item .testimonial-img {
-  width: 90px;
-  border-radius: 50%;
-  border: 4px solid var(--background-color);
-  margin: 0 auto;
+.courses .course-icon i {
+  font-size: 26px;
 }
 
-.testimonials .testimonial-item h3 {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 10px 0 5px 0;
+.courses .course-card h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--heading-color);
 }
 
-.testimonials .testimonial-item h4 {
-  font-size: 14px;
-  color: color-mix(in srgb, var(--default-color), transparent 40%);
+.courses .course-card p {
+  font-size: 14.5px;
+  line-height: 1.7;
   margin: 0;
+  color: color-mix(in srgb, var(--default-color), transparent 25%);
 }
 
-.testimonials .testimonial-item p {
-  font-style: italic;
-  margin: 0 auto 15px auto;
-}
-
-.testimonials .swiper-wrapper {
-  height: auto;
-}
-
-.testimonials .swiper-pagination {
-  margin-top: 20px;
+/* Swiper pagination */
+.courses .swiper-pagination {
+  margin-top: 26px;
   position: relative;
 }
 
-.testimonials .swiper-pagination .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background-color: color-mix(in srgb, var(--default-color), transparent 85%);
+.courses .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: color-mix(in srgb, var(--default-color), transparent 80%);
   opacity: 1;
 }
 
-.testimonials .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: var(--accent-color);
+.courses .swiper-pagination-bullet-active {
+  background: var(--accent-color);
 }
 
-.testimonials .swiper-slide {
-  opacity: 0.3;
-}
-
+/* Responsive Swiper Courses */
 @media (max-width: 1199px) {
-  .testimonials .swiper-slide-active {
+  .courses .swiper-slide {
     opacity: 1;
+    transform: none;
   }
 
-  .testimonials .swiper-pagination {
-    margin-top: 0;
-  }
-
-  .testimonials .testimonial-item {
-    margin: 40px 20px;
+  .courses .swiper-pagination {
+    margin-top: 16px;
   }
 }
 
 @media (min-width: 1200px) {
-  .testimonials .swiper-slide-next {
+  .courses .swiper-slide {
     opacity: 1;
-    transform: scale(1.12);
+    transform: none;
   }
 }
+
 
 /*--------------------------------------------------------------
 # Team Section
@@ -1855,48 +1971,67 @@ section,
 }
 
 /* =========================================================
-   TEAM SECTION – FINAL (WAVE TETAP ADA + BULLETS LEBIH BAWAH)
+   TEAM SWIPER – CONSISTENT (FINAL)
    Tempel PALING BAWAH main.css
    ========================================================= */
 
-/* 1) Card/slide jangan melebar */
+/* ====== 0) Wrapper spacing biar pagination nggak nabrak ====== */
+#team .team-swiper{
+  padding-bottom: 70px !important; /* ruang untuk bullets */
+  position: relative;
+}
+
+/* ====== 1) Slide width biar card rapi (opsional tapi bagus) ====== */
 #team .swiper-slide{
   width: 290px !important;
   flex-shrink: 0 !important;
 }
+
 #team .team-member{
   width: 100% !important;
   max-width: 290px !important;
   margin: 0 auto !important;
+
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-color);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: 0.25s ease;
 }
 
-/* 2) Area foto lebih lega */
+/* Hover konsisten seperti card lain (naik sedikit, bukan zoom gede) */
+#team .team-member:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+}
+
+/* ====== 2) Foto area biar proporsional + wave tetap ada ====== */
 #team .team-member .member-img{
   position: relative;
   overflow: hidden;
-  height: 220px !important;      /* foto tidak sempit */
+  height: 220px !important;
   background: #fff;
 }
 
-/* foto default icon biar proporsional */
 #team .team-member .member-img img{
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important; /* kalau foto asli nanti mau cover, bilang */
+  object-fit: contain !important;
   padding: 16px !important;
   display: block;
   position: relative;
-  z-index: 0;                     /* di bawah gelombang */
+  z-index: 0;
 }
 
-/* 3) WAVE: JANGAN HILANG (PASTI MUNCUL) */
+/* Wave mask tetap muncul */
 #team .team-member .member-img:after{
   content: "" !important;
   position: absolute !important;
   left: -1px !important;
   right: -1px !important;
-  bottom: -1px !important;        /* jangan minus besar, ini bikin wave aman */
-  height: 100% !important;        /* biarin default supaya mask kebaca */
+  bottom: -1px !important;
+  height: 100% !important;
   background-color: var(--surface-color) !important;
 
   -webkit-mask: url("../img/team-shape.svg") no-repeat center bottom !important;
@@ -1904,33 +2039,102 @@ section,
   -webkit-mask-size: contain !important;
   mask-size: contain !important;
 
-  z-index: 1 !important;          /* wave di atas foto */
+  z-index: 1 !important;
   pointer-events: none;
 }
 
-/* 4) Spasi bullets: TURUNIN LAGI */
+/* ====== 3) Info spacing biar rapi ====== */
+#team .team-member .member-info{
+  padding: 14px 16px 20px 16px !important;
+}
+
+#team .team-member .member-info h4{
+  font-weight: 800;
+  font-size: 18px;
+  margin: 6px 0 4px 0;
+}
+
+#team .team-member .member-info span{
+  font-size: 14px;
+  color: color-mix(in srgb, var(--default-color), transparent 45%);
+}
+
+#team .team-member .member-info p{
+  margin: 10px 0 0 0;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 22px;
+  color: color-mix(in srgb, var(--default-color), transparent 25%);
+}
+
+/* ====== 4) Pagination bullets – SAMA seperti .courses ====== */
 #team .swiper-pagination{
+  margin-top: 26px !important;
   position: relative !important;
-  margin-top: 20px !important;    /* bullets turun */
   bottom: auto !important;
 }
 
-/* tambah ruang bawah swiper supaya bullets nggak numpuk */
-#team .team-swiper{
-  padding-bottom: 60px !important; /* ini yang bikin bullets beneran kebawah */
+#team .swiper-pagination-bullet{
+  width: 10px !important;
+  height: 10px !important;
+  background-color: color-mix(in srgb, var(--default-color), transparent 80%) !important;
+  opacity: 1 !important;
 }
 
-/* 5) Panah di tengah */
-#team .swiper-button-prev,
-#team .swiper-button-next{
+#team .swiper-pagination-bullet-active{
+  background-color: var(--accent-color) !important;
+}
+
+/* ====== 5) Arrow style – rapi & konsisten ====== */
+#team .swiper-button-next,
+#team .swiper-button-prev{
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,0.90) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+  color: var(--accent-color) !important;
+
   top: 45% !important;
+  transform: translateY(-50%);
 }
 
-/* rapatkan tombol */
-#team .team-btn{
-  margin-top: 10px !important;
+#team .swiper-button-next:after,
+#team .swiper-button-prev:after{
+  font-size: 18px !important;
+  font-weight: 800 !important;
 }
 
+#team .swiper-button-next:hover,
+#team .swiper-button-prev:hover{
+  background: #fff !important;
+  box-shadow: 0 16px 34px rgba(0,0,0,0.12) !important;
+}
+
+/* Panah jangan terlalu mepet layar di mobile */
+@media (max-width: 576px){
+  #team .swiper-button-next{ right: 6px !important; }
+  #team .swiper-button-prev{ left: 6px !important; }
+}
+
+/* ====== 6) Responsive slide width (biar pas di semua layar) ====== */
+@media (max-width: 991px){
+  #team .swiper-slide{
+    width: 260px !important;
+  }
+  #team .team-member{
+    max-width: 260px !important;
+  }
+}
+
+@media (max-width: 576px){
+  #team .swiper-slide{
+    width: 240px !important;
+  }
+  #team .team-member{
+    max-width: 240px !important;
+  }
+}
 
 
 /*--------------------------------------------------------------

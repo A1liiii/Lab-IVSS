@@ -196,7 +196,7 @@ ob_start();
           </h1>
 
           <p style="color:#fff;">
-          <?= safe(isset($lab['deskripsi']) ? $lab['deskripsi'] : 'Deskripsi belum diisi.'); ?>
+          <?= safe(isset($lab['motto']) ? $lab['motto'] : 'Motto Lab Belum Diisi'); ?>
           </p>
 
           <div class="hero-actions" data-aos="fade-up" data-aos-delay="150">
@@ -229,7 +229,9 @@ ob_start();
         </div>
       </div>
       <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-        <img src="../../../public/assets/img/dokum10.jpg" class="img-fluid" alt="">
+        <div class="about-img">
+          <img src="../../../public/assets/img/dokum10.jpg" class="img-fluid" alt="">
+        </div>  
       </div>
     </div>
   </div>
@@ -298,24 +300,56 @@ ob_start();
     <h2>Visi &amp; Misi</h2>
     <p>Visi &amp; Misi</p>
   </div>
+
   <div class="container">
-    <div class="row gy-4 container d-flex justify-content-center">
+    <div class="row gy-4 justify-content-center">
+
+      <!-- VISI -->
       <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="card">
+        <div class="values-card values-vision">
           <h3>Visi</h3>
-          <p><?= !empty($lab['visi']) ? safe($lab['visi']) : 'Visi lab belum diisi.'; ?></p>
+          <p class="values-text">
+            <?= !empty($lab['visi']) ? nl2br(safe($lab['visi'])) : 'Visi lab belum diisi.'; ?>
+          </p>
         </div>
       </div>
-      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-        <div class="card">
+
+      <!-- MISI -->
+      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="values-card values-mission">
           <h3>Misi</h3>
-          <p><?= !empty($lab['misi']) ? safe($lab['misi']) : 'Misi lab belum diisi.'; ?></p>
+
+          <?php if (!empty($lab['misi'])): ?>
+            <?php
+              // Pecah misi jadi item list:
+              // - jika misi dipisah newline, bakal jadi list
+              $lines = preg_split("/\r\n|\n|\r/", trim($lab['misi']));
+              $items = [];
+              foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line === '') continue;
+                // buang prefix angka "1. " atau "1) "
+                $line = preg_replace('/^\d+\s*[\.\)]\s*/', '', $line);
+                $items[] = $line;
+              }
+            ?>
+            <ol class="values-list">
+              <?php foreach ($items as $it): ?>
+                <li><?= safe($it) ?></li>
+              <?php endforeach; ?>
+            </ol>
+          <?php else: ?>
+            <p class="values-text">Misi lab belum diisi.</p>
+          <?php endif; ?>
+
         </div>
       </div>
+
     </div>
   </div>
 </section>
 <!-- /Values Section -->
+
 
 <!-- Services (Riset) -->
 <section id="services" class="services section">
@@ -575,60 +609,80 @@ ob_start();
 
 
 <!-- Perkuliahan (Mata Kuliah) -->
-<section id="testimonials" class="testimonials section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Perkuliahan</h2>
-    <p>Mata Kuliah terkait</p>
-  </div>
+<section id="courses" class="courses section">
+<div class="container section-title" data-aos="fade-up"> 
+<h2>Perkuliahan</h2> 
+<p>Mata Kuliah terkait</p> 
+</div>
+
+  <?php
+  // STATIC DATA (tidak pakai database, tapi tetap jalan)
+  $courses = [
+    [
+      "title" => "Kecerdasan Artifisial (AI)",
+      "desc"  => "Teknologi yang fokus pada pengembangan sistem atau mesin yang dapat melakukan tugas-tugas yang biasanya memerlukan kecerdasan manusia, seperti pengenalan pola, pembelajaran, pemecahan masalah, dan pengambilan keputusan.",
+      "icon"  => "bi-cpu-fill"
+    ],
+    [
+      "title" => "Machine Learning",
+      "desc"  => "Cabang dari kecerdasan artifisial yang fokus pada pengembangan algoritma yang memungkinkan mesin belajar dari data untuk membuat prediksi atau keputusan tanpa diprogram secara eksplisit.",
+      "icon"  => "bi-journal-bookmark-fill"
+    ],
+    [
+      "title" => "Pengolahan Citra & Visi Komputer",
+      "desc"  => "Teknik untuk mengolah dan menganalisis gambar atau video menggunakan komputer, termasuk deteksi objek, segmentasi, pengenalan pola, dan interpretasi citra untuk aplikasi seperti pengenalan wajah dan kendaraan otomatis.",
+      "icon"  => "bi-box-fill"
+    ],
+    [
+      "title" => "Sistem Cerdas (Intelligent System)",
+      "desc"  => "Pengembangan sistem yang dapat meniru atau melampaui kemampuan kognitif manusia, seperti pengambilan keputusan otomatis, perencanaan, dan pemrosesan informasi dalam konteks aplikasi nyata, seperti robotika dan sistem pakar.",
+      "icon"  => "bi-diagram-3-fill"
+    ],
+  ];
+  ?>
 
   <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="swiper init-swiper">
+    <div class="swiper init-swiper courses-swiper">
+
       <script type="application/json" class="swiper-config">
         {
           "loop": true,
           "speed": 600,
-          "autoplay": { "delay": 5000 },
-          "slidesPerView": "auto",
+          "autoplay": { "delay": 4500 },
+          "slidesPerView": 3,
+          "spaceBetween": 24,
           "pagination": {
             "el": ".swiper-pagination",
-            "type": "bullets",
             "clickable": true
           },
           "breakpoints": {
-            "320": { "slidesPerView": 1, "spaceBetween": 40 },
-            "1200": { "slidesPerView": 3, "spaceBetween": 1 }
+            "0":   { "slidesPerView": 1 },
+            "768": { "slidesPerView": 2 },
+            "1200":{ "slidesPerView": 3 }
           }
         }
       </script>
+
       <div class="swiper-wrapper">
-        <?php foreach ($matkul as $m): ?>
+        <?php foreach ($courses as $c): ?>
           <div class="swiper-slide">
-            <div class="testimonial-item">
-              <div class="stars">
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
+            <div class="course-card">
+              <div class="course-icon">
+                <i class="bi <?= safe($c['icon']); ?>"></i>
               </div>
-              <p>
-                Mata kuliah <strong><?= safe($m['nama_matkul']); ?></strong>
-                ditawarkan pada semester <strong><?= safe($m['semester']); ?></strong>
-                untuk prodi <strong><?= safe($m['prodi']); ?></strong>.
-                Total SKS: <strong><?= safe($m['sks']); ?></strong>.
-              </p>
-              <div class="profile mt-auto">
-                <img src="assets/img/default-profile.png" class="testimonial-img" alt="">
-                <h3><?= safe($m['nama_matkul']); ?></h3>
-                <h4>Dosen: <?= safe(isset($m['nip']) ? $m['nip'] : 'Belum diisi'); ?></h4>
-              </div>
+              <h3><?= safe($c['title']); ?></h3>
+              <p><?= safe($c['desc']); ?></p>
             </div>
           </div>
         <?php endforeach; ?>
       </div>
+
       <div class="swiper-pagination"></div>
     </div>
   </div>
 </section>
-<!-- /Perkuliahan Section -->
+<!-- /Perkuliahan -->
+
 
 <!-- Contact / Pendaftaran -->
 <section id="contact" class="contact section">
