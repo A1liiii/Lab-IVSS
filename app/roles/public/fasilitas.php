@@ -1,9 +1,13 @@
-<?php
+<?php 
 $title = "Fasilitas | IVSS";
 $active = "fasilitas";
 
 require_once __DIR__ . "/../../core/database.php";
 $db = Database::connect();
+
+function e($v){
+  return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+}
 
 // Ambil semua fasilitas
 $qFasilitas = $db->query("SELECT * FROM fasilitas ORDER BY fasilitas_id DESC");
@@ -12,20 +16,19 @@ $fasilitas = $qFasilitas->fetchAll(PDO::FETCH_ASSOC);
 ob_start();
 ?>
 
-<!-- Portfolio Section -->
-<section id="portfolio" class="portfolio section" style="padding-top: 100px;">
+<section id="portfolio" class="portfolio section portfolio-page" style="padding-top: 100px;">
 
   <div class="container section-title" data-aos="fade-up">
-    <h2>Fasilitas & Peralatan</h2>
+    <h2>Fasilitas &amp; Peralatan</h2>
     <p>Daftar fasilitas dan peralatan laboratorium IVSS</p>
   </div>
 
   <div class="container">
 
-    <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
+    <div class="isotope-layout" data-default-filter="*" data-layout="fitRows" data-sort="original-order">
 
       <!-- FILTER BUTTONS -->
-      <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
+      <ul class="portfolio-filters isotope-filters portfolio-tabs" data-aos="fade-up" data-aos-delay="100">
         <li data-filter="*" class="filter-active">Semua</li>
         <li data-filter=".filter-fasilitas">Fasilitas</li>
         <li data-filter=".filter-peralatan">Peralatan</li>
@@ -36,43 +39,52 @@ ob_start();
 
         <?php if (!empty($fasilitas)): ?>
           <?php foreach ($fasilitas as $f): 
-              $kategoriSlug = strtolower(str_replace(' ', '-', $f['kategori']));
+            $kategori = strtolower(trim(isset($f['kategori']) ? $f['kategori'] : ''));
+            $kategoriSlug = ($kategori === 'peralatan') ? 'peralatan' : 'fasilitas';
+
+            $foto = !empty($f['foto'])
+              ? "/Lab-IVSS/public/uploads/fasilitas/" . e($f['foto'])
+              : "/Lab-IVSS/public/assets/img/facility-placeholder.jpg";
+
+            $nama     = e(isset($f['nama']) ? $f['nama'] : 'Tanpa Nama');
+            $descRaw  = strip_tags((string)(isset($f['deskripsi']) ? $f['deskripsi'] : ''));
+            $desc     = e($descRaw);
+
+            // ringkas buat card (bukan buat lightbox)
+            $descCardRaw = mb_substr($descRaw, 0, 110);
+            $descCard = e($descCardRaw) . (mb_strlen($descRaw) > 110 ? '...' : '');
           ?>
+            <!-- CARD LEBAR: col-xl-4 (lebih enak daripada xl-3) -->
+            <div class="col-xl-4 col-lg-4 col-md-6 portfolio-item isotope-item filter-<?= $kategoriSlug ?>">
+              <div class="portfolio-content h-100">
 
-          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-<?= $kategoriSlug ?>">
-            <div class="portfolio-content h-100">
+                <div class="thumb-wrap">
+                  <img src="<?= $foto ?>" class="img-fluid thumb-img" alt="<?= $nama ?>">
+                </div>
 
-              <!-- BADGE KATEGORI (KOTAK BIRU DI GAMBAR) -->
-              <span class="category-badge-overlay">
-                <?= htmlspecialchars($f['kategori']) ?>
-              </span>
+                <div class="portfolio-info">
+                  <h4><?= $nama ?></h4>
 
-              <!-- IMAGE -->
-              <img src="/Lab-IVSS/public/uploads/fasilitas/<?= htmlspecialchars($f['foto']) ?>" 
-                   class="img-fluid w-100" 
-                   alt="<?= htmlspecialchars($f['nama']) ?>"
-                   style="height: 300px; object-fit: cover;">
+                  <?php if ($descRaw !== ''): ?>
+                    <p><?= $descCard ?></p>
+                  <?php else: ?>
+                    <p class="muted">Deskripsi belum tersedia.</p>
+                  <?php endif; ?>
 
-              <!-- OVERLAY INFO -->
-              <div class="portfolio-info">
-                <?php if (!empty($f['deskripsi'])): ?>
-                  <p><?= htmlspecialchars(mb_substr($f['deskripsi'], 0, 100)) ?><?= mb_strlen($f['deskripsi']) > 100 ? '...' : '' ?></p>
-                <?php endif; ?>
+                  <!-- tombol + simetris -->
+                  <a href="<?= $foto ?>"
+                     class="glightbox preview-link"
+                     data-gallery="fasilitas-gallery"
+                     data-title="<?= $nama ?>"
+                     data-description="<?= $desc ?>">
+                    <i class="bi bi-plus-lg"></i>
+                  </a>
+                </div>
 
-                <!-- ICON ZOOM -->
-                <a href="/Lab-IVSS/public/uploads/fasilitas/<?= htmlspecialchars($f['foto']) ?>" 
-                   class="glightbox preview-link" 
-                   data-gallery="fasilitas-gallery"
-                   title="<?= htmlspecialchars($f['nama']) ?>">
-                  <i class="bi bi-zoom-in"></i>
-                </a>
               </div>
-
             </div>
-          </div>
-
           <?php endforeach; ?>
-        
+
         <?php else: ?>
           <div class="col-12 text-center py-5">
             <div class="alert alert-info">
@@ -87,370 +99,156 @@ ob_start();
     </div>
 
   </div>
-
 </section>
 
-<!-- Custom CSS -->
 <style>
-/* ==================== PORTFOLIO CONTENT ==================== */
-.portfolio-content {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background: #fff;
+/* =========================================
+   FASILITAS PUBLIC – FINAL FIX (CLEAN)
+   ========================================= */
+
+/* SECTION spacing */
+.portfolio-page{
+  padding-bottom: 40px;
 }
 
-.portfolio-content:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+/* FILTER TABS (lebih modern & ga “formal”) */
+.portfolio-page .portfolio-tabs{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:18px 0 34px;
+  padding:0;
+  list-style:none;
 }
 
-.portfolio-content img {
-  transition: transform 0.5s ease;
-  display: block;
+.portfolio-page .portfolio-tabs li{
+  cursor:pointer;
+  padding:9px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  color:#495057;
+  background:#f1f3f5;
+  border:1px solid #e9ecef;
+  transition:all .18s ease;
+  user-select:none;
 }
 
-.portfolio-content:hover img {
-  transform: scale(1.08);
+.portfolio-page .portfolio-tabs li:hover{
+  background:#e9ecef;
+  transform:translateY(-1px);
 }
 
-/* ==================== BADGE KATEGORI (KOTAK BIRU DI GAMBAR) ==================== */
-.category-badge-overlay {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 10;
-  background: #0d6efd !important;
-  color: white !important;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 8px 18px;
-  border-radius: 25px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
-  transition: transform 0.3s ease;
-  border: none !important;
-  outline: none !important;
+.portfolio-page .portfolio-tabs li.filter-active{
+  background:#0d6efd;
+  border-color:#0d6efd;
+  color:#fff;
+  box-shadow:0 10px 20px rgba(13,110,253,.22);
 }
 
-.category-badge-overlay::before,
-.category-badge-overlay::after {
-  display: none !important;
+/* CARD */
+.portfolio-page .portfolio-content{
+  background:#fff;
+  border-radius:8px; /* jangan terlalu rounded */
+  overflow:hidden;
+  box-shadow:0 10px 26px rgba(0,0,0,.08);
+  transition:transform .22s ease, box-shadow .22s ease;
 }
 
-.portfolio-content:hover .category-badge-overlay {
-  transform: scale(1.05);
+.portfolio-page .portfolio-content:hover{
+  transform:translateY(-6px);
+  box-shadow:0 18px 40px rgba(0,0,0,.12);
 }
 
-/* ==================== OVERLAY INFO ==================== */
-.portfolio-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.75) 60%, transparent 100%);
-  padding: 30px 20px 20px;
-  transform: translateY(calc(100% - 80px));
-  transition: transform 0.3s ease;
-  color: white;
-  z-index: 5;
+/* FOTO konsisten */
+.portfolio-page .thumb-wrap{
+  width:100%;
+  height:260px;            /* bikin lebih “panjang/lega” */
+  overflow:hidden;
+  background:#f2f2f2;
 }
 
-.portfolio-content:hover .portfolio-info {
-  transform: translateY(0);
+@media (max-width: 768px){
+  .portfolio-page .thumb-wrap{ height:240px; }
 }
 
-.portfolio-info h4 {
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  line-height: 1.4;
+.portfolio-page .thumb-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;        /* ini yang bikin konsisten */
+  display:block;
+  transition:transform .35s ease;
 }
 
-.portfolio-info p {
-  color: rgba(255,255,255,0.9);
-  font-size: 14px;
-  margin-bottom: 15px;
-  line-height: 1.6;
-  display: none;
+.portfolio-page .portfolio-content:hover .thumb-img{
+  transform:scale(1.04);   /* kecil aja biar ga norak */
 }
 
-.portfolio-content:hover .portfolio-info p {
-  display: block;
+/* INFO di bawah foto (center) */
+.portfolio-page .portfolio-info{
+  position:relative;
+  padding:14px 16px 18px;
+  text-align:center;
 }
 
-/* ==================== ZOOM BUTTON ==================== */
-.preview-link {
-  background: white !important;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  color: #0d6efd !important;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  position: relative;
-  z-index: 10;
-  opacity: 1 !important;
-  visibility: visible !important;
+.portfolio-page .portfolio-info h4{
+  font-size:16px;
+  font-weight:800;
+  margin:0 0 6px;
+  color:#212529;
 }
 
-.preview-link:hover {
-  background: #0d6efd !important;
-  color: white !important;
-  transform: scale(1.15) rotate(10deg);
-  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+/* DESKRIPSI: center & max 2 baris */
+.portfolio-page .portfolio-info p{
+  font-size:13px;
+  color:#6c757d;
+  line-height:1.45;
+  margin:0 auto;
+  max-width: 92%;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
-.preview-link i {
-  font-size: 22px;
-  line-height: 1;
+.portfolio-page .portfolio-info p.muted{
+  opacity:.7;
 }
 
-/* ==================== FILTER BUTTONS (DI ATAS) ==================== */
-.portfolio-filters {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 50px;
+/* tombol +: rapi & simetris di tengah bawah foto/info */
+.portfolio-page .preview-link{
+  position:absolute;
+  left:50%;
+  top:-20px;               /* nempel di batas foto & info */
+  transform:translateX(-50%);
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#0d6efd;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  box-shadow:0 12px 24px rgba(13,110,253,.25);
+  transition:transform .18s ease, background .18s ease;
 }
 
-.portfolio-filters li {
-  cursor: pointer;
-  padding: 12px 28px;
-  border-radius: 30px;
-  background: #f8f9fa;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  font-weight: 600;
-  color: #495057;
-  border: 2px solid #e9ecef;
+.portfolio-page .preview-link i{
+  font-size:18px;
+  line-height:1;
 }
 
-.portfolio-filters li:hover {
-  background: #ffe69c;
-  color: #212529;
-  border-color: #ffc107;
-  transform: translateY(-2px);
+.portfolio-page .preview-link:hover{
+  background:#084298;
+  transform:translateX(-50%) scale(1.06);
 }
 
-.portfolio-filters li.filter-active {
-  background: #ffc107;
-  color: #212529;
-  border-color: #ffc107;
-  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
-}
-
-/* ==================== SECTION TITLE ==================== */
-.section-title {
-  margin-top: 80px;
-  padding-top: 40px;
-}
-
-.section-title h2 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #212529;
-  margin-bottom: 10px;
-}
-
-.section-title p {
-  color: #6c757d;
-  font-size: 16px;
-}
-
-/* ==================== STYLE UNTUK TITLE GAMBAR LIGHTBOX ==================== */
-.glightbox-container .gslide-title,
-.glightbox-container .gslide-desc {
-  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
-  color: white !important;
-  padding: 15px 25px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  text-align: left !important;
-  border-radius: 0 !important;
-  letter-spacing: 0.3px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  z-index: 999 !important;
-  overflow: hidden;
-  margin: 0 !important;
-}
-
-.glightbox-container .gslide-title::before {
-  content: "";
-  margin-right: 0;
-  font-size: 0;
-  animation: none;
-}
-
-.glightbox-container .gslide-title::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #ffc107, #ffeb3b, #ffc107);
-  animation: slideGradient 3s ease infinite;
-}
-
-@keyframes bounceIcon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-@keyframes slideGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ==================== ALTERNATIF: STYLE MODERN MINIMALIS ==================== */
-.glightbox-container .gslide-title.modern {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px);
-  color: #212529 !important;
-  padding: 18px 25px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  border-top: 3px solid #0d6efd;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-}
-
-.glightbox-container .gslide-title.modern::before {
-  content: "●";
-  color: #0d6efd;
-  margin-right: 10px;
-  font-size: 14px;
-  animation: pulse 2s infinite;
-}
-
-/* ==================== ALTERNATIF: STYLE GRADIENT RAINBOW ==================== */
-.glightbox-container .gslide-title.gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
-  color: white !important;
-  padding: 22px 30px !important;
-  font-size: 22px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: relative;
-}
-
-.glightbox-container .gslide-title.gradient::before {
-  content: "✨";
-  margin-right: 15px;
-  font-size: 28px;
-  filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
-}
-
-/* ==================== STYLE NAMA FASILITAS DI CARD ==================== */
-.portfolio-info h4 {
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  line-height: 1.4;
-  padding: 12px 15px;
-  background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(10, 88, 202, 0.9));
-  border-radius: 8px;
-  border-left: 4px solid #ffc107;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.portfolio-info h4::before {
-  content: "🔧";
-  font-size: 20px;
-  animation: rotate 3s linear infinite;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.portfolio-content:hover .portfolio-info h4 {
-  background: linear-gradient(135deg, #ffc107, #ffb800);
-  color: #212529;
-  transform: translateX(5px);
-  transition: all 0.3s ease;
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 768px) {
-  .portfolio-content img {
-    height: 250px !important;
-  }
-  
-  .portfolio-info {
-    transform: translateY(calc(100% - 70px));
-  }
-  
-  .portfolio-info h4 {
-    font-size: 16px;
-    padding: 10px 12px;
-  }
-  
-  .portfolio-info h4::before {
-    font-size: 18px;
-  }
-  
-  .portfolio-info p {
-    font-size: 13px;
-  }
-  
-  .category-badge-overlay {
-    font-size: 10px;
-    padding: 6px 14px;
-    top: 10px;
-    left: 10px;
-  }
-  
-  .portfolio-filters li {
-    padding: 10px 20px;
-    font-size: 13px;
-  }
-  
-  .preview-link {
-    width: 42px;
-    height: 42px;
-  }
-  
-  .preview-link i {
-    font-size: 20px;
-  }
-  
-  .glightbox-container .gslide-title {
-    font-size: 16px !important;
-    padding: 15px 20px !important;
-  }
-}
-
-@media (max-width: 576px) {
-  .section-title h2 {
-    font-size: 26px;
-  }
-  
-  .section-title p {
-    font-size: 14px;
-  }
+/* Biar klik area isotope rapi */
+.portfolio-page .portfolio-item{
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>
 

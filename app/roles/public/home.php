@@ -1,91 +1,186 @@
 <?php
+/* =====================================================
+   HOME PAGE – FINAL STABLE VERSION
+   CSS & LAYOUT GUARANTEED TO LOAD
+   ===================================================== */
+
 $title  = "Beranda | IVSS";
 $active = "home";
 
 require_once __DIR__ . "/../../core/database.php";
-$conn = Database::connect(); // PDO
+$conn = Database::connect();
 
+// DEBUG (boleh dimatikan setelah fix)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+/* ===================== HELPERS ===================== */
 function safe($v){
-    return htmlspecialchars((string)(isset($v) ? $v : ""), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 }
 
-// =========================
-// 1. Ambil info lab
-// =========================
-$sql  = "SELECT * FROM lab_info LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$lab = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$lab) $lab = array();
+if (!function_exists('excerpt_home')) {
+    function excerpt_home($text, $limit = 60) {
+        $text = trim(strip_tags((string)$text));
+        if (mb_strlen($text) <= $limit) return $text;
+        return mb_substr($text, 0, $limit) . '...';
+    }
+}
 
-// =========================
-// 2. Ambil fasilitas
-// =========================
-$sql  = "SELECT * FROM fasilitas ORDER BY fasilitas_id DESC LIMIT 9";
-$stmt = $conn->prepare($sql);
+if (!function_exists('pick_best_role_from_agg')) {
+    function pick_best_role_from_agg($rolesAgg, $default) {
+        if ($rolesAgg !== null && trim($rolesAgg) !== '') {
+            $priority = [
+                'ketua lab' => 1,
+                'admin' => 2,
+                'operator' => 3,
+                'dosen' => 4,
+                'mahasiswa' => 5
+            ];
+            $roles = array_map('trim', explode(',', strtolower($rolesAgg)));
+            foreach ($priority as $role => $rank) {
+                if (in_array($role, $roles)) return $role;
+            }
+            return isset($roles[0]) ? $roles[0] : $default;
+        }
+        return $default;
+    }
+}
+
+if (!function_exists('role_priority_for_sort')) {
+    function role_priority_for_sort($role) {
+      $roleLower = strtolower((string) $role);
+      switch ($roleLower) {
+          case 'ketua lab':
+              return 1;
+          case 'admin':
+              return 2;
+          case 'operator':
+              return 3;
+          case 'dosen':
+              return 4;
+          case 'mahasiswa':
+              return 5;
+          default:
+              return 99;
+      }      
+    }
+}
+
+/* ===================== DATA ===================== */
+
+// LAB
+$stmt = $conn->prepare("SELECT * FROM lab_info LIMIT 1");
+$stmt->execute();
+$lab = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+// FASILITAS
+$stmt = $conn->prepare("SELECT * FROM fasilitas ORDER BY fasilitas_id DESC LIMIT 9");
 $stmt->execute();
 $fasilitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// =========================
-// 3. Ambil mata kuliah
-// =========================
-$sql  = "SELECT * FROM mata_kuliah ORDER BY semester ASC LIMIT 5";
-$stmt = $conn->prepare($sql);
+// MATA KULIAH
+$stmt = $conn->prepare("SELECT * FROM mata_kuliah ORDER BY semester ASC LIMIT 5");
 $stmt->execute();
 $matkul = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// ============================
-// 4. Ambil dokumentasi (foto)
-//   type_file diisi nama file
-// ============================
-$sql = "
-    SELECT *
-    FROM act_documentation
+// DOKUMENTASI
+$stmt = $conn->prepare("
+    SELECT * FROM act_documentation
     WHERE type_file ILIKE '%.jpg'
        OR type_file ILIKE '%.jpeg'
        OR type_file ILIKE '%.png'
        OR type_file ILIKE '%.webp'
     ORDER BY documentation_id DESC
     LIMIT 8
-";
-$stmt = $conn->prepare($sql);
+");
 $stmt->execute();
 $dokumentasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// ============================
-// 5. Berita terbaru
-// ============================
-$sql = "
+// BERITA
+$stmt = $conn->prepare("
     SELECT b.*, u.username
     FROM berita b
     LEFT JOIN users u ON b.user_id = u.user_id
     ORDER BY b.tgl_post DESC
     LIMIT 3
-";
-
-$stmt = $conn->prepare($sql);
+");
 $stmt->execute();
 $berita = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+/* ===================== TEAM ===================== */
 
-// ============================
-// 6. Profil dosen
-// ============================
-$sql  = "SELECT * FROM dosen LIMIT 9";
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$dosen = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$rolesSubquery = "(
+  SELECT STRING_AGG(r.role_name, ',') 
+  FROM user_roles ur
+  JOIN roles r ON r.role_id = ur.role_id
+  WHERE ur.user_id = u.user_id
+) AS roles_agg";
 
-function excerpt_home($text, $len = 70){
-  $text = trim(strip_tags($text));
-  if (function_exists('mb_strlen')) {
-      if (mb_strlen($text, 'UTF-8') <= $len) return $text;
-      return mb_substr($text, 0, $len, 'UTF-8') . '...';
-  } else {
-      if (strlen($text) <= $len) return $text;
-      return substr($text, 0, $len) . '...';
-  }
+$dosen = $conn->query("
+  SELECT d.nip AS id_anggota, d.nama, d.jabatan, d.nidn,
+         u.user_id, d.foto AS foto_field, {$rolesSubquery}, 'dosen' AS tipe
+  FROM dosen d
+  LEFT JOIN users u ON u.nip = d.nip
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$mahasiswa = $conn->query("
+  SELECT m.nim AS id_anggota, m.nama, 'Mahasiswa' AS jabatan,
+         NULL AS nidn, u.user_id, m.foto AS foto_field,
+         {$rolesSubquery}, 'mahasiswa' AS tipe
+  FROM mahasiswa m
+  LEFT JOIN users u ON u.nim = m.nim
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$staff = $conn->query("
+  SELECT NULL::varchar AS id_anggota, u.username AS nama,
+         'Staff' AS jabatan, NULL AS nidn, u.user_id,
+         NULL AS foto_field, STRING_AGG(r.role_name, ',') AS roles_agg,
+         'staff' AS tipe
+  FROM users u
+  JOIN user_roles ur ON ur.user_id = u.user_id
+  JOIN roles r ON r.role_id = ur.role_id
+  WHERE LOWER(r.role_name) IN ('admin','operator')
+    AND u.nip IS NULL AND u.nim IS NULL
+  GROUP BY u.user_id, u.username
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$anggotaLab = array_merge($staff, $dosen, $mahasiswa);
+
+/* NORMALISASI */
+foreach ($anggotaLab as $i => $a) {
+
+  $defaultRole = isset($a['tipe']) ? $a['tipe'] : 'mahasiswa';
+
+  $anggotaLab[$i]['role_name'] = pick_best_role_from_agg(
+      isset($a['roles_agg']) ? $a['roles_agg'] : null,
+      $defaultRole
+  );
+
+  $anggotaLab[$i]['nama_normal'] = isset($a['nama']) ? $a['nama'] : 'Tidak diketahui';
+  $anggotaLab[$i]['email'] = '-';
+  $anggotaLab[$i]['foto_resolved'] = "../../../public/assets/img/default-user.png";
 }
+
+
+/* SORT */
+usort($anggotaLab, function ($a, $b) {
+
+  $pa = role_priority_for_sort(isset($a['role_name']) ? $a['role_name'] : '');
+  $pb = role_priority_for_sort(isset($b['role_name']) ? $b['role_name'] : '');
+
+  if ($pa === $pb) {
+      return strcasecmp(
+          isset($a['nama_normal']) ? $a['nama_normal'] : '',
+          isset($b['nama_normal']) ? $b['nama_normal'] : ''
+      );
+  }
+
+  return ($pa < $pb) ? -1 : 1;
+});
+
+
+/* ===================== RENDER ===================== */
 
 ob_start();
 ?>
@@ -93,23 +188,28 @@ ob_start();
 <!-- Hero Section -->
 <section id="hero" class="hero section">
   <div class="container">
-    <div class="row gy-4">
-      <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-        <h1 data-aos="fade-up" style="color:#FFFFFF;">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-10">
+        <div class="hero-content" data-aos="fade-up">
+          <h1 style="color:#fff;">
           <?= safe(isset($lab['nama']) ? $lab['nama'] : 'Nama Lab Belum Diisi'); ?>
-        </h1>
-        <p data-aos="fade-up" data-aos-delay="100" style="color:#FFFFFF;">
+          </h1>
+
+          <p style="color:#fff;">
           <?= safe(isset($lab['deskripsi']) ? $lab['deskripsi'] : 'Deskripsi belum diisi.'); ?>
-        </p>
-        <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
-          <a href="#form-pendaftaran" class="btn-get-started">
-            Bergabung <i class="bi bi-arrow-right"></i>
-          </a>
+          </p>
+
+          <div class="hero-actions" data-aos="fade-up" data-aos-delay="150">
+            <a href="#form-pendaftaran" class="btn-get-started">
+              Bergabung <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
 <!-- /Hero Section -->
 
 <!-- About Section -->
@@ -119,18 +219,17 @@ ob_start();
       <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
         <div class="content">
           <h3>Kami adalah</h3>
-          <h2><?= !empty($lab['nama']) ? safe($lab['nama']) : 'Nama lab belum diisi'; ?></h2>
           <p><?= !empty($lab['deskripsi']) ? safe($lab['deskripsi']) : 'Deskripsi lab belum diisi.'; ?></p>
           <div class="text-center text-lg-start">
             <a href="../public/about.php" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
-              <span>Read More</span>
+              <span>Baca Selengkapnya</span>
               <i class="bi bi-arrow-right"></i>
             </a>
           </div>
         </div>
       </div>
       <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-        <img src="../../../public/assets/img/about1.jpeg" class="img-fluid" alt="">
+        <img src="../../../public/assets/img/dokum10.jpg" class="img-fluid" alt="">
       </div>
     </div>
   </div>
@@ -301,54 +400,97 @@ ob_start();
 </section>
 <!-- /Recent Posts Section -->
 
-<!-- Team Section (Home) -->
-<section id="team" class="team section team-home">
+<!-- TEAM SECTION -->
+<section id="team" class="team section">
   <div class="container section-title" data-aos="fade-up">
     <h2>Team</h2>
     <p>Anggota Lab</p>
   </div>
 
   <div class="container">
-    <div class="row gy-4">
+    <div class="swiper init-swiper team-swiper">
+      <!-- SWIPER CONFIG (FINAL: NO "auto") -->
+      <script type="application/json" class="swiper-config">
+      {
+        "loop": true,
+        "speed": 600,
+        "autoplay": { "delay": 4000 },
+        "slidesPerView": 1,
+        "spaceBetween": 16,
+        "centeredSlides": false,
+        "pagination": {
+          "el": ".swiper-pagination",
+          "clickable": true,
+          "dynamicBullets": true,
+          "dynamicMainBullets": 5
+        },
+        "navigation": {
+          "nextEl": ".swiper-button-next",
+          "prevEl": ".swiper-button-prev"
+        },
+        "breakpoints": {
+          "480":  { "slidesPerView": 1, "spaceBetween": 16 },
+          "768":  { "slidesPerView": 2, "spaceBetween": 18 },
+          "1200": { "slidesPerView": 3, "spaceBetween": 20 }
+        }
+      }
+      </script>
 
-      <?php if (!empty($dosen)): ?>
-        <?php
-          // Hanya tampilkan 4 dosen di home (bisa diganti 6, 8, dll)
-          $dosenHome = array_slice($dosen, 0, 8);
-          foreach ($dosenHome as $d):
-            $img = "../../../public/uploads/dosen/" . safe($d['foto']);
-        ?>
-          <div class="col-xl-3 col-lg-4 col-md-6">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="<?= $img; ?>" class="img-fluid" alt="<?= safe($d['nama']); ?>">
-              </div>
-              <div class="member-info">
+      <div class="swiper-wrapper">
+        <?php if (!empty($anggotaLab)): ?>
+          <?php foreach ($anggotaLab as $a): ?>
+            <?php
+              $foto = !empty($a['foto_resolved'])
+                ? $a['foto_resolved']
+                : "../../../public/assets/img/default-user.png";
 
-                <!-- Nama jadi link ke detail profil -->
-                <h4>
-                  <a href="anggota_detail.php?nip=<?= urlencode($d['nip']); ?>"
-                     class="member-link">
-                    <?= safe($d['nama']); ?>
-                  </a>
-                </h4>
+              $displayRole = ucfirst(
+                !empty($a['role_name'])
+                  ? $a['role_name']
+                  : (!empty($a['tipe']) ? $a['tipe'] : 'anggota')
+              );
+            ?>
+            <div class="swiper-slide">
+              <div class="team-member">
+                <div class="member-img">
+                  <img
+                  src="<?= htmlspecialchars($foto, ENT_QUOTES, 'UTF-8') ?>"
+                  alt="<?= htmlspecialchars(isset($a['nama_normal']) ? $a['nama_normal'] : 'Anggota', ENT_QUOTES, 'UTF-8') ?>"
+                  >
+                </div>
 
-                <span><?= safe($d['jabatan']); ?></span>
-                <p><?= safe($d['nidn']); ?></p>
-                <p><?= safe($d['email']); ?></p>
+                <div class="member-info">
+                  <h4><?= htmlspecialchars(isset($a['nama_normal']) ? $a['nama_normal'] : 'Tidak diketahui', ENT_QUOTES, 'UTF-8') ?></h4>
+
+                  <span><?= htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8') ?></span>
+
+                  <?php if (!empty($a['nidn'])): ?>
+                    <p><?= htmlspecialchars($a['nidn'], ENT_QUOTES, 'UTF-8') ?></p>
+                  <?php endif; ?>
+
+                  <p><?= htmlspecialchars(isset($a['email']) ? $a['email'] : '-', ENT_QUOTES, 'UTF-8') ?></p>
+                </div>
               </div>
             </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="swiper-slide">
+            <p class="text-center">Belum ada anggota.</p>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <p class="text-center">Belum ada dosen.</p>
-      <?php endif; ?>
+        <?php endif; ?>
+      </div>
 
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
     </div>
 
-    <div class="text-center mt-3">
-      <a href="anggota.php" class="btn btn-primary">Lihat Semua Anggota</a>
+    <div class="text-center team-btn">
+      <a href="anggota.php" class="btn btn-outline-primary btn-sm">
+        Lihat Semua Anggota
+      </a>
     </div>
+
   </div>
 </section>
 <!-- /Team Section -->
@@ -400,12 +542,13 @@ ob_start();
                   <p><?= htmlspecialchars(excerpt_home($f['deskripsi'], 60)) ?></p>
 
                   <a href="<?= $img; ?>"
-                     title="<?= safe($f['nama']); ?>"
-                     data-gallery="portfolio-gallery-<?= $filterClass; ?>"
-                     class="glightbox preview-link">
+                    title="<?= safe($f['nama']); ?>"
+                    data-description="<?= safe($f['deskripsi']); ?>"
+                    data-gallery="portfolio-gallery-<?= $filterClass; ?>"
+                    class="glightbox preview-link">
                     <i class="bi bi-zoom-in"></i>
                   </a>
-
+                  
                   <a href="fasilitas.php?id=<?= (int)$f['fasilitas_id']; ?>"
                      title="More Details"
                      class="details-link">
@@ -584,7 +727,9 @@ ob_start();
 </section>
 <!-- /Contact Section -->
 
+<!-- SEMUA HTML KONTEN HOME DI SINI (hero, about, team, dst) -->
 <?php
 $content = ob_get_clean();
-include __DIR__ . "/_layout.php";
+require __DIR__ . "/_layout.php";
+exit;
 ?>
