@@ -12,6 +12,41 @@ if (!$user_id) die("User ID tidak valid.");
 function safe($x){ return htmlspecialchars($x ?? "-", ENT_QUOTES,'UTF-8'); }
 
 // =====================================================
+// AJAX FOTO UPLOAD (NO RELOAD)
+// =====================================================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_upload_foto'])) {
+
+    header('Content-Type: application/json');
+
+    if (!isset($_FILES['foto']) || $_FILES['foto']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['ok'=>false,'msg'=>'File tidak valid']);
+        exit;
+    }
+
+    $file = $_FILES['foto'];
+    $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($ext, ['jpg','jpeg'])) {
+        echo json_encode(['ok'=>false,'msg'=>'Harus JPG/JPEG']);
+        exit;
+    }
+
+    $target = __DIR__ . "/../../../public/uploads/profiles/" . intval($_POST['user_id']) . ".jpg";
+
+    if (!move_uploaded_file($file['tmp_name'], $target)) {
+        echo json_encode(['ok'=>false,'msg'=>'Gagal simpan']);
+        exit;
+    }
+
+    echo json_encode([
+        'ok' => true,
+        'msg'=> 'Foto diperbarui',
+        'v'  => filemtime($target)
+    ]);
+    exit;
+}
+
+// =====================================================
 // HANDLE FOTO UPLOAD
 // =====================================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_foto'])) {
@@ -46,11 +81,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // UPDATE PROFIL DOSEN
     if (isset($_POST['update_dosen'])) {
+
+        $nip_lama = $_POST['nip_lama'];
+        $nip_baru = $_POST['nip_baru'];
+
+        // validasi dasar
+        if ($nip_baru === "") {
+            die("NIP tidak boleh kosong");
+        }
+
         $stmt = $conn->prepare("
-            UPDATE dosen SET nama=?, nidn=?, email=?, jabatan=? WHERE nip=?
+            UPDATE dosen
+            SET nip=?, nama=?, nidn=?, email=?, jabatan=?
+            WHERE nip=?
         ");
+
         $stmt->execute([
-            $_POST['nama'], $_POST['nidn'], $_POST['email'], $_POST['jabatan'], $_POST['nip']
+            $nip_baru,
+            $_POST['nama'],
+            $_POST['nidn'],
+            $_POST['email'],
+            $_POST['jabatan'],
+            $nip_lama
         ]);
     }
 
@@ -73,40 +125,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Pendidikan CRUD
     if (isset($_POST['add_edu'])) {
         $stmt = $conn->prepare("
-            INSERT INTO pendidikan (nip_dosen, pendidikan_tinggi, universitas, tahun_awal, tahun_akhir)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO pendidikan (nip_dosen, pendidikan_tinggi, universitas, tahun_akhir)
+            VALUES (?, ?, ?, ?)
         ");
         $stmt->execute([
-            $_POST['nip_dosen'], $_POST['pendidikan_tinggi'], $_POST['universitas'],
-            $_POST['tahun_awal'], $_POST['tahun_akhir']
+            $_POST['nip_dosen'],
+            $_POST['pendidikan_tinggi'],
+            $_POST['universitas'],
+            $_POST['tahun_akhir']
         ]);
     }
 
     if (isset($_POST['update_edu'])) {
         $stmt = $conn->prepare("
-            UPDATE pendidikan SET pendidikan_tinggi=?, universitas=?, tahun_awal=?, tahun_akhir=? WHERE id=?
-        ");
+            UPDATE pendidikan SET pendidikan_tinggi=?, universitas=?, tahun_akhir=? WHERE id=?");
         $stmt->execute([
-            $_POST['pendidikan_tinggi'], $_POST['universitas'],
-            $_POST['tahun_awal'], $_POST['tahun_akhir'], $_POST['id']
+            $_POST['pendidikan_tinggi'],
+            $_POST['universitas'],
+            $_POST['tahun_akhir'],
+            $_POST['id']
         ]);
     }
 
     // Mata Kuliah CRUD
     if (isset($_POST['add_mk'])) {
 
-        function kodeMK($nama,$prodi,$tahun){
-            $a=""; foreach(explode(" ",$nama) as $w){ $a .= strtoupper($w[0]); }
-            $b=""; foreach(explode(" ",$prodi) as $w){ $b .= strtoupper($w[0]); }
-            $tahun = str_replace(" ","",$tahun);
-            if(str_contains($tahun,"/")){
-                [$x,$y] = explode("/",$tahun);
-                return "$a-$b-" . substr($x,-2) . substr($y,-2);
+        $allowedSemester = ['ganjil','genap'];
+        if (!in_array($_POST['semester'], $allowedSemester)) {
+            die("Semester tidak valid");
+        }
+        function kodeMK($nama, $prodi, $tahun, $nip){
+            $a = "";
+            foreach (explode(" ", $nama) as $w) {
+                $a .= strtoupper($w[0]);
             }
-            return "$a-$b-" . substr($tahun,-2);
+
+            $b = "";
+            foreach (explode(" ", $prodi) as $w) {
+                $b .= strtoupper($w[0]);
+            }
+
+            $tahun = str_replace(" ", "", $tahun);
+
+            if (str_contains($tahun, "/")) {
+                [$x, $y] = explode("/", $tahun);
+                $tahunKode = substr($x, -2) . substr($y, -2);
+            } else {
+                $tahunKode = substr($tahun, -2);
+            }
+
+            return "$a-$b-$tahunKode-$nip";
         }
 
-        $kode = kodeMK($_POST['nama_matkul'], $_POST['prodi'], $_POST['tahun_ajar']);
+        $kode = kodeMK(
+            $_POST['nama_matkul'],
+            $_POST['prodi'],
+            $_POST['tahun_ajar'],
+            $_POST['nip']
+        );
 
         $stmt = $conn->prepare("
             INSERT INTO mata_kuliah (kode_matkul, nip, nama_matkul, semester, prodi, sks, tahun_ajar)
@@ -213,11 +289,14 @@ ob_start();
 
     <!-- FOTO + ROLE -->
     <div class="text-center mb-4">
-        <img src="../../../public/uploads/profiles/<?= $user_id ?>.jpg"
-             onerror="this.src='../../../public/assets/img/default-user.png';"
-             class="profile-img">
+        <img id="userAvatar"
+            src="../../../public/uploads/profiles/<?= $user_id ?>.jpg?v=<?= time() ?>"
+            onerror="this.onerror=null;this.src='../../../public/assets/img/default-user.png';"
+            class="profile-img">
 
-        <form method="POST" enctype="multipart/form-data" class="mt-3">
+        <form id="fotoForm" class="mt-3" enctype="multipart/form-data">
+            <input type="hidden" name="ajax_upload_foto" value="1">
+            <input type="hidden" name="user_id" value="<?= $user_id ?>">
             <input type="hidden" name="upload_foto" value="1">
             <input type="hidden" name="foto_user_id" value="<?= $user_id ?>">
             <input type="hidden" name="user_id_redirect" value="<?= $user_id ?>">
@@ -235,11 +314,19 @@ ob_start();
     <form method="POST">
         <input type="hidden" name="user_id_redirect" value="<?= $user_id ?>">
         <input type="hidden" name="nip" value="<?= $nip ?>">
+        <input type="hidden" name="nip_lama" value="<?= $nip ?>">
 
         <table class="table table-borderless">
-            <tr>
-                <th width="25%">NIP</th>
-                <td><?= safe($nip) ?></td>
+            <tr class="editable-row">
+                <th>NIP</th>
+                <td>
+                    <span class="text-value"><?= safe($nip) ?></span>
+                    <input type="text"
+                        name="nip_baru"
+                        class="form-control edit-input"
+                        value="<?= safe($nip) ?>">
+                    <i class="bi bi-pencil-square text-primary action-btn ms-2 edit-toggle"></i>
+                </td>
             </tr>
 
             <?php
@@ -275,12 +362,10 @@ ob_start();
         <input type="hidden" name="add_edu" value="1">
         <input type="hidden" name="nip_dosen" value="<?= $nip ?>">
         <input type="hidden" name="user_id_redirect" value="<?= $user_id ?>">
-
         <div class="row g-2">
             <div class="col"><input class="form-control" name="pendidikan_tinggi" placeholder="Jenjang"></div>
             <div class="col"><input class="form-control" name="universitas" placeholder="Universitas"></div>
-            <div class="col"><input class="form-control" name="tahun_awal" placeholder="Mulai"></div>
-            <div class="col"><input class="form-control" name="tahun_akhir" placeholder="Selesai"></div>
+            <div class="col"><input class="form-control" name="tahun_akhir" placeholder="Tahun Lulus"></div>
             <div class="col-auto"><button class="btn btn-success btn-sm">Tambah</button></div>
         </div>
     </form>
@@ -298,12 +383,10 @@ ob_start();
 
                 <div class="col text-display"><?= safe($edu['pendidikan_tinggi']) ?></div>
                 <div class="col text-display"><?= safe($edu['universitas']) ?></div>
-                <div class="col text-display"><?= safe($edu['tahun_awal']) ?></div>
                 <div class="col text-display"><?= safe($edu['tahun_akhir']) ?></div>
 
                 <input class="col form-control text-edit d-none" name="pendidikan_tinggi" value="<?= safe($edu['pendidikan_tinggi']) ?>">
                 <input class="col form-control text-edit d-none" name="universitas" value="<?= safe($edu['universitas']) ?>">
-                <input class="col form-control text-edit d-none" name="tahun_awal" value="<?= safe($edu['tahun_awal']) ?>">
                 <input class="col form-control text-edit d-none" name="tahun_akhir" value="<?= safe($edu['tahun_akhir']) ?>">
 
                 <div class="col-auto d-flex gap-2">
@@ -325,11 +408,17 @@ ob_start();
         <input type="hidden" name="user_id_redirect" value="<?= $user_id ?>">
 
         <div class="row g-2">
-            <div class="col"><input class="form-control" name="nama_matkul" placeholder="Nama MK"></div>
-            <div class="col"><input class="form-control" name="semester" placeholder="Sem"></div>
+            <div class="col"><input class="form-control" name="nama_matkul" placeholder="Nama Mata Kuliah"></div>
+            <div class="col">
+                <select class="form-select" name="semester" required>
+                    <option value="">Semester</option>
+                    <option value="ganjil">Ganjil</option>
+                    <option value="genap">Genap</option>
+                </select>
+            </div>
             <div class="col"><input class="form-control" name="sks" placeholder="SKS"></div>
             <div class="col"><input class="form-control" name="prodi" placeholder="Prodi"></div>
-            <div class="col"><input class="form-control" name="tahun_ajar" placeholder="Tahun"></div>
+            <div class="col"><input class="form-control" name="tahun_ajar" placeholder="Tahun : 2025/2026"></div>
             <div class="col-auto"><button class="btn btn-success btn-sm">Tambah</button></div>
         </div>
     </form>
@@ -352,7 +441,10 @@ ob_start();
                 <div class="col text-display"><?= safe($m['tahun_ajar']) ?></div>
 
                 <input class="col form-control text-edit d-none" name="nama_matkul" value="<?= safe($m['nama_matkul']) ?>">
-                <input class="col form-control text-edit d-none" name="semester" value="<?= safe($m['semester']) ?>">
+                <select class="col form-select text-edit d-none" name="semester">
+                    <option value="ganjil" <?= $m['semester']=='ganjil'?'selected':'' ?>>Ganjil</option>
+                    <option value="genap"  <?= $m['semester']=='genap'?'selected':'' ?>>Genap</option>
+                </select>
                 <input class="col form-control text-edit d-none" name="sks" value="<?= safe($m['sks']) ?>">
                 <input class="col form-control text-edit d-none" name="prodi" value="<?= safe($m['prodi']) ?>">
                 <input class="col form-control text-edit d-none" name="tahun_ajar" value="<?= safe($m['tahun_ajar']) ?>">
@@ -391,6 +483,29 @@ ob_start();
 </div>
 
 <script>
+
+document.getElementById('fotoForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const form  = this;
+    const data  = new FormData(form);
+    const img   = document.getElementById('userAvatar');
+
+    fetch('', {
+        method: 'POST',
+        body: data
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.ok){
+            img.src = img.src.split('?')[0] + '?v=' + res.v;
+            form.reset();
+        } else {
+            alert(res.msg);
+        }
+    })
+    .catch(() => alert('AJAX error'));
+});
 // toggle inline edit
 document.querySelectorAll(".edit-toggle").forEach(btn => {
     btn.onclick = () => {

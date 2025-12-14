@@ -140,32 +140,37 @@ ob_start();
 <?php foreach($users as $u): ?>
     <?php $roleUtama = resolveRole($u['roles']); ?>
 
-    <div class="col-6 col-md-4 col-lg-3 mb-4">
-        <div class="card shadow-sm border-0 p-3 text-center user-card">
+        <div class="col-6 col-md-4 col-lg-3">
+        <div class="card user-card h-100">
 
             <!-- FOTO -->
             <div class="user-avatar-wrapper">
-                <img src="../../../public/uploads/profiles/<?=$u['user_id']?>.jpg"
-                     onerror="this.src='../../../public/assets/img/default-user.png';"
-                     class="user-avatar">
+                <img src="../../../public/uploads/profiles/<?=$u['user_id']?>.jpg?v=<?=time()?>"
+                    onerror="this.onerror=null;this.src='../../../public/assets/img/default-user.png';"
+                    class="user-avatar"
+                    alt="User Photo">
             </div>
 
-            <!-- NAMA -->
-            <h6 class="fw-bold mt-3 mb-1">
-                <?= htmlspecialchars($u['nama']) ?>
-            </h6>
+            <!-- BODY -->
+            <div class="card-body text-center d-flex flex-column">
 
-            <!-- ROLE -->
-            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-1 mb-2" 
-                  style="border-radius: 12px;">
-                <?= htmlspecialchars($roleUtama) ?>
-            </span>
+                <!-- NAMA -->
+                <h6 class="user-name">
+                    <?= htmlspecialchars($u['nama']) ?>
+                </h6>
 
-            <a href="detail_user.php?id=<?=$u['user_id']?>" 
-               class="btn btn-outline-primary btn-sm w-100 mt-2">
-                <i class="bi bi-eye"></i> Detail
-            </a>
+                <!-- ROLE -->
+                <span class="user-role">
+                    <?= htmlspecialchars($roleUtama) ?>
+                </span>
 
+                <!-- BUTTON -->
+                <a href="detail_user.php?id=<?=$u['user_id']?>"
+                class="btn btn-outline-primary btn-sm mt-auto">
+                    <i class="bi bi-eye"></i> Detail
+                </a>
+
+            </div>
         </div>
     </div>
 <?php endforeach; ?>
@@ -205,11 +210,60 @@ ob_start();
 <style>
 .user-card {
     border-radius: 14px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
     transition: .25s ease;
 }
+
 .user-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+/* AVATAR */
+.user-avatar-wrapper {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.user-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e9efff;
+    background: #fff;
+}
+
+/* BODY */
+.card-body {
+    padding: 15px;
+}
+
+/* NAMA — FIX tinggi */
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 10px 0 6px;
+    line-height: 1.3;
+    height: 36px;                 /* KUNCI TINGGI */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* ROLE BADGE */
+.user-role {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0d6efd;
+    background: #e7f0ff;
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 12px;
 }
 
 .user-photo {

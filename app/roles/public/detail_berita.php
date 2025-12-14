@@ -258,7 +258,7 @@ ob_start();
 
         <!-- Search -->
         <div class="sidebar-item mb-4">
-          <h3 class="sidebar-title">Search</h3>
+          <h3 class="sidebar-title">Cari</h3>
           <!-- search diarahkan ke list berita -->
           <form action="berita.php" method="get" class="mt-3 d-flex">
             <input type="text"
@@ -273,7 +273,7 @@ ob_start();
 
         <!-- Categories -->
         <div class="sidebar-item mb-4">
-          <h3 class="sidebar-title">Categories</h3>
+          <h3 class="sidebar-title">kategori</h3>
           <ul class="mt-3">
             <?php foreach ($kategoriList as $k): 
               $namaKat = $k['kategori'] ?: 'lainnya';
@@ -291,11 +291,12 @@ ob_start();
 
         <!-- Recent Posts -->
         <div class="sidebar-item">
-          <h3 class="sidebar-title">Recent Posts</h3>
+          <h3 class="sidebar-title">Berita terbaru</h3>
 
           <div class="mt-3">
             <?php foreach ($recentPosts as $r): 
               $thumbSmall = $r['foto']
+              
                 ? "../../../public/uploads/berita/" . $r['foto']
                 : "assets/img/blog/blog-1.jpg";
             ?>

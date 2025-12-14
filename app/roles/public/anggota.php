@@ -8,15 +8,15 @@ require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
 
 /*
-   RULE TUAN:
-   - id_anggota = nip / nim (bukan user_id)
-   - staff TIDAK pakai nip/nim
-   - foto mengikuti user_management: uploads/profiles/{user_id}.jpg
-   - role priority: ketua lab → admin → operator → dosen → mahasiswa
+ RULE:
+ - filter hanya all / dosen / mahasiswa / alumni
+ - role utama (ketua lab/admin/operator) MENANG
+ - tidak boleh dobel
+ - detail_anggota.php tetap
 */
 
 /* ============================================================
-   1. AMBIL DOSEN + ROLE + USER_ID
+   1. DOSEN
 ============================================================ */
 $sqlDosen = "
     SELECT 
@@ -33,11 +33,10 @@ $sqlDosen = "
     LEFT JOIN user_roles ur ON ur.user_id = u.user_id
     LEFT JOIN roles r ON r.role_id = ur.role_id
 ";
-
 $dosen = $conn->query($sqlDosen)->fetchAll(PDO::FETCH_ASSOC);
 
 /* ============================================================
-   2. AMBIL MAHASISWA + ROLE
+   2. MAHASISWA
 ============================================================ */
 $sqlMhs = "
     SELECT
@@ -54,11 +53,10 @@ $sqlMhs = "
     LEFT JOIN user_roles ur ON ur.user_id = u.user_id
     LEFT JOIN roles r ON r.role_id = ur.role_id
 ";
-
 $mahasiswa = $conn->query($sqlMhs)->fetchAll(PDO::FETCH_ASSOC);
 
 /* ============================================================
-   3. AMBIL STAFF (ADMIN / OPERATOR / KETUA LAB)
+   3. STAFF (ROLE UTAMA)
 ============================================================ */
 $sqlStaff = "
     SELECT
@@ -71,19 +69,13 @@ $sqlStaff = "
         r.role_name
     FROM users u
     LEFT JOIN roles r
-        ON r.role_id = (SELECT role_id FROM user_roles WHERE user_id = u.user_id LIMIT 1)
-    WHERE r.role_name IN ('ketua lab', 'admin', 'operator')
+      ON r.role_id = (SELECT role_id FROM user_roles WHERE user_id = u.user_id LIMIT 1)
+    WHERE r.role_name IN ('ketua lab','admin','operator')
 ";
-
 $staff = $conn->query($sqlStaff)->fetchAll(PDO::FETCH_ASSOC);
 
 /* ============================================================
-   4. GABUNGKAN SEMUA ANGGOTA
-============================================================ */
-$anggota = array_merge($staff, $dosen, $mahasiswa);
-
-/* ============================================================
-   5. ROLE PRIORITY SORTING
+   4. ROLE PRIORITY
 ============================================================ */
 function rolePriority($role) {
     return match(strtolower($role)) {
@@ -96,127 +88,104 @@ function rolePriority($role) {
     };
 }
 
-usort($anggota, function($a, $b) {
-    return rolePriority($a['role_name']) <=> rolePriority($b['role_name']);
-});
+/* ============================================================
+   🔥 FIX DOBEL + ROLE UTAMA MENANG (MINIMAL)
+============================================================ */
+$raw = array_merge($staff, $dosen, $mahasiswa);
+$map = [];
+
+foreach ($raw as $r) {
+    $key = $r['user_id'] ?? ($r['tipe'].'-'.$r['id_anggota']);
+
+    if (!isset($map[$key])) {
+        $map[$key] = $r;
+    } else {
+        if (rolePriority($r['role_name']) < rolePriority($map[$key]['role_name'])) {
+            $map[$key]['role_name'] = $r['role_name'];
+        }
+    }
+}
+
+$anggota = array_values($map);
 ?>
 
-<!-- ============================================================== -->
-<!-- STYLE -->
-<!-- ============================================================== -->
 <style>
 .anggota-filter-group{text-align:center;margin-bottom:1.5rem}
-.anggota-filter-btn{background:none;border:none;padding:6px 14px;margin:0 4px;font-weight:600;font-size:1rem;color:#64748b;cursor:pointer;position:relative}
+.anggota-filter-btn{background:none;border:none;padding:6px 14px;font-weight:600;color:#64748b;cursor:pointer}
 .anggota-filter-btn.active{color:#facc15}
-.anggota-filter-btn.active::after{width:60%}
-.anggota-filter-btn::after{content:"";position:absolute;left:50%;bottom:-4px;width:0;height:2px;background:#facc15;border-radius:999px;transform:translateX(-50%);transition:width .2s ease}
-
-.team-member{background:#fff;border-radius:18px;padding:20px 16px 26px;box-shadow:0 8px 20px rgba(15,23,42,.06);transition:.25s;text-align:center}
-.team-member:hover{transform:translateY(-8px);box-shadow:0 16px 35px rgba(15,23,42,.15)}
-.team-member .member-img{width:100%;height:240px;overflow:hidden;border-radius:14px;background:#f1f5f9}
-.team-member .member-img img{width:100%;height:100%;object-fit:cover}
-.team-member::before{content:"";width:70%;height:1.5px;background:#e2e8f0;margin:12px auto 18px;display:block;border-radius:2px}
-.member-info h4{font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:6px}
-.member-info span{font-size:.85rem;font-weight:500;color:#64748b;text-transform:uppercase}
+.team-member{background:#fff;border-radius:18px;padding:20px 16px 26px;box-shadow:0 8px 20px rgba(15,23,42,.06);text-align:center}
+.member-img{width:100%;height:240px;overflow:hidden;border-radius:14px;background:#f1f5f9}
+.member-img img{width:100%;height:100%;object-fit:cover}
+.member-info h4{font-size:1.1rem;font-weight:700;margin-top:10px}
+.member-info span{font-size:.85rem;color:#64748b;text-transform:uppercase}
 </style>
 
-<!-- ============================================================== -->
-<!-- TEAM SECTION -->
-<!-- ============================================================== -->
 <section id="team" class="team section">
-
-  <div class="container section-title">
-    <h2>Team</h2>
+<div class="container section-title">
     <p>Anggota Lab</p>
-  </div>
+</div>
 
-  <div class="container">
+<div class="container">
 
-    <!-- FILTER -->
-    <div class="anggota-filter-group">
-        <button class="anggota-filter-btn active" data-filter="all">All</button>
-        <button class="anggota-filter-btn" data-filter="dosen">Dosen</button>
-        <button class="anggota-filter-btn" data-filter="mahasiswa">Mahasiswa</button>
-        <button class="anggota-filter-btn" data-filter="alumni">Alumni</button>
-    </div>
+<div class="anggota-filter-group">
+    <button class="anggota-filter-btn active" data-filter="all">All</button>
+    <button class="anggota-filter-btn" data-filter="dosen">Dosen</button>
+    <button class="anggota-filter-btn" data-filter="mahasiswa">Mahasiswa</button>
+    <button class="anggota-filter-btn" data-filter="alumni">Alumni</button>
+</div>
 
-    <div class="row gy-4">
+<div class="row gy-4">
 
-    <?php foreach ($anggota as $row): ?>
+<?php foreach ($anggota as $row):
 
-        <?php
-        $role = strtolower($row['role_name'] ?? '');
-        $kategori = strtolower($row['kategori'] ?? '');
-        $status = strtolower($row['status_mhs'] ?? '');
+$role = strtolower($row['role_name'] ?? '');
+$kategori = strtolower($row['kategori'] ?? '');
+$status = strtolower($row['status_mhs'] ?? '');
 
-        // FILTER TYPE
-        if (in_array($role, ['ketua lab','admin','operator'])) {
-            $filter = 'staff';
-        } elseif ($role === 'dosen') {
-            $filter = 'dosen';
-        } elseif ($role === 'mahasiswa' && ($kategori === 'alumni' || $status === 'lulus')) {
-            $filter = 'alumni';
-        } else {
-            $filter = 'mahasiswa';
-        }
+// FILTER BASED ON AKADEMIK, BUKAN ROLE
+if ($row['tipe'] === 'dosen') $filter = 'dosen';
+elseif ($row['tipe'] === 'mahasiswa' && ($kategori==='alumni'||$status==='lulus')) $filter='alumni';
+elseif ($row['tipe'] === 'mahasiswa') $filter='mahasiswa';
+else $filter='dosen'; // staff dosen tetap masuk dosen
 
-        // FOTO — mengikuti USER MANAGEMENT
-        $foto = "../../../public/uploads/profiles/" . ($row['user_id'] ?? "0") . ".jpg";
-        $defaultFoto = "../../../public/assets/img/default-user.png";
+$foto = "../../../public/uploads/profiles/" . ($row['user_id'] ?? 0) . ".jpg";
+$default = "../../../public/assets/img/default-user.png";
 
-        // LINK DETAIL
-        $link = ($row['tipe'] === 'staff')
-            ? "#"
-            : "anggota_detail.php?tipe={$row['tipe']}&id={$row['id_anggota']}";
-        ?>
+$link = ($row['tipe']==='staff')
+    ? "#"
+    : "anggota_detail.php?tipe={$row['tipe']}&id={$row['id_anggota']}";
+?>
 
-        <div class="col-lg-3 col-md-6 anggota-item" data-type="<?= $filter ?>">
+<div class="col-lg-3 col-md-6 anggota-item" data-type="<?= $filter ?>">
+<a href="<?= $link ?>" class="text-decoration-none text-dark">
+<div class="team-member">
+<div class="member-img">
+<img src="<?= $foto ?>?v=<?= time() ?>" onerror="this.src='<?= $default ?>'">
+</div>
+<div class="member-info">
+    <h4><?= htmlspecialchars($row['nama']) ?></h4>
+    <span><?= strtoupper($row['role_name']) ?></span>
+</div>
+</div>
+</a>
+</div>
 
-            <a href="<?= $link ?>" class="text-decoration-none text-dark">
+<?php endforeach; ?>
 
-                <div class="team-member">
-
-                <div class="member-img">
-                    <img src="<?= $foto ?>" onerror="this.src='<?= $defaultFoto ?>';">
-                </div>
-
-                <div class="member-info">
-                    <h4><?= htmlspecialchars($row['nama']) ?></h4>
-                    <span><?= strtoupper($row['role_name']) ?></span>
-                </div>
-
-                </div>
-
-            </a>
-
-        </div>
-
-    <?php endforeach; ?>
-
-    </div>
-
-  </div>
-
+</div>
+</div>
 </section>
 
 <script>
-// FILTER SCRIPT
-document.addEventListener("DOMContentLoaded", () => {
-    const btns = document.querySelectorAll(".anggota-filter-btn");
-    const items = document.querySelectorAll(".anggota-item");
-
-    btns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            btns.forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-
-            const filter = btn.dataset.filter;
-
-            items.forEach(item => {
-                item.classList.toggle("d-none", !(filter === "all" || item.dataset.type === filter));
-            });
-        });
+document.querySelectorAll(".anggota-filter-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".anggota-filter-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const f=btn.dataset.filter;
+    document.querySelectorAll(".anggota-item").forEach(i=>{
+      i.classList.toggle("d-none",!(f==="all"||i.dataset.type===f));
     });
+  }
 });
 </script>
 

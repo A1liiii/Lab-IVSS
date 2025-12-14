@@ -81,7 +81,7 @@ if (!$tipe || !$id) {
                   END AS level_pendidikan
                 FROM pendidikan
                 WHERE nip_dosen = :nip
-                ORDER BY level_pendidikan ASC, tahun_awal ASC
+                ORDER BY level_pendidikan ASC
             ");
             $stmt->execute(['nip' => $profil['nip']]);
             $pendidikan = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -287,7 +287,7 @@ if (!$tipe || !$id) {
           <div class="col-md-3 text-center">
             <div class="profile-photo-wrapper mx-md-0 mx-auto">
               <img
-                src="/lab-IVSS/public/uploads/anggota/<?= htmlspecialchars($profil['foto'] ?? 'default.jpg') ?>"
+                src="../../../public/uploads/profiles/<?= $user_id ?>.jpg?v=<?= time() ?>"
                 alt="<?= htmlspecialchars($profil['nama'] ?? '') ?>">
             </div>
           </div>
@@ -389,9 +389,8 @@ if (!$tipe || !$id) {
                       </div>
                       <div class="item-meta">
                         <?= htmlspecialchars($pd['universitas']) ?>
-                        <?php if (!empty($pd['tahun_awal']) || !empty($pd['tahun_akhir'])): ?>
-                          (<?= htmlspecialchars($pd['tahun_awal'] ?? '') ?> &ndash;
-                           <?= htmlspecialchars($pd['tahun_akhir'] ?? '') ?>)
+                        <?php if (!empty($pd['tahun_akhir'])): ?>
+                          (<?= htmlspecialchars($pd['tahun_akhir'] ?? '') ?>)
                         <?php endif; ?>
                       </div>
                     </div>
