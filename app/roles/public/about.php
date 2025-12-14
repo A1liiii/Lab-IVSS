@@ -2,340 +2,352 @@
 $title = "Tentang Kami | IVSS";
 $active = "about";
 
-ob_start(); ?>
-<!-- About Section -->
-    <section id="about" class="about section">
+require_once __DIR__ . "/../../core/database.php";
+$conn = Database::connect();
 
-      <div class="container" data-aos="fade-up">
+/* ============================================================
+   FETCH LAB INFO (nama, deskripsi, visi, misi)
+============================================================ */
+$stmtLab = $conn->prepare("SELECT nama, deskripsi, visi, misi FROM lab_info LIMIT 1");
+$stmtLab->execute();
+$lab = $stmtLab->fetch(PDO::FETCH_ASSOC) ?: [
+    'nama' => 'Laboratorium',
+    'deskripsi' => '',
+    'visi' => '',
+    'misi' => ''
+];
+
+/* ============================================================
+   FETCH DOSEN + ROLE
+============================================================ */
+$sqlDosen = "
+    SELECT 
+        u.user_id,
+        u.username,
+        u.nip,
+        d.nama AS nama_dosen
+    FROM users u
+    JOIN dosen d ON d.nip = u.nip
+";
+$stmtDosen = $conn->prepare($sqlDosen);
+$stmtDosen->execute();
+$dosenList = $stmtDosen->fetchAll(PDO::FETCH_ASSOC);
+
+/* Ambil role utama */
+function getRoleUtama($conn, $user_id) {
+
+    $stmt = $conn->prepare("
+        SELECT r.role_name
+        FROM user_roles ur
+        JOIN roles r ON r.role_id = ur.role_id
+        WHERE ur.user_id = ?
+    ");
+    $stmt->execute([$user_id]);
+    $roles = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if (!$roles) return "Peneliti";
+
+    $prioritas = ["ketua lab", "admin", "operator", "dosen"];
+
+    foreach ($prioritas as $p) {
+        foreach ($roles as $r) {
+            if (strtolower($r) === $p) {
+                return ucfirst($r);
+            }
+        }
+    }
+
+    return "Peneliti";
+}
+
+/* PRIORITAS SORTING ANGGOTA */
+function getSortIndex($role) {
+    $priority = [
+        "ketua lab" => 1,
+        "admin" => 2,
+        "operator" => 3,
+        "dosen" => 4,
+        "peneliti" => 5
+    ];
+
+    $r = strtolower($role);
+
+    return isset($priority[$r]) ? $priority[$r] : 999;
+
+}
+
+/* ============================================================
+   FETCH MAHASISWA RISET
+============================================================ */
+$sqlMhs = "
+    SELECT nim, nama
+    FROM mahasiswa
+    WHERE kategori = 'riset'
+      AND status = 'aktif'
+    ORDER BY nama ASC
+";
+$stmtMhs = $conn->prepare($sqlMhs);
+$stmtMhs->execute();
+$mhsList = $stmtMhs->fetchAll(PDO::FETCH_ASSOC);
+
+/* ============================================================
+   SORT DOSEN BERDASARKAN PRIORITAS ROLE
+============================================================ */
+foreach ($dosenList as &$d) {
+    $d['main_role'] = getRoleUtama($conn, $d['user_id']);
+    $d['sort_index'] = getSortIndex(strtolower($d['main_role']));
+}
+unset($d);
+
+usort($dosenList, function($a, $b) {
+    return $a['sort_index'] - $b['sort_index'];
+});
+
+/* ============================================================
+   START OUTPUT BUFFER
+============================================================ */
+ob_start();
+?>
+
+<style>
+/* FIX CARD TEAM SIZE */
+.team-member {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 15px;
+    width: 100%;
+    max-width: 260px;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+/* Foto Rounded Circle */
+.member-img {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 15px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #eee;
+}
+
+.member-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member-info h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.member-info span {
+    font-size: 14px;
+    color: #666;
+}
+</style>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="about section">
+    <div class="container" data-aos="fade-up">
         <div class="row gx-0">
 
-          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
-            <div class="content">
-              <h2>PROFIL LABORATORIUM</h2>
-              <p>Laboratorium Visi Cerdas dan Sistem Cerdas merupakan pusat riset dan pengembangan di bawah Jurusan Teknologi Informasi Politeknik Negeri Malang 
-                yang berfokus pada bidang intelligent vision, dan smart system. Laboratorium ini menjadi wadah bagi dosen dan mahasiswa untuk melakukan penelitian, 
-                pembelajaran, serta pelatihan dalam pengembangan sistem cerdas berbasis pengolahan citra dan kecerdasan buatan.</p>
-              <p>Penelitian di laboratorium ini mengintegrasikan computer vision, AI, dan IoT untuk menciptakan solusi inovatif yang mampu mengenali, menganalisis, 
-                serta merespon lingkungan secara mandiri.</p>
-               
-              </div>
-            </div>
-          </div>
+            <div class="col-lg-6 d-flex flex-column justify-content-center" 
+                 data-aos="fade-up" data-aos-delay="200">
+                <div class="content">
+                    <h2><?= htmlspecialchars($lab['nama']) ?></h2>
+                    
+                    <p style="text-align: justify;">
+                        <?= nl2br(htmlspecialchars($lab['deskripsi'])) ?>
+                    </p>
 
-          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="assets/img/about.jpg" class="img-fluid" alt="">
-          </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 d-flex align-items-center" 
+                 data-aos="zoom-out" data-aos-delay="200">
+                <img src="../../../public/assets/img/dokum10.jpg" class="img-fluid" alt="">
+            </div>
 
         </div>
-      </div>
+    </div>
+</section>
 
-    </section><!-- /About Section -->
-    
-   
-     <!-- Values Section -->
-    <section id="values" class="values section">
+<!-- Values Section -->
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+  <p>Visi & Misi<br></p>
+</div><!-- End Section Title -->
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Our Values</h2>
-        <p>VISI DAN Misi<br></p>
-      </div><!-- End Section Title -->
+<div class="container">
+  <div class="row gy-4 justify-content-center">
 
-      <div class="container">
+    <!-- VISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="100">
+      <div class="vm-card vm-visi">
 
-        <div class="row gy-4 justify-content-center">
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-stars"></i>
+          </div>
+        </div>
 
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card">
-              <img src="assets/img/values-1.png" class="img-fluid" alt="">
-              <h3>VISI</h3>
-              <p style="text-align: justify;">
-                Menjadi laboratorium unggulan dalam pengembangan teknologi penglihatan cerdas (Intelligent Vision) dan sistem cerdas terintegrasi (Smart Systems) 
-                yang inovatif, aplikatif, serta berdaya saing nasional dan internasional untuk mendukung kemajuan bidang teknologi informasi dan industri berbasis 
-                kecerdasan buatan.
-              </p>
-            </div>
-          </div><!-- End Card Item -->
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card">
-              <img src="assets/img/values-2.png" class="img-fluid" alt="">
-              <h3>MISI</h3>
-            <ol  style="text-align: justify;">
-                <li>Melaksanakan penelitian dan inovasi di bidang computer vision, artificial intelligence, dan smart systems yang berorientasi pada kebutuhan industri dan masyarakat.</li>
-
-                <li>Menyediakan fasilitas riset dan pelatihan bagi dosen dan mahasiswa Polinema dalam pengembangan sistem berbasis penglihatan komputer, pembelajaran mesin, dan Internet of Things (IoT).</li>
-
-                <li>Mendorong kolaborasi akademik dan industri dalam penerapan teknologi intelligent vision dan smart systems untuk menghasilkan solusi nyata dan berkelanjutan.</li>
-
-                <li>Menghasilkan publikasi ilmiah, prototipe, dan produk inovatif yang mendukung reputasi Polinema sebagai institusi vokasi berkelas internasional.</li>
-
-                <li>Mengembangkan ekosistem pembelajaran adaptif berbasis riset untuk mencetak sumber daya manusia unggul di bidang kecerdasan buatan dan sistem cerdas.</li>
-            </ol>
-
-            </div>
-          </div><!-- End Card Item -->
-
+        <div class="vm-body">
+          <h3 class="vm-title">VISI</h3>
+          <p class="vm-text">
+            <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
+          </p>
         </div>
 
       </div>
+    </div><!-- End VISI -->
 
+    <!-- MISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="200">
+      <div class="vm-card vm-misi">
+
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-list-check"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">MISI</h3>
+
+          <?php
+            $misiText = !empty($lab['misi']) ? $lab['misi'] : '';
+            // pecah per kalimat berdasarkan titik.
+            $misiList = array_filter(array_map('trim', preg_split('/\.(\s|$)/', $misiText)));
+          ?>
+
+          <?php if (!empty($misiList)): ?>
+            <ul class="vm-misi-list">
+              <?php foreach ($misiList as $item): ?>
+                <li><?= htmlspecialchars($item) ?>.</li>
+              <?php endforeach; ?>
+            </ul>
+          <?php else: ?>
+            <p class="vm-text">Misi lab belum diisi.</p>
+          <?php endif; ?>
+
+        </div>
+
+      </div>
+    </div><!-- End MISI -->
+
+  </div>
+</div>
     </section><!-- /Values Section -->
 
+<!-- TEAM SECTION -->
+<section id="team" class="team section">
+  <div class="container section-title" data-aos="fade-up">
+    <p>ANGGOTA TIM LABORATORIUM</p>
+  </div>
 
-    <!-- Team Section -->
-    <section id="team" class="team section">
+  <div class="container">
+    <div class="swiper init-swiper team-swiper">
+      <div class="swiper-wrapper">
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Team</h2>
-        <p>ANGGOTA TIM</p>
-      </div><!-- End Section Title -->
+        <?php if (!empty($anggotaLab)): ?>
+          <?php foreach ($anggotaLab as $a): ?>
 
-      <div class="container">
+            <?php
+              // ==========================
+              // FOTO
+              // ==========================
+              $foto = !empty($a['foto_resolved'])
+                ? $a['foto_resolved']
+                : "../../../public/assets/img/default-user.png";
 
-        <div class="row gy-4">
+              // ==========================
+              // ROLE
+              // ==========================
+              $displayRole = ucfirst(
+                !empty($a['role_name'])
+                  ? $a['role_name']
+                  : (!empty($a['tipe']) ? $a['tipe'] : 'anggota')
+              );
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-1.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+              // ==========================
+              // PROFIL ID & URL
+              // ==========================
+              $profilId = '';
+              if (!empty($a['nidn'])) {
+                $profilId = $a['nidn'];
+              } elseif (!empty($a['nim'])) {
+                $profilId = $a['nim'];
+              } elseif (!empty($a['user_id'])) {
+                $profilId = $a['user_id'];
+              }
+
+              $profilTipe = !empty($a['tipe']) ? $a['tipe'] : 'anggota';
+
+              $profilUrl = $profilId
+                ? "anggota_detail.php?tipe=" . urlencode($profilTipe) . "&id=" . urlencode($profilId)
+                : "#";
+
+              // ===== pengganti ?? =====
+              $namaNormal = isset($a['nama_normal']) ? $a['nama_normal'] : 'Tidak diketahui';
+              $email = isset($a['email']) ? $a['email'] : '-';
+            ?>
+
+            <div class="swiper-slide">
+              <div class="team-member">
+
+                <div class="member-img">
+                  <img
+                    src="<?= htmlspecialchars($foto, ENT_QUOTES, 'UTF-8') ?>"
+                    alt="<?= htmlspecialchars($namaNormal, ENT_QUOTES, 'UTF-8') ?>"
+                  >
                 </div>
-              </div>
-              <div class="member-info">
-                <h4>Dr. Ulla Delfana Rosiani, ST., MT.</h4>
-                <span>Kepala Lab</span>
-                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum exercitationem iure minima enim corporis et voluptate.</p>
+
+                <div class="member-info">
+                  <h4>
+                    <a href="<?= htmlspecialchars($profilUrl, ENT_QUOTES, 'UTF-8') ?>">
+                      <?= htmlspecialchars($namaNormal, ENT_QUOTES, 'UTF-8') ?>
+                    </a>
+                  </h4>
+
+                  <span><?= htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8') ?></span>
+
+                  <?php if (!empty($a['nidn'])): ?>
+                    <p><?= htmlspecialchars($a['nidn'], ENT_QUOTES, 'UTF-8') ?></p>
+                  <?php endif; ?>
+
+                  <p><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></p>
+                </div>
+
               </div>
             </div>
-          </div><!-- End Team Member -->
 
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-2.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Mamluatul Hani'ah, S.Kom., M.Kom</h4>
-                <span>Peneliti</span>
-                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-3.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Mungki Astiningrum, ST., M.Kom.</h4>
-                <span>Peneliti</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-4.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Prof. Dr. Eng. Rosa Andrie Asmara, ST., M.</h4>
-                <span>Peneliti</span>
-                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-        </div>
-        <div class="row gy-4 mt-5">
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-5.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Vivi Nur Wijayaningrum, S.Kom, M.Kom</h4>
-                <span>Peneliti</span>
-                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum exercitationem iure minima enim corporis et voluptate.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-6.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Wilda Imama Sabilla, S.Kom., M.Kom</h4>
-                <span>Peneliti</span>
-                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-7.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Dr. Ely Setyo Astuti, ST., MT.</h4>
-                <span>Peneliti</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-8.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>>Walter White</h4>
-                <span>Peneliti</span>
-                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-        </div>
-        <div class="row gy-4 mt-5">
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-9.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum exercitationem iure minima enim corporis et voluptate.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-10.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-11.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-            <div class="team-member">
-              <div class="member-img">
-                <img src="public/assets/img/team/team-12.jpg" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Amanda Jepson</h4>
-                <span>Accountant</span>
-                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.</p>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-        </div>
-
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="swiper-slide">
+            <p class="text-center">Belum ada anggota.</p>
+          </div>
+        <?php endif; ?>
 
       </div>
+    </div>
+  </div>
+</section>
+<!-- /Team Section -->
 
-    </section><!-- /Team Section -->
-
- <?php
+<?php
 $content = ob_get_clean();
 include __DIR__ . "/_layout.php";
 ?>

@@ -685,16 +685,16 @@ h6 {
    FOOTER BACKGROUND – COLORED (WHITE TOP FIX)
    ========================================================= */
 
-.footer {
+   .footer{
     background: linear-gradient(
-      180deg,
-      #ffffff 5%,        /* PUTIH – nyatu bg */
-      #0b3c7a 22%,       /* mulai biru tua */
-      #0e4fa3 60%,       /* biru */
-      #ffde59 140%       /* aksen kuning */
-      );
-      color: #ffffff;
-}
+      120deg,
+      rgba(0, 82, 170, 0.95) 0%,
+      rgba(0, 82, 170, 0.85) 35%,
+      rgba(255, 220, 120, 0.90) 100%
+    );
+    color: #ffffff;
+  }
+  
 
   
   /* Judul footer */
@@ -940,7 +940,7 @@ section,
   background: rgba(255,255,255,0.08);     /* tetap ada panel tipis */
   border: 1px solid rgba(255,255,255,0.18);
 
-  backdrop-filter: blur(5px);             /* sebelumnya 8px, sekarang halus */
+  backdrop-filter: blur(7px);             /* sebelumnya 8px, sekarang halus */
   -webkit-backdrop-filter: blur(2px);
 }
 
@@ -1148,57 +1148,130 @@ section,
 /*--------------------------------------------------------------
 # Values Section (Visi & Misi) - FIX
 --------------------------------------------------------------*/
-.values .values-card{
-  background: var(--surface-color);
-  color: var(--default-color);
-  padding: 28px 28px;
-  border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
-  transition: 0.25s ease;
-  text-align: left;     /* biar rapi */
-  height: auto;         /* PENTING: card gak disamain tingginya */
+/* ===== Visi & Misi Style ===== */
+.vm-card{
+  position: relative;
+  background: #fff;
+  border-radius: 26px;
+  padding: 34px 26px 28px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.10);
+  overflow: visible;
+  min-height: 260px;
 }
 
-.values .values-card:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.10);
+/* base warna bawah */
+.vm-card::after{
+  content:"";
+  position:absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -18px;
+  height: 40px;
+  border-radius: 0 0 26px 26px;
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,.12));
+  z-index: 0;
 }
 
-.values .values-card h3{
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 14px;
+/* ikon atas (dekoratif, bukan panah) */
+.vm-top{
+  position: absolute;
+  top: -26px;
+  left: 18px;
+  right: 18px;
+  display:flex;
+  align-items:center;
+  justify-content: flex-start; /* biar cuma ikon */
+  z-index: 3;
+}
+
+.vm-icon{
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 10px 18px rgba(0,0,0,.12);
+}
+
+.vm-icon i{ font-size: 26px; }
+
+/* isi card */
+.vm-body{
+  position: relative;
+  z-index: 2;
+  padding-top: 18px;
   text-align: center;
 }
 
-.values .values-text{
-  line-height: 1.8;
-  margin: 0;
-  color: rgba(0,0,0,0.72);
+.vm-title{
+  letter-spacing: 2px;
+  font-size: 18px;
+  margin: 8px 0 10px;
 }
 
-/* List misi biar terstruktur */
-.values .values-list{
+.vm-text{
   margin: 0;
-  padding-left: 18px;
+  font-size: 15.5px;
   line-height: 1.75;
-  color: rgba(0,0,0,0.72);
+  color: #444;
+  word-break: break-word;
+  text-align: center;
 }
 
-.values .values-list li{
-  margin-bottom: 10px;
+/* ===== Variasi warna Visi (orange) ===== */
+.vm-visi .vm-icon{
+  background: radial-gradient(circle at 30% 30%, #ffcc66 0%, #ff9f1a 45%, #ff7a00 100%);
+  color:#fff;
+}
+.vm-visi::after{
+  background: linear-gradient(90deg, #ffb100 0%, #ff7a00 100%);
+}
+.vm-visi .vm-title{ color:#ff9a0a; }
+
+/* ===== Variasi warna Misi (blue) ===== */
+.vm-misi .vm-icon{
+  background: radial-gradient(circle at 30% 30%, #56d4ff 0%, #1f8cff 45%, #0b57d0 100%);
+  color:#fff;
+}
+.vm-misi::after{
+  background: linear-gradient(90deg, #35d2ff 0%, #0b57d0 100%);
+}
+.vm-misi .vm-title{ color:#1f84ff; }
+
+/* ===== LIST MISI: bullet biru + justify ===== */
+.vm-misi-list{
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  text-align: justify;          /* rata kanan-kiri */
 }
 
-.values .values-list li:last-child{
-  margin-bottom: 0;
+.vm-misi-list li{
+  position: relative;
+  padding-left: 18px;
+  margin-bottom: 8px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #333;
 }
 
-/* Responsive */
-@media (max-width: 991px){
-  .values .values-card{
-    padding: 22px;
-  }
+/* bullet biru */
+.vm-misi-list li::before{
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: #1f84ff;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+/* responsif */
+@media (max-width: 576px){
+  .vm-card{ padding: 24px 18px 20px; min-height: auto; }
+  .vm-top{ left: 14px; right: 14px; }
+  .vm-icon{ width: 70px; height: 70px; }
 }
 
 
@@ -1971,113 +2044,119 @@ section,
 }
 
 /* =========================================================
-   TEAM SWIPER – CONSISTENT (FINAL)
-   Tempel PALING BAWAH main.css
+   TEAM SWIPER – FINAL POLISH (CARD + WAVE + BULLETS)
+   Fokus: card lebih bagus, tidak lebar, wave rapi
    ========================================================= */
 
-/* ====== 0) Wrapper spacing biar pagination nggak nabrak ====== */
+/* ===== A) SPACING WRAPPER (biar pagination & tombol pas) ===== */
 #team .team-swiper{
-  padding-bottom: 70px !important; /* ruang untuk bullets */
+  padding-bottom: 48px !important; /* pas seperti kamu mau */
   position: relative;
 }
 
-/* ====== 1) Slide width biar card rapi (opsional tapi bagus) ====== */
+/* ===== B) CARD WIDTH (biar nggak gendut) ===== */
 #team .swiper-slide{
-  width: 290px !important;
+  width: 250px !important;     /* lebih ramping */
   flex-shrink: 0 !important;
 }
 
 #team .team-member{
   width: 100% !important;
-  max-width: 290px !important;
+  max-width: 250px !important;
   margin: 0 auto !important;
 
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--surface-color);
-  box-shadow: 0 8px 26px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.06);
-  transition: 0.25s ease;
+  /* bikin card lebih "premium" */
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: var(--surface-color) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08) !important;
+  transition: transform .22s ease, box-shadow .22s ease !important;
 }
 
-/* Hover konsisten seperti card lain (naik sedikit, bukan zoom gede) */
+/* Hover: jangan zoom gede, cukup naik dikit */
 #team .team-member:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+  transform: translateY(-4px) !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12) !important;
 }
 
-/* ====== 2) Foto area biar proporsional + wave tetap ada ====== */
+/* ===== C) FOTO AREA + WAVE (lebih rapi & tidak “melebar”) ===== */
 #team .team-member .member-img{
-  position: relative;
-  overflow: hidden;
-  height: 220px !important;
-  background: #fff;
+  position: relative !important;
+  overflow: hidden !important;
+  height: 190px !important;     /* lebih proporsional */
+  background: #fff !important;
 }
 
+/* Foto default/real: tetap aman */
 #team .team-member .member-img img{
   width: 100% !important;
   height: 100% !important;
   object-fit: contain !important;
-  padding: 16px !important;
-  display: block;
-  position: relative;
-  z-index: 0;
+  padding: 14px !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 0 !important;
 }
 
-/* Wave mask tetap muncul */
+/* Wave: diperkecil & lebih “halus” */
 #team .team-member .member-img:after{
   content: "" !important;
   position: absolute !important;
   left: -1px !important;
   right: -1px !important;
   bottom: -1px !important;
-  height: 100% !important;
+
+  height: 62% !important;                 /* wave tidak dominan */
   background-color: var(--surface-color) !important;
 
   -webkit-mask: url("../img/team-shape.svg") no-repeat center bottom !important;
   mask: url("../img/team-shape.svg") no-repeat center bottom !important;
-  -webkit-mask-size: contain !important;
-  mask-size: contain !important;
+
+  -webkit-mask-size: 100% 58% !important; /* wave lebih pendek */
+  mask-size: 100% 58% !important;
 
   z-index: 1 !important;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
-/* ====== 3) Info spacing biar rapi ====== */
+/* ===== D) MEMBER INFO (rapi & konsisten) ===== */
 #team .team-member .member-info{
-  padding: 14px 16px 20px 16px !important;
+  padding: 14px 16px 18px 16px !important;
 }
 
 #team .team-member .member-info h4{
-  font-weight: 800;
-  font-size: 18px;
-  margin: 6px 0 4px 0;
+  font-weight: 800 !important;
+  font-size: 17px !important;
+  margin: 8px 0 4px 0 !important;
 }
 
 #team .team-member .member-info span{
-  font-size: 14px;
-  color: color-mix(in srgb, var(--default-color), transparent 45%);
+  display: block !important;
+  font-size: 14px !important;
+  color: color-mix(in srgb, var(--default-color), transparent 45%) !important;
 }
 
 #team .team-member .member-info p{
-  margin: 10px 0 0 0;
-  font-style: italic;
-  font-size: 14px;
-  line-height: 22px;
-  color: color-mix(in srgb, var(--default-color), transparent 25%);
+  margin: 10px 0 0 0 !important;
+  font-style: italic !important;
+  font-size: 14px !important;
+  line-height: 22px !important;
+  color: color-mix(in srgb, var(--default-color), transparent 25%) !important;
 }
 
-/* ====== 4) Pagination bullets – SAMA seperti .courses ====== */
+/* ===== E) BULLETS – PAKAI PUNYA KAMU (biar sama seperti aktivitas) ===== */
 #team .swiper-pagination{
-  margin-top: 26px !important;
+  margin-top: 18px !important;
   position: relative !important;
   bottom: auto !important;
 }
 
 #team .swiper-pagination-bullet{
-  width: 10px !important;
-  height: 10px !important;
-  background-color: color-mix(in srgb, var(--default-color), transparent 80%) !important;
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 6px !important;
+  background-color: color-mix(in srgb, var(--default-color), transparent 75%) !important;
   opacity: 1 !important;
 }
 
@@ -2085,56 +2164,36 @@ section,
   background-color: var(--accent-color) !important;
 }
 
-/* ====== 5) Arrow style – rapi & konsisten ====== */
-#team .swiper-button-next,
-#team .swiper-button-prev{
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 12px !important;
-  background: rgba(255,255,255,0.90) !important;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
-  color: var(--accent-color) !important;
-
-  top: 45% !important;
-  transform: translateY(-50%);
+/* tombol bawah */
+#team .team-btn{
+  margin-top: 22px !important;
 }
 
-#team .swiper-button-next:after,
-#team .swiper-button-prev:after{
-  font-size: 18px !important;
-  font-weight: 800 !important;
-}
-
-#team .swiper-button-next:hover,
-#team .swiper-button-prev:hover{
-  background: #fff !important;
-  box-shadow: 0 16px 34px rgba(0,0,0,0.12) !important;
-}
-
-/* Panah jangan terlalu mepet layar di mobile */
-@media (max-width: 576px){
-  #team .swiper-button-next{ right: 6px !important; }
-  #team .swiper-button-prev{ left: 6px !important; }
-}
-
-/* ====== 6) Responsive slide width (biar pas di semua layar) ====== */
-@media (max-width: 991px){
-  #team .swiper-slide{
-    width: 260px !important;
-  }
-  #team .team-member{
-    max-width: 260px !important;
-  }
-}
-
+/* ===== F) RESPONSIVE WIDTH ===== */
 @media (max-width: 576px){
   #team .swiper-slide{
-    width: 240px !important;
+    width: 230px !important;
   }
   #team .team-member{
-    max-width: 240px !important;
+    max-width: 230px !important;
+  }
+  #team .team-member .member-img{
+    height: 175px !important;
   }
 }
+
+#team .team-member .member-info h4 a{
+  color: var(--heading-color); /* hitam awal */
+  text-decoration: none;
+  transition: color .25s ease;
+}
+
+#team .team-member .member-info h4 a:hover,
+#team .team-member .member-info h4 a:focus{
+  color: #ffde59; /* kuning */
+  text-decoration: underline;
+}
+
 
 
 /*--------------------------------------------------------------
@@ -2308,6 +2367,12 @@ section,
 .recent-posts .post-content .readmore {
   margin-top: 8px;
 }
+
+/* Jarak tombol "Lihat Semua Berita" dari card */
+.recent-posts .text-center.mt-3 {
+  margin-top: 48px !important;
+}
+
 
 /*--------------------------------------------------------------
 # Contact Section

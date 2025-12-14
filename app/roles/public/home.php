@@ -294,62 +294,73 @@ ob_start();
 </section>
 <!-- /Aktivitas Section -->
 
-<!-- Values (Visi & Misi) -->
-<section id="values" class="values section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Visi &amp; Misi</h2>
-    <p>Visi &amp; Misi</p>
-  </div>
+<!-- Values Section -->
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+  <h2>Visi & Misi</h2>
+  <p>Visi & Misi<br></p>
+</div><!-- End Section Title -->
 
-  <div class="container">
-    <div class="row gy-4 justify-content-center">
+<div class="container">
+  <div class="row gy-4 justify-content-center">
 
-      <!-- VISI -->
-      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="values-card values-vision">
-          <h3>Visi</h3>
-          <p class="values-text">
-            <?= !empty($lab['visi']) ? nl2br(safe($lab['visi'])) : 'Visi lab belum diisi.'; ?>
+    <!-- VISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="100">
+      <div class="vm-card vm-visi">
+
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-stars"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">VISI</h3>
+          <p class="vm-text">
+            <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
           </p>
         </div>
+
       </div>
+    </div><!-- End VISI -->
 
-      <!-- MISI -->
-      <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-        <div class="values-card values-mission">
-          <h3>Misi</h3>
+    <!-- MISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="200">
+      <div class="vm-card vm-misi">
 
-          <?php if (!empty($lab['misi'])): ?>
-            <?php
-              // Pecah misi jadi item list:
-              // - jika misi dipisah newline, bakal jadi list
-              $lines = preg_split("/\r\n|\n|\r/", trim($lab['misi']));
-              $items = [];
-              foreach ($lines as $line) {
-                $line = trim($line);
-                if ($line === '') continue;
-                // buang prefix angka "1. " atau "1) "
-                $line = preg_replace('/^\d+\s*[\.\)]\s*/', '', $line);
-                $items[] = $line;
-              }
-            ?>
-            <ol class="values-list">
-              <?php foreach ($items as $it): ?>
-                <li><?= safe($it) ?></li>
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-list-check"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">MISI</h3>
+
+          <?php
+            $misiText = !empty($lab['misi']) ? $lab['misi'] : '';
+            // pecah per kalimat berdasarkan titik.
+            $misiList = array_filter(array_map('trim', preg_split('/\.(\s|$)/', $misiText)));
+          ?>
+
+          <?php if (!empty($misiList)): ?>
+            <ul class="vm-misi-list">
+              <?php foreach ($misiList as $item): ?>
+                <li><?= htmlspecialchars($item) ?>.</li>
               <?php endforeach; ?>
-            </ol>
+            </ul>
           <?php else: ?>
-            <p class="values-text">Misi lab belum diisi.</p>
+            <p class="vm-text">Misi lab belum diisi.</p>
           <?php endif; ?>
 
         </div>
+
       </div>
+    </div><!-- End MISI -->
 
-    </div>
   </div>
-</section>
-<!-- /Values Section -->
-
+</div>
+    </section><!-- /Values Section -->
 
 <!-- Services (Riset) -->
 <section id="services" class="services section">
@@ -469,6 +480,24 @@ ob_start();
         }
       }
       </script>
+      <?php
+        // Tentukan ID profil
+        $profilId = '';
+        if (!empty($a['nidn'])) {
+            $profilId = $a['nidn'];
+        } elseif (!empty($a['nim'])) {
+            $profilId = $a['nim'];
+        } elseif (!empty($a['user_id'])) {
+            $profilId = $a['user_id'];
+        }
+
+        $profilTipe = !empty($a['tipe']) ? $a['tipe'] : 'anggota';
+
+
+        $profilUrl = $profilId
+          ? "anggota_detail.php?tipe=" . urlencode($profilTipe) . "&id=" . urlencode($profilId)
+          : "#";
+      ?>
 
       <div class="swiper-wrapper">
         <?php if (!empty($anggotaLab)): ?>
@@ -494,8 +523,11 @@ ob_start();
                 </div>
 
                 <div class="member-info">
-                  <h4><?= htmlspecialchars(isset($a['nama_normal']) ? $a['nama_normal'] : 'Tidak diketahui', ENT_QUOTES, 'UTF-8') ?></h4>
-
+                <h4>
+                  <a href="<?= htmlspecialchars($profilUrl, ENT_QUOTES, 'UTF-8') ?>">
+                    <?= htmlspecialchars(isset($a['nama_normal']) ? $a['nama_normal'] : 'Tidak diketahui', ENT_QUOTES, 'UTF-8') ?>
+                  </a>
+                </h4>
                   <span><?= htmlspecialchars($displayRole, ENT_QUOTES, 'UTF-8') ?></span>
 
                   <?php if (!empty($a['nidn'])): ?>
