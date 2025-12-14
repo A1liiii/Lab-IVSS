@@ -174,37 +174,203 @@ ob_start();
       </section><!-- /Clients Section -->
 
     <!-- Values Section -->
-    <section id="values" class="values section">
+      <!-- Bootstrap Icons (kalau belum ada di <head>) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Visi & Misi</h2>
-        <p>Visi & Misi<br></p>
-      </div><!-- End Section Title -->
+<style>
+/* ===== Visi & Misi Style ===== */
+.vm-card{
+  position: relative;
+  background: #fff;
+  border-radius: 26px;
+  padding: 34px 26px 28px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.10);
+  overflow: visible;
+  min-height: 320px;
+}
 
-      <div class="container">
+/* base warna bawah */
+.vm-card::after{
+  content:"";
+  position:absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -18px;
+  height: 54px;
+  border-radius: 0 0 26px 26px;
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,.12));
+  z-index: 0;
+}
 
-        <div class="row gy-4 container d-flex justify-content-center">
+/* ikon atas (dekoratif, bukan panah) */
+.vm-top{
+  position: absolute;
+  top: -34px;
+  left: 22px;
+  right: 22px;
+  display:flex;
+  align-items:center;
+  justify-content: flex-start; /* biar cuma ikon */
+  z-index: 3;
+}
 
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card">
-              <h3>Visi</h3>
-              <p>
-              <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
-              </p>
-            </div>
-          </div><!-- End Card Item -->
+.vm-icon{
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 14px 24px rgba(0,0,0,.12);
+}
 
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card">
-              <h3>Misi</h3>
-              <p>
-              <?= !empty($lab['misi']) ? htmlspecialchars($lab['misi']) : 'Misi lab belum diisi.' ?>
-              </p>
-            </div>
-          </div><!-- End Card Item -->
+.vm-icon i{ font-size: 32px; }
+
+/* isi card */
+.vm-body{
+  position: relative;
+  z-index: 2;
+  padding-top: 26px;
+  text-align: center;
+}
+
+.vm-title{
+  letter-spacing: 3px;
+  font-weight: 800;
+  margin: 10px 0 12px;
+}
+
+.vm-text{
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: #444;
+  word-break: break-word;
+  text-align: center;
+}
+
+/* ===== Variasi warna Visi (orange) ===== */
+.vm-visi .vm-icon{
+  background: radial-gradient(circle at 30% 30%, #ffcc66 0%, #ff9f1a 45%, #ff7a00 100%);
+  color:#fff;
+}
+.vm-visi::after{
+  background: linear-gradient(90deg, #ffb100 0%, #ff7a00 100%);
+}
+.vm-visi .vm-title{ color:#ff9a0a; }
+
+/* ===== Variasi warna Misi (blue) ===== */
+.vm-misi .vm-icon{
+  background: radial-gradient(circle at 30% 30%, #56d4ff 0%, #1f8cff 45%, #0b57d0 100%);
+  color:#fff;
+}
+.vm-misi::after{
+  background: linear-gradient(90deg, #35d2ff 0%, #0b57d0 100%);
+}
+.vm-misi .vm-title{ color:#1f84ff; }
+
+/* ===== LIST MISI: bullet biru + justify ===== */
+.vm-misi-list{
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  text-align: justify;          /* rata kanan-kiri */
+}
+
+.vm-misi-list li{
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 10px;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: #333;
+}
+
+/* bullet biru */
+.vm-misi-list li::before{
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #1f84ff;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 9px;
+}
+
+/* responsif */
+@media (max-width: 576px){
+  .vm-card{ padding: 34px 18px 24px; min-height: auto; }
+  .vm-top{ left: 14px; right: 14px; }
+  .vm-icon{ width: 70px; height: 70px; }
+}
+</style>
+
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+  <h2>Visi & Misi</h2>
+  <p>Visi & Misi<br></p>
+</div><!-- End Section Title -->
+
+<div class="container">
+  <div class="row gy-4 justify-content-center">
+
+    <!-- VISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="100">
+      <div class="vm-card vm-visi">
+
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-stars"></i>
+          </div>
         </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">VISI</h3>
+          <p class="vm-text">
+            <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
+          </p>
+        </div>
+
       </div>
+    </div><!-- End VISI -->
+
+    <!-- MISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="200">
+      <div class="vm-card vm-misi">
+
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-list-check"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">MISI</h3>
+
+          <?php
+            $misiText = !empty($lab['misi']) ? $lab['misi'] : '';
+            // pecah per kalimat berdasarkan titik.
+            $misiList = array_filter(array_map('trim', preg_split('/\.(\s|$)/', $misiText)));
+          ?>
+
+          <?php if (!empty($misiList)): ?>
+            <ul class="vm-misi-list">
+              <?php foreach ($misiList as $item): ?>
+                <li><?= htmlspecialchars($item) ?>.</li>
+              <?php endforeach; ?>
+            </ul>
+          <?php else: ?>
+            <p class="vm-text">Misi lab belum diisi.</p>
+          <?php endif; ?>
+
+        </div>
+
+      </div>
+    </div><!-- End MISI -->
+
+  </div>
+</div>
     </section><!-- /Values Section -->
 
     <!-- Services Section -->
