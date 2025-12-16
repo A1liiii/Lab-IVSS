@@ -126,7 +126,7 @@ ob_start();
         </a>
 
         <div>
-            <?php if ($reg['status']=="pending" && $_SESSION['user']['role']=="ketua lab"): ?>
+            <?php if ($reg['status']=="pending" && $_SESSION['user']=="ketua lab"): ?>
                 <a href="approve_action.php?id=<?= $reg['reg_id'] ?>" 
                    class="btn btn-success">
                     <i class="bi bi-check2-circle"></i> Setujui

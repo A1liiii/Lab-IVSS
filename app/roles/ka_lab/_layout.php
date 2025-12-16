@@ -118,11 +118,6 @@ $conn = Database::connect();
 
             <a href="dashboard.php"><i class="bi bi-bar-chart-line"></i> Dashboard</a>
             <a href="approvals.php"><i class="bi bi-file-check"></i> Approval Anggota Baru</a>
-            <a href="bimbingan.php"><i class="bi bi-people"></i> Monitoring Bimbingan</a>
-            <a href="publikasi.php"><i class="bi bi-journal-text"></i> Publikasi Lab</a>
-            <a href="logs.php"><i class="bi bi-clock-history"></i> Log Sistem</a>
-            <a href="profile.php"><i class="bi bi-gear"></i> Profil Saya</a>
-
             <hr style="border-color: rgba(255,255,255,0.3)">
 
             <a href="../../../select_role.php"><i class="bi bi-arrow-left-right"></i> Switch Role</a>

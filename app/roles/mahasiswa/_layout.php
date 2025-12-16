@@ -91,6 +91,9 @@ $conn = Database::connect();
             background: #00378a;
             color: #fff;
         }
+        .main-content {
+            padding: 24px 32px;   /* bebas mau 20/24/32, intinya kasih padding kiri-kanan */
+        }
     </style>
 </head>
 
@@ -142,20 +145,21 @@ $conn = Database::connect();
             </a>
         </div>
 
-        <div class="col">
-  <?php if (!empty($content)): ?>
-    <?= $content ?>
-  <?php else: ?>
-    <div class="text-center py-5">
-      <h2 class="fw-bold text-secondary">
-        <i class="bi bi-mortarboard"></i> Selamat Datang, Mahasiswa
-      </h2>
-      <p class="text-muted">
-        Gunakan menu di sisi kiri untuk mengelola profil dan aktivitas Anda.
-      </p>
-    </div>
-  <?php endif; ?>
-</div>
+       <div class="col main-content">
+        <?php if (!empty($content)): ?>
+            <?= $content ?>
+        <?php else: ?>
+            <div class="text-center py-5">
+            <h2 class="fw-bold text-secondary">
+                <i class="bi bi-mortarboard"></i> Selamat Datang, Mahasiswa
+            </h2>
+            <p class="text-muted">
+                Gunakan menu di sisi kiri untuk mengelola profil dan aktivitas Anda.
+            </p>
+            </div>
+        <?php endif; ?>
+        </div>
+
 
 
     </div>

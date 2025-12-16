@@ -527,23 +527,34 @@ body {
 /*--------------------------------------------------------------
 # Global Footer
 --------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Global Footer (BIRU TUA + AKSEN KUNING)
+--------------------------------------------------------------*/
 .footer {
-  color: var(--default-color);
-  background-color: var(--background-color);
+  /* tema */
+  --footer-bg: #0b2a6b;           /* biru tua */
+  --footer-accent: #ffd43b;       /* kuning */
+  --footer-text: #ffffff;         /* putih */
+  --footer-muted: rgba(255,255,255,0.75);
+  --footer-border: rgba(255,255,255,0.15);
+
+  color: var(--footer-text);
+  background-color: var(--footer-bg);
   font-size: 14px;
   padding-bottom: 50px;
   position: relative;
 }
 
 .footer .footer-newsletter {
-  background-color: color-mix(in srgb, var(--accent-color), transparent 97%);
-  border-top: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
-  border-bottom: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+  background-color: rgba(255,255,255,0.04);
+  border-top: 1px solid var(--footer-border);
+  border-bottom: 1px solid var(--footer-border);
   padding: 50px 0;
 }
 
 .footer .footer-newsletter h4 {
   font-size: 24px;
+  color: var(--footer-text);
 }
 
 .footer .footer-newsletter .newsletter-form {
@@ -551,24 +562,28 @@ body {
   margin-bottom: 15px;
   padding: 6px 8px;
   position: relative;
-  background-color: color-mix(in srgb, var(--background-color), transparent 50%);
-  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
-  box-shadow: 0px 2px 25px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0px 2px 25px rgba(0, 0, 0, 0.25);
   display: flex;
   transition: 0.3s;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .footer .footer-newsletter .newsletter-form:focus-within {
-  border-color: var(--accent-color);
+  border-color: var(--footer-accent);
 }
 
 .footer .footer-newsletter .newsletter-form input[type=email] {
   border: 0;
-  padding: 4px;
+  padding: 6px 8px;
   width: 100%;
-  background-color: color-mix(in srgb, var(--background-color), transparent 50%);
-  color: var(--default-color);
+  background: transparent;
+  color: var(--footer-text);
+}
+
+.footer .footer-newsletter .newsletter-form input[type=email]::placeholder {
+  color: rgba(255,255,255,0.6);
 }
 
 .footer .footer-newsletter .newsletter-form input[type=email]:focus-visible {
@@ -578,49 +593,54 @@ body {
 .footer .footer-newsletter .newsletter-form input[type=submit] {
   border: 0;
   font-size: 16px;
-  padding: 0 20px;
+  padding: 0 18px;
   margin: -7px -8px -7px 0;
-  background: var(--accent-color);
-  color: var(--contrast-color);
+  background: var(--footer-accent);
+  color: #0b2a6b;
+  font-weight: 700;
   transition: 0.3s;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 8px 8px 0;
 }
 
 .footer .footer-newsletter .newsletter-form input[type=submit]:hover {
-  background: color-mix(in srgb, var(--accent-color), transparent 20%);
+  background: #ffca2c;
 }
 
 .footer .footer-top {
   padding-top: 50px;
 }
 
+/* social icon */
 .footer .social-links a {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 4px;
-  background-color: color-mix(in srgb, var(--accent-color), transparent 97%);
-  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+  border-radius: 10px;
+  background-color: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
   font-size: 16px;
-  color: var(--accent-color);
+  color: var(--footer-accent);
   margin-right: 10px;
   transition: 0.3s;
 }
 
 .footer .social-links a:hover {
-  color: var(--contrast-color);
-  background-color: var(--accent-color);
+  color: #0b2a6b;
+  background-color: var(--footer-accent);
 }
 
+/* judul kolom */
 .footer h4 {
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 800;
   position: relative;
   padding-bottom: 12px;
+  color: var(--footer-text);
 }
 
+/* link list */
 .footer .footer-links {
   margin-bottom: 30px;
 }
@@ -632,10 +652,10 @@ body {
 }
 
 .footer .footer-links ul i {
-  margin-right: 3px;
+  margin-right: 8px;
   font-size: 12px;
   line-height: 0;
-  color: var(--accent-color);
+  color: var(--footer-accent);
 }
 
 .footer .footer-links ul li {
@@ -650,39 +670,52 @@ body {
 
 .footer .footer-links ul a {
   display: inline-block;
-  color: color-mix(in srgb, var(--default-color), transparent 20%);
-  line-height: 1;
+  color: var(--footer-muted);
+  line-height: 1.2;
+  transition: 0.25s;
+  text-decoration: none;
 }
 
 .footer .footer-links ul a:hover {
-  color: var(--accent-color);
+  color: var(--footer-accent);
 }
 
+/* brand / about */
 .footer .footer-about a {
-  color: var(--heading-color);
+  color: var(--footer-text);
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 800;
   font-family: var(--heading-font);
+  text-decoration: none;
 }
 
 .footer .footer-contact p {
   margin-bottom: 5px;
+  color: var(--footer-muted);
 }
 
+.footer .footer-contact strong {
+  color: var(--footer-text);
+}
+
+/* copyright */
 .footer .copyright {
   padding-top: 25px;
   padding-bottom: 25px;
-  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-top: 1px solid var(--footer-border);
 }
 
 .footer .copyright p {
   margin-bottom: 0;
+  color: rgba(255,255,255,0.85);
 }
 
 .footer .credits {
   margin-top: 6px;
   font-size: 13px;
+  color: rgba(255,255,255,0.6);
 }
+
 
 /*--------------------------------------------------------------
 # Scroll Top Button

@@ -1,3 +1,4 @@
+<?php include "_layout.php"; ?>
 <?php
 // app/roles/mahasiswa/profile.php
 if (session_status() === PHP_SESSION_NONE) session_start();

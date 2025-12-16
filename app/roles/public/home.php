@@ -574,74 +574,171 @@ ob_start();
     </section><!-- /Portfolio Section -->
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials section">
+    <style>
+/* =========================
+   PERKULIAHAN – Swiper Cards (rapet)
+   ========================= */
+#perkuliahan.section{
+  padding: 70px 0;
+}
 
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Perkuliahan</h2>
-        <p>Mata Kuliah terkait<br></p>
-      </div><!-- End Section Title -->
+#perkuliahan .swiper{
+  padding: 54px 8px 42px;
+}
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+/* penting: biar slide punya lebar yang jelas */
+#perkuliahan .swiper-slide{
+  height: auto;
+  display: flex;
+  justify-content: center;
+}
 
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 1,
-                  "spaceBetween": 40
-                },
-                "1200": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 1
-                }
-              }
-            }
-          </script>
-          <div class="swiper-wrapper">
+/* CARD */
+#perkuliahan .course-card{
+  position: relative;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 54px 26px 32px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+  width: 100%;              /* ikut lebar slide */
+  max-width: 360px;         /* ukuran card */
+  min-height: 300px;
+  margin: 0;                /* jangan auto, biar rapet */
+  transition: transform .25s ease, box-shadow .25s ease;
+}
 
-          <?php foreach ($matkul as $m): ?>
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="stars">
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                </div>
-                <p>
-                  Mata kuliah <strong><?= htmlspecialchars($m['nama_matkul']) ?></strong>  
-                  ditawarkan pada semester <strong><?= htmlspecialchars($m['semester']) ?></strong>  
-                  untuk prodi <strong><?= htmlspecialchars($m['prodi']) ?></strong>.  
-                  Total SKS: <strong><?= htmlspecialchars($m['sks']) ?></strong>.
-                </p>
-                <div class="profile mt-auto">
-                  <img src="assets/img/default-profile.png"
-                      class="testimonial-img" alt="">
-                  <h3><?= htmlspecialchars($m['nama_matkul']) ?></h3>
-                  <h4>Dosen: <?= htmlspecialchars($m['nip'] ?: 'Belum diisi') ?></h4>
-                </div>
-              </div>
-            </div>
+#perkuliahan .course-card:hover{
+  transform: translateY(-5px);
+  box-shadow: 0 18px 42px rgba(0,0,0,0.12);
+}
 
-          <?php endforeach; ?>
+/* ICON */
+#perkuliahan .course-icon{
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #ffb347 0%, #ff8c00 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(255,140,0,0.35);
+  z-index: 2;
+}
 
+#perkuliahan .course-icon i{
+  font-size: 26px;
+  color: #fff;
+}
+
+#perkuliahan .course-title{
+  font-size: 18px;
+  font-weight: 800;
+  color: #0b2a6b;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+#perkuliahan .course-desc{
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #444;
+  margin: 0;
+  text-align: justify;
+}
+
+/* pagination */
+#perkuliahan .swiper-pagination-bullet{
+  background: rgba(13,110,253,0.3);
+  opacity: 1;
+}
+#perkuliahan .swiper-pagination-bullet-active{
+  background: #0d6efd;
+}
+</style>
+
+<section id="perkuliahan" class="section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Perkuliahan</h2>
+    <p>Perkuliahan Terkait</p>
+  </div>
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="swiper init-swiper">
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": { "delay": 5000 },
+          "slidesPerView": 1,
+          "spaceBetween": 12,
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          },
+          "breakpoints": {
+            "768":  { "slidesPerView": 1, "spaceBetween": 12 },
+            "1200": { "slidesPerView": 2, "spaceBetween": 14 }
+          }
+        }
+      </script>
+
+      <div class="swiper-wrapper">
+
+        <div class="swiper-slide">
+          <div class="course-card">
+            <div class="course-icon"><i class="bi bi-cpu"></i></div>
+            <h3 class="course-title">Kecerdasan Artifisial (AI)</h3>
+            <p class="course-desc">
+              Teknologi yang fokus pada pengembangan sistem atau mesin yang dapat melakukan tugas-tugas yang biasanya memerlukan kecerdasan manusia, seperti pengenalan pola, pembelajaran, pemecahan masalah, dan pengambilan keputusan.
+            </p>
           </div>
-          <div class="swiper-pagination"></div>
         </div>
+
+        <div class="swiper-slide">
+          <div class="course-card">
+            <div class="course-icon"><i class="bi bi-robot"></i></div>
+            <h3 class="course-title">Machine Learning</h3>
+            <p class="course-desc">
+              Cabang dari kecerdasan artifisial yang fokus pada pengembangan algoritma yang memungkinkan mesin belajar dari data untuk membuat prediksi atau keputusan tanpa diprogram secara eksplisit.
+            </p>
+          </div>
+        </div>
+
+        <div class="swiper-slide">
+          <div class="course-card">
+            <div class="course-icon"><i class="bi bi-camera"></i></div>
+            <h3 class="course-title">Pengolahan Citra dan Visi Komputer</h3>
+            <p class="course-desc">
+              Teknik untuk mengolah dan menganalisis gambar atau video menggunakan komputer, termasuk deteksi objek, segmentasi, pengenalan pola, dan interpretasi citra untuk aplikasi seperti pengenalan wajah dan kendaraan otomatis.
+            </p>
+          </div>
+        </div>
+
+        <div class="swiper-slide">
+          <div class="course-card">
+            <div class="course-icon"><i class="bi bi-diagram-3"></i></div>
+            <h3 class="course-title">Sistem Cerdas (Intelligent System)</h3>
+            <p class="course-desc">
+              Pengembangan sistem yang dapat meniru atau melampaui kemampuan kognitif manusia, seperti pengambilan keputusan otomatis, perencanaan, dan pemrosesan informasi dalam konteks aplikasi nyata, seperti robotika dan sistem pakar.
+            </p>
+          </div>
+        </div>
+
       </div>
-    </section><!-- /Testimonials Section -->
+
+      <div class="swiper-pagination"></div>
+    </div>
+
+  </div>
+</section>
+    <!-- /Testimonials Section -->
+
     <!-- Contact Section -->
     <section id="contact" class="contact section">
 
