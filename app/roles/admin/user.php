@@ -107,7 +107,23 @@ function rolePriority($roles) {
     return 99;
 }
 
+/* ===============================
+   CEK ROLE KHUSUS (KETUA LAB & OPERATOR)
+================================ */
+function roleExists(PDO $conn, string $roleName): bool {
+    $stmt = $conn->prepare("
+        SELECT 1
+        FROM user_roles ur
+        JOIN roles r ON r.role_id = ur.role_id
+        WHERE r.role_name = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$roleName]);
+    return (bool) $stmt->fetchColumn();
+}
 
+$hasKetuaLab = roleExists($conn, 'ketua lab');
+$hasOperator = roleExists($conn, 'operator');
 ob_start();
 ?>
 
@@ -117,7 +133,7 @@ ob_start();
 </h2>
 
 <div class="d-flex justify-content-between mb-3">
-    
+
     <!-- SEARCH -->
     <form method="GET" class="d-flex align-items-center gap-2">
         <input type="text" 
@@ -129,10 +145,30 @@ ob_start();
             <i class="bi bi-search"></i>
         </button>
     </form>
-    <!-- ADD BUTTON -->
-    <a href="add_dosen_step1.php" class="btn btn-primary">
-        <i class="bi bi-person-plus"></i> Tambah Dosen
-    </a>
+
+    <!-- ADD BUTTONS -->
+    <div class="d-flex gap-2">
+
+        <!-- TAMBAH DOSEN (SELALU ADA) -->
+        <a href="add_dosen_step1.php" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Tambah Dosen
+        </a>
+
+        <!-- TAMBAH KETUA LAB (JIKA BELUM ADA) -->
+        <?php if (!$hasKetuaLab): ?>
+            <a href="add_dosen_step1.php?as=ketua_lab" class="btn btn-warning">
+                <i class="bi bi-star-fill"></i> Tambah Ketua Lab
+            </a>
+        <?php endif; ?>
+
+        <!-- TAMBAH OPERATOR (JIKA BELUM ADA) -->
+        <?php if (!$hasOperator): ?>
+            <a href="add_dosen_step1.php?as=operator" class="btn btn-success">
+                <i class="bi bi-shield-check"></i> Tambah Operator
+            </a>
+        <?php endif; ?>
+
+    </div>
 </div>
 
 <div class="row g-4">

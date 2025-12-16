@@ -151,12 +151,13 @@ requireRole("admin");
             <i class="bi bi-shield-lock-fill"></i> Admin Panel
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <span class="text-secondary">
-                <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
-            </span>
-
-        </div>
+    <div class="d-flex align-items-center gap-3">
+        <a href="/Lab-ivss/app/roles/dosen/profile.php"
+        class="text-secondary text-decoration-none">
+            <i class="bi bi-person-circle"></i>
+            <?= htmlspecialchars($_SESSION['user']['username']) ?>
+        </a>
+    </div>
     </div>
 
     <div class="layout-wrapper">

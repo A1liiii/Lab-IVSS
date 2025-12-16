@@ -41,7 +41,55 @@ if (!$lab) {
 
   <link href="../../../public/assets/css/main.css" rel="stylesheet">
 </head>
+<style>
+  /* ===============================
+   LOGIN BUTTON (MANUAL STYLE)
+================================ */
+.navmenu .nav-login {
+  margin-left: 14px;
+}
 
+.login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 14px;          /* SLIM */
+  border-radius: 5px;       /* pill tipis */
+
+  background: #facc15;        /* kuning solid */
+  color: #1a1a1a;
+
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+
+  box-shadow: 0 2px 6px rgba(234, 179, 8, 0.25);
+  transition: all 0.2s ease;
+}
+
+/* hover */
+.login-btn:hover {
+  background: #fde047;
+  color: #111;
+  box-shadow: 0 3px 8px rgba(234, 179, 8, 0.35);
+  transform: translateY(-0.5px);
+}
+
+/* active (klik) */
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(234, 179, 8, 0.4);
+}
+
+/* icon */
+.login-btn i {
+  font-size: 13px;
+}
+body.scrolled .login-btn {
+  background: #ffde59;
+}
+</style>
 <body class="index-page">
 
 <header id="header" class="header d-flex align-items-center fixed-top">
@@ -64,6 +112,12 @@ if (!$lab) {
           </li>
           <li class="dropdown"><a href="../public/dokumentasi.php"><span>Galeri</span></a></li>
           <li><a href="../public/home.php#contact">Contact</a></li>
+          <li>
+            <a href="../../../login.php">
+              <i class="bi bi-box-arrow-in-right p-1"></i>
+              Login
+            </a>
+          </li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

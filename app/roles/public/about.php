@@ -184,47 +184,73 @@ ob_start();
     </div>
 </section>
 
-<!-- VALUES SECTION -->
-<section id="values" class="values section">
-    <div class="container section-title" data-aos="fade-up">
-        <p>Visi & Misi</p>
-    </div>
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+  <h2>Visi & Misi</h2>
+  <p>Visi & Misi<br></p>
+</div><!-- End Section Title -->
 
-    <div class="container">
-        <div class="row gy-4 justify-content-center">
+<div class="container">
+  <div class="row gy-4 justify-content-center">
 
-            <!-- VISI -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card">
-                    <img src="../../../public/assets/img/visionary.png" class="img-fluid" alt="">
-                    <h3>VISI</h3>
-                    <p style="text-align: justify;">
-                        <?= nl2br(htmlspecialchars($lab['visi'])) ?>
-                    </p>
-                </div>
-            </div>
+    <!-- VISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="100">
+      <div class="vm-card vm-visi">
 
-            <!-- MISI -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card">
-                    <img src="../../../public/assets/img/mission.png" class="img-fluid" alt="">
-                    <h3>MISI</h3>
-                    <div style="text-align: justify;">
-                        <?php
-                        $misiList = explode("\n", $lab['misi']);
-                        echo "<ol>";
-                        foreach ($misiList as $m) {
-                            if (trim($m) !== "") echo "<li>" . htmlspecialchars($m) . "</li>";
-                        }
-                        echo "</ol>";
-                        ?>
-                    </div>
-                </div>
-            </div>
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-stars"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">VISI</h3>
+          <p class="vm-text">
+            <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
+          </p>
+        </div>
+
+      </div>
+    </div><!-- End VISI -->
+
+    <!-- MISI -->
+    <div class="col-lg-5 col-md-10" data-aos="fade-up" data-aos-delay="200">
+      <div class="vm-card vm-misi">
+
+        <div class="vm-top">
+          <div class="vm-icon">
+            <i class="bi bi-list-check"></i>
+          </div>
+        </div>
+
+        <div class="vm-body">
+          <h3 class="vm-title">MISI</h3>
+
+          <?php
+            $misiText = !empty($lab['misi']) ? $lab['misi'] : '';
+            // pecah per kalimat berdasarkan titik.
+            $misiList = array_filter(array_map('trim', preg_split('/\.(\s|$)/', $misiText)));
+          ?>
+
+          <?php if (!empty($misiList)): ?>
+            <ul class="vm-misi-list">
+              <?php foreach ($misiList as $item): ?>
+                <li><?= htmlspecialchars($item) ?>.</li>
+              <?php endforeach; ?>
+            </ul>
+          <?php else: ?>
+            <p class="vm-text">Misi lab belum diisi.</p>
+          <?php endif; ?>
 
         </div>
-    </div>
-</section>
+
+      </div>
+    </div><!-- End MISI -->
+
+  </div>
+</div>
+    </section><!-- /Values Section -->
+
 
 <!-- TEAM SECTION -->
 <section id="team" class="team section">

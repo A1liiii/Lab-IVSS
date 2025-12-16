@@ -190,19 +190,7 @@ ob_start();
                         </div>
                     </div>
 
-                    <!-- RIGHT (EDIT BUTTON) -->
-                    <div class="text-end">
-                        <button class="btn btn-light btn-sm px-3 py-2 fw-semibold shadow-sm"
-                                style="
-                                    border-radius: 10px;
-                                    font-size: 0.92rem;
-                                    border: 1px solid rgba(255,255,255,0.35);
-                                    backdrop-filter: blur(6px);
-                                "
-                                data-bs-toggle="modal" data-bs-target="#modalEdit">
-                            <i class="bi bi-pencil-square me-1"></i> Edit Informasi
-                        </button>
-                    </div>
+                    
 
                 </div>
             </div>
@@ -269,7 +257,7 @@ ob_start();
         <div class="col-lg-4">
             <div class="card shadow border-0">
                 <div class="card-body p-4">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Info Singkat</h6>
+                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Informasi Singkat</h6>
 
                     <dl class="row">
                         <dt class="col-5 text-muted">Nama</dt>

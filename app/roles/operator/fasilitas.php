@@ -25,7 +25,11 @@ function excerpt_text($text, $len){
     }
 }
 
-$currentUserId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+if (empty($_SESSION['user']['user_id'])) {
+    die("Session user tidak valid. Silakan login ulang.");
+}
+
+$currentUserId = (int) $_SESSION['user']['user_id'];
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -2,7 +2,7 @@
 // app/roles/dosen/mata_kuliah.php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
+// requireRole("dosen");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
@@ -24,44 +24,29 @@ if (!$nip) {
 }
 
 // ===================== helper generate kode mata kuliah =====================
-function generateKodeMK($nama, $prodi, $tahun, $conn) {
-    // inisial MK dari tiap kata di nama mata kuliah
-    $inisialMK = "";
+function generateKodeMK($nama, $prodi, $tahun, $nip) {
+    // Inisial mata kuliah
+    $inisialMK = '';
     foreach (preg_split('/\s+/', trim($nama)) as $w) {
-        $inisialMK .= strtoupper(substr($w, 0, 1));
-    }
-    // inisial prodi
-    $inisialProdi = "";
-    foreach (preg_split('/\s+/', trim($prodi)) as $w) {
-        $inisialProdi .= strtoupper(substr($w, 0, 1));
+        $inisialMK .= strtoupper($w[0]);
     }
 
-    // tahun format "2025/2026" atau "2025": ambil dua digit akhir dari masing2 (fallback)
-    $tahun = str_replace(" ", "", $tahun);
-    if (str_contains($tahun, "/")) {
-        [$s,$e] = explode("/", $tahun);
-        $s2 = substr($s, -2);
-        $e2 = substr($e, -2);
+    // Inisial prodi
+    $inisialProdi = '';
+    foreach (preg_split('/\s+/', trim($prodi ?: 'XX')) as $w) {
+        $inisialProdi .= strtoupper($w[0]);
+    }
+
+    // Tahun ajar
+    $tahun = str_replace(' ', '', $tahun);
+    if (str_contains($tahun, '/')) {
+        [$s, $e] = explode('/', $tahun);
+        $tahunKode = substr($s, -2) . substr($e, -2);
     } else {
-        $s2 = substr($tahun, -2);
-        $e2 = $s2;
+        $tahunKode = substr($tahun ?: date('Y'), -2);
     }
 
-    $base = "{$inisialMK}-{$inisialProdi}-{$s2}{$e2}";
-
-    // pastikan unik, kalau ada collision tambahkan -01, -02 ...
-    $candidate = $base;
-    $i = 1;
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM mata_kuliah WHERE kode_matkul = ?");
-    while (true) {
-        $stmt->execute([$candidate]);
-        $c = (int)$stmt->fetchColumn();
-        if ($c === 0) break;
-        $candidate = $base . "-" . str_pad($i, 2, "0", STR_PAD_LEFT);
-        $i++;
-        if ($i > 999) break;
-    }
-    return $candidate;
+    return "{$inisialMK}-{$inisialProdi}-{$tahunKode}-{$nip}";
 }
 
 // ===================== HANDLE ACTIONS (POST) =====================
@@ -81,7 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $kode = generateKodeMK($nama, $prodi ?: "XX", $tahun_ajar ?: date("Y"), $conn);
+        $kode = generateKodeMK(
+            $nama,
+            $prodi ?: "XX",
+            $tahun_ajar ?: date("Y"),
+            $nip
+        );
 
         $stmt = $conn->prepare("INSERT INTO mata_kuliah (kode_matkul, nip, nama_matkul, semester, prodi, sks, tahun_ajar)
                                 VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -199,9 +189,13 @@ ob_start();
             <label class="form-label small">Nama Mata Kuliah</label>
             <input name="nama_matkul" class="form-control" required>
         </div>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <label class="form-label small">Semester</label>
-            <input name="semester" class="form-control">
+            <select name="semester" class="form-select" required>
+                <option value="">-- Pilih --</option>
+                <option value="ganjil">Ganjil</option>
+                <option value="genap">Genap</option>
+            </select>
         </div>
         <div class="col-md-1">
             <label class="form-label small">SKS</label>
@@ -309,7 +303,10 @@ ob_start();
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small">Semester</label>
-                    <input name="semester" id="edit_semester" class="form-control">
+                    <select name="semester" id="edit_semester" class="form-select">
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small">SKS</label>

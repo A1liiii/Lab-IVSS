@@ -36,6 +36,16 @@ if (!$tipe || !$id) {
         ");
         $stmt->execute(['id' => $id]);
         $profil = $stmt->fetch(PDO::FETCH_ASSOC);
+        $userId = $profil['user_id'] ?? null;
+
+        $fotoProfil = "../../../public/assets/img/default-user.png";
+
+        if ($userId) {
+            $candidate = "../../../public/uploads/profiles/{$userId}.jpg";
+            if (file_exists($candidate)) {
+                $fotoProfil = $candidate;
+            }
+        }
 
         if ($profil) {
             $userId = $profil['user_id'] ?? null;
@@ -286,9 +296,9 @@ if (!$tipe || !$id) {
           <!-- Foto kiri -->
           <div class="col-md-3 text-center">
             <div class="profile-photo-wrapper mx-md-0 mx-auto">
-              <img
-                src="../../../public/uploads/profiles/<?= $user_id ?>.jpg?v=<?= time() ?>"
-                alt="<?= htmlspecialchars($profil['nama'] ?? '') ?>">
+            <img
+              src="<?= htmlspecialchars($fotoProfil) ?>?v=<?= time() ?>"
+              alt="<?= htmlspecialchars($profil['nama'] ?? '') ?>">
             </div>
           </div>
 
@@ -424,7 +434,6 @@ if (!$tipe || !$id) {
                         <?= htmlspecialchars($mk['nama_matkul']) ?>
                       </div>
                       <div class="item-meta">
-                        Kode: <?= htmlspecialchars($mk['kode_matkul']) ?>
                         · Semester: <?= htmlspecialchars($mk['semester']) ?>
                         · SKS: <?= htmlspecialchars($mk['sks']) ?>
                       </div>

@@ -6,6 +6,8 @@ requireRole("mahasiswa");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
+$roles = $_SESSION['roles'] ?? [];
+$onlyMhs = (count($roles) === 1 && in_array('mahasiswa', $roles, true));
 ?>
 
 <!DOCTYPE html>
@@ -125,9 +127,13 @@ main::-webkit-scrollbar-thumb:hover,
             <i class="bi bi-backpack-fill"></i> Mahasiswa Panel
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
-        </div>
+    <div class="d-flex align-items-center gap-3">
+        <a href="profile.php"
+        class="text-secondary text-decoration-none">
+            <i class="bi bi-person-circle"></i>
+            <?= htmlspecialchars($_SESSION['user']['username']) ?>
+        </a>
+    </div>
     </div>
 
     <!-- WRAPPER -->
@@ -151,9 +157,11 @@ main::-webkit-scrollbar-thumb:hover,
 
             <hr style="border-color: rgba(255,255,255,0.3)">
 
+            <?php if (!$onlyMhs): ?>
             <a href="../../../select_role.php">
                 <i class="bi bi-arrow-left-right"></i> Switch Role
             </a>
+            <?php endif; ?>
 
             <a href="../../../logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout

@@ -7,12 +7,21 @@ require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
 
 $error = "";
+$allowedRoles = ['dosen', 'ketua_lab', 'operator'];
+$as = $_GET['as'] ?? 'dosen';
 
+if (!in_array($as, $allowedRoles, true)) {
+    $as = 'dosen';
+}
 // Jika form submit
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $nip = trim($_POST['nip']);
     $nama = trim($_POST['nama']);
+    $as   = $_POST['as'] ?? 'dosen';
+    if (!in_array($as, ['dosen','ketua_lab','operator'], true)) {
+        $as = 'dosen';
+    }
 
     if ($nip === "" || $nama === "") {
         $error = "NIP dan Nama wajib diisi.";
@@ -34,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->execute([$nip, $nama]);
 
                 // redirect ke step 2
-                header("Location: add_dosen_step2.php?nip=" . urlencode($nip));
+                header("Location: add_dosen_step2.php?nip=" . urlencode($nip) . "&as=" . urlencode($as));
                 exit;
 
             } catch (Exception $e) {
@@ -68,16 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <form method="POST" class="mt-3">
 
+            <input type="hidden" name="as" value="<?= htmlspecialchars($as, ENT_QUOTES) ?>">
+
             <div class="mb-3">
                 <label class="form-label">NIP *</label>
-                <input type="text" name="nip" class="form-control" required 
-                       placeholder="Masukkan NIP dengan benar">
+                <input type="text" name="nip" class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label>Nama Lengkap *</label>
-                <input type="text" name="nama" class="form-control" required
-                       placeholder="Masukkan nama dosen beserta gelar">
+                <input type="text" name="nama" class="form-control" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">

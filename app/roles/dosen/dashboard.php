@@ -2,7 +2,7 @@
 // app/roles/dosen/dashboard.php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
+// requireRole("dosen");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();

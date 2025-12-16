@@ -141,11 +141,13 @@ $conn = Database::connect();
             <i class="bi bi-speedometer2"></i> Ketua Lab Panel
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            <span class="text-secondary">
-                <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
-            </span>
-        </div>
+    <div class="d-flex align-items-center gap-3">
+        <a href="/Lab-ivss/app/roles/dosen/profile.php"
+        class="text-secondary text-decoration-none">
+            <i class="bi bi-person-circle"></i>
+            <?= htmlspecialchars($_SESSION['user']['username']) ?>
+        </a>
+    </div>
     </div>
     <!-- BODY WRAPPER -->
     <div class="layout-wrapper">

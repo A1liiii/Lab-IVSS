@@ -168,6 +168,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </div>
 
                 <button type="submit" class="btn btn-dark w-100">Login</button>
+                <div class="text-center mt-3">
+                    <small class="text-dark">
+                        Belum menjadi anggota?
+                        <a href="/lab-ivss/app/roles/public/home.php#contact" class="contact-link">
+                            Hubungi kami
+                        </a>
+                    </small>
+                </div>
 
             </form>
         </div>

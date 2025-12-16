@@ -2,7 +2,6 @@
 // app/roles/dosen/profile.php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
@@ -39,12 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update data dosen
     if ($_POST['action'] === 'update_dosen') {
         $stmt = $conn->prepare("
-            UPDATE dosen SET nama=?, nidn=?, email=?, jabatan=?, pendidikan=? 
+            UPDATE dosen SET nama=?, nidn=?, email=?, jabatan=?
             WHERE nip = ?
         ");
         $stmt->execute([
             $_POST['nama'], $_POST['nidn'], $_POST['email'],
-            $_POST['jabatan'], $_POST['pendidikan'], $_POST['nip']
+            $_POST['jabatan'], $_POST['nip']
         ]);
         $_SESSION['flash_success'] = "Data dosen diperbarui.";
         header("Location: profile.php"); exit;
@@ -182,7 +181,6 @@ ob_start();
 
     <div id="userView" class="mt-3">
         <p><strong>Username:</strong> <?= safe($user['username']) ?></p>
-        <p><strong>Role:</strong> <?= safe($user['role']) ?></p>
     </div>
 
     <form method="POST" id="userEdit" style="display:none;" class="mt-3">

@@ -240,10 +240,11 @@ ob_start();
             <!-- Link file eksternal (opsional) -->
             <?php if (!empty($detail['file_url'])): ?>
               <div class="detail-file">
-                <a href="<?= htmlspecialchars($detail['file_url']) ?>" 
-                   target="_blank" 
-                   class="btn btn-outline-primary btn-sm">
-                  <i class="bi bi-box-arrow-up-right me-1"></i> Lihat Dokumen
+                <a href="../../../public/uploads/berita/files/<?= htmlspecialchars($detail['file_url']) ?>"
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-file-earmark-pdf me-1"></i> Lihat Dokumen
                 </a>
               </div>
             <?php endif; ?>

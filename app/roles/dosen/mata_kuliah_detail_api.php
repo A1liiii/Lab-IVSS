@@ -2,7 +2,7 @@
 // app/roles/dosen/mata_kuliah_detail_api.php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
+// requireRole("dosen");
 
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . "/../../core/database.php";

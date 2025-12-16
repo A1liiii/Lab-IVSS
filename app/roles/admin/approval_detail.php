@@ -126,16 +126,6 @@ ob_start();
         </a>
 
         <div>
-            <?php if ($reg['status']=="pending" && $_SESSION['user']['role']=="ketua lab"): ?>
-                <a href="approve_action.php?id=<?= $reg['reg_id'] ?>" 
-                   class="btn btn-success">
-                    <i class="bi bi-check2-circle"></i> Setujui
-                </a>
-                <a href="reject_action.php?id=<?= $reg['reg_id'] ?>" 
-                   class="btn btn-danger">
-                    <i class="bi bi-x-circle"></i> Tolak
-                </a>
-            <?php endif; ?>
 
             <?php if ($reg['status']=="approved" && !$reg['account_created']): ?>
                 <a href="generate_user.php?reg_id=<?= $reg['reg_id'] ?>" 

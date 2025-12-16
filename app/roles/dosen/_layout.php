@@ -1,11 +1,13 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-
+requireRole(["admin","ketua lab","dosen","operator"]);
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
+// requireRole("dosen");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
+$roles = $_SESSION['roles'] ?? [];
+$onlyDosen = (count($roles) === 1 && in_array('dosen', $roles, true));
 ?>
 
 <!DOCTYPE html>
@@ -21,101 +23,125 @@ $conn = Database::connect();
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-<style>
-/* ================= GLOBAL FIX ================= */
-html, body {
-    height: 100%;
-    overflow: hidden; /* FIX utama: jangan biarkan body scroll */
-}
+    <style>
+        /* GLOBAL LAYOUT FIX */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* agar sidebar tidak nge-scroll body */
+        }
 
-body {
-    display: flex;
-    flex-direction: column;
-    background-color: #f5f8ff;
-}
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f8ff;
+        }
 
-:root {
-    --blue: #004aad;
-    --yellow: #ffde59;
-}
+        /* ROOT COLORS */
+        :root {
+            --blue: #004aad;
+            --yellow: #ffde59;
+        }
 
-/* ================= TOPBAR ================= */
-.topbar {
-    background: #ffffff;
-    border-bottom: 1px solid #e6e6e6;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* TOPBAR */
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e6e6e6;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* ================= LAYOUT WRAPPER ================= */
-.layout-wrapper {
-    height: calc(100vh - 63px); /* minus topbar */
-    display: flex;
-    overflow: hidden;
-}
+        .topbar-title {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--blue);
+        }
 
-/* ================= SIDEBAR ================= */
-.sidebar {
-    width: 240px;
-    background: var(--blue);
-    padding: 25px 15px;
-    color: #fff;
-    overflow-y: auto; 
-    scrollbar-width: thin;
-}
+        /* LAYOUT WRAPPER / CONTENT BODY */
+        .layout-wrapper {
+            height: calc(100vh - 63px); /* full layout minus topbar */
+            display: flex;
+            overflow: hidden;
+        }
 
-.sidebar a {
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    padding: 10px 12px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    font-weight: 500;
-    transition: .2s;
-}
+        /* SIDEBAR */
+        .sidebar {
+            flex-shrink: 0;
+            width: 240px;
+            background: var(--blue);
+            padding: 25px 15px;
+            color: #fff;
+            height: 100%;
+            overflow-y: auto;           /* kalau menu panjang, sidebar bisa scroll */
+            scrollbar-width: thin;
+            min-height: calc(100vh - 63px);
+            box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
+        }
 
-.sidebar a:hover {
-    background: var(--yellow);
-    color: #000;
-    transform: translateX(5px);
-}
+        .sidebar a {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: .2s;
+        }
 
-.sidebar .active {
-    background: var(--yellow);
-    color: #000 !important;
-    font-weight: 700;
-}
+        .sidebar a:hover {
+            background: var(--yellow);
+            color: #000;
+            transform: translateX(5px);
+        }
 
-/* ================= MAIN CONTENT ================= */
-main {
-    flex-grow: 1;
-    overflow-y: auto; /* hanya konten scroll */
-    padding: 25px;
-    scrollbar-width: thin;
-}
+        .sidebar .active {
+            background: var(--yellow);
+            color: #000 !important;
+            font-weight: 700;
+        }
 
-/* Scrollbar styling */
-main::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar {
-    width: 6px;
-}
+        /* MAIN CONTENT */
+        main {
+            flex-grow: 1;
+            padding-bottom: 0 !important;
+            overflow-y: auto;            /* scroll hanya area konten */
+            scrollbar-width: thin;
+        }
 
-main::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
-    border-radius: 6px;
-}
+        main::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
 
-main::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.35);
-}
-</style>
+        main::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+        }
+
+        main::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        .modal-dialog-scrollable .modal-body {
+            overflow-y: auto !important;
+            max-height: calc(100vh - 200px); /* bebas, tapi ini paling ideal */
+        }
+
+        .modal-open {
+            overflow: hidden !important; /* body di-lock seperti biasa */
+        }
+
+        body.modal-open main {
+            overflow: hidden !important; /* cegah double-scroll */
+        }
+
+    </style>
 </head>
 
 <body>
@@ -127,7 +153,11 @@ main::-webkit-scrollbar-thumb:hover,
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <i class="bi bi-person-circle"></i> <?= $_SESSION['user']['username'] ?>
+            <a href="/Lab-ivss/app/roles/dosen/profile.php"
+            class="text-secondary text-decoration-none">
+                <i class="bi bi-person-circle"></i>
+                <?= htmlspecialchars($_SESSION['user']['username']) ?>
+            </a>
         </div>
     </div>
 
@@ -164,9 +194,11 @@ main::-webkit-scrollbar-thumb:hover,
 
             <hr style="border-color: rgba(255,255,255,0.3)">
 
+            <?php if (!$onlyDosen): ?>
             <a href="../../../select_role.php">
                 <i class="bi bi-arrow-left-right"></i> Switch Role
             </a>
+            <?php endif; ?>
 
             <a href="../../../logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
@@ -174,7 +206,7 @@ main::-webkit-scrollbar-thumb:hover,
         </div>
 
         <!-- MAIN CONTENT -->
-        <main>
+        <main class="flex-grow-1 p-4">
             <?php 
             require_once __DIR__ . "/../../core/notification.php";
             echo showReminder();

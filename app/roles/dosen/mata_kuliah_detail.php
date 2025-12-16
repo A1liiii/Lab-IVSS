@@ -2,7 +2,7 @@
 // app/roles/dosen/mata_kuliah_detail.php
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("dosen");
+// requireRole("dosen");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
@@ -93,7 +93,6 @@ ob_start();
         <div>
             <h4 class="fw-bold mb-1"><?= safe($mk['nama_matkul']) ?></h4>
             <div class="text-muted small">
-                Kode: <strong><?= safe($mk['kode_matkul']) ?></strong>
                 <span class="mx-2">•</span>
                 Prodi: <strong><?= safe($mk['prodi']) ?></strong>
                 <span class="mx-2">•</span>

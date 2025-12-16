@@ -29,10 +29,19 @@ $stmt->execute();
 $proyek = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 /** batasi judul di card jadi 10 kata */
-function limit_words(string $text, int $limit = 10): string {
+function limit_words($text, $limit = 10) {
+    $text = (string)$text; // jaga-jaga biar aman
+    $limit = (int)$limit;
+
     $words = preg_split('/\s+/', trim($text));
-    if (!$words) return $text;
-    if (count($words) <= $limit) return $text;
+    if (!$words) {
+        return $text;
+    }
+
+    if (count($words) <= $limit) {
+        return $text;
+    }
+
     return implode(' ', array_slice($words, 0, $limit)) . '...';
 }
 
@@ -213,69 +222,87 @@ $publikasi = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /*--------------------------------------------------------------
-# Publikasi Section
+# Publikasi Section (FINAL – CLEAN & STABLE)
 --------------------------------------------------------------*/
 
-/* Card publikasi rapi + readmore nempel ke bawah */
+/* CARD UTAMA */
 .recent-posts .post-item {
-  background-color: var(--surface-color);
-  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  overflow: hidden;          /* hilangkan sisa putih di bawah */
+  background: var(--surface-color);
+  border-radius: 14px;
+  overflow: hidden; /* KUNCI: radius ikut biru */
+  box-shadow: 0 4px 18px rgba(0,0,0,.08);
   display: flex;
   flex-direction: column;
+  height: 100%;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-/* Garis pemisah sedikit rapat */
-.recent-posts .post-item hr {
-  color: color-mix(in srgb, var(--default-color), transparent 80%);
-  margin: 10px 0 6px;
+.recent-posts .post-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(0,0,0,.12);
 }
 
-/* Konten card */
+/* KONTEN PUTIH */
 .recent-posts .post-item .post-content {
-  padding: 26px 30px 0;      /* atas agak turun, bawah nol (biru tutup) */
+  padding: 26px 30px;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
-/* Judul publikasi: bisa 1–3 baris */
-.recent-posts .post-item .post-title {
+/* JUDUL (MAX 3 BARIS, TINGGI STABIL) */
+.recent-posts .post-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
   display: -webkit-box;
-  -webkit-line-clamp: 3; 
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 72px; /* 3 baris @ 24px, sesuaikan dengan font size */
+  min-height: 72px;
 }
 
-/* Read More bar biru nempel ke bawah card */
-.recent-posts .post-item .readmore-box {
+/* META INFO */
+.recent-posts .meta {
+  font-size: .95rem;
+  color: #6b7280;
+}
+
+.recent-posts .meta i {
+  color: #fbbf24;
+}
+
+/* GARIS PEMISAH */
+.recent-posts .post-item hr {
+  margin: 14px 0 0;
+  border-color: color-mix(in srgb, var(--default-color), transparent 85%);
+}
+
+/* READ MORE BAR (MENYATU DENGAN CARD) */
+.recent-posts .readmore-box {
   background: #0F2F8A;
-  border-radius: 0 0 12px 12px;
   padding: 14px 20px;
-  margin: 8px -30px 0 -30px;  /* kiri-kanan full, atas sedikit jarak, BAWAH 0  */
+  margin-top: auto; /* KUNCI: dorong ke bawah */
 }
 
-/* Text di dalam biru → putih */
-.recent-posts .post-item .readmore-box .readmore {
+/* LINK READ MORE */
+.recent-posts .readmore {
   color: #ffffff !important;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  font-weight: 600;
+  text-decoration: none;
 }
 
-/* Arrow hover */
-.recent-posts .post-item .readmore:hover i {
+.recent-posts .readmore i {
+  margin-left: 6px;
+  transition: transform .2s ease;
+}
+
+.recent-posts .readmore:hover i {
   transform: translateX(6px);
-  transition: transform 0.2s ease;
 }
-/* Biar semua card punya tinggi konten yang sama */
-.recent-posts .post-item .post-content {
-  padding: 26px 30px 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 180px; /* --- tambahkan ini --- */
-}
+
 </style>
 <?php
 ob_start();
@@ -294,12 +321,13 @@ ob_start();
     <div class="row gy-5">
 
       <?php foreach ($proyek as $p): 
-        $status = strtolower(trim($p['status'] ?? ''));
-        $statusClass = match ($status) {
-          'on going'  => 'status-running',
-          'selesai'   => 'status-done',
-          default     => 'status-other',
-        };
+        $status = isset($p['status']) ? strtolower(trim($p['status'])) : '';
+        $map = array(
+            'on going' => 'status-running',
+            'selesai'  => 'status-done',
+        );
+        
+        $statusClass = isset($map[$status]) ? $map[$status] : 'status-other';        
       ?>
 
         <div class="col-xl-4 col-md-6">
@@ -373,13 +401,17 @@ ob_start();
     <p class="mb-0"><strong>Deskripsi Proyek</strong></p>
 
     <?php
-      $status = strtolower(trim($p['status'] ?? ''));
-      $statusClass = match ($status) {
-        'berjalan'  => 'modal-status-running',
-        'selesai'   => 'modal-status-done',
-        'perencanaan', 'planning' => 'modal-status-planning',
-        default     => 'modal-status-other',
-      };
+      $status = isset($p['status']) ? strtolower(trim($p['status'])) : '';
+      $map = array(
+        'berjalan'     => 'modal-status-running',
+        'selesai'      => 'modal-status-done',
+        'perencanaan'  => 'modal-status-planning',
+        'planning'     => 'modal-status-planning',
+    );
+    
+    $statusClass = isset($map[$status])
+        ? $map[$status]
+        : 'modal-status-other';    
     ?>
     <span class="modal-status-badge <?= $statusClass ?>">
       <?= htmlspecialchars($p['status'] ?: '-') ?>
@@ -388,7 +420,10 @@ ob_start();
 
   <!-- Isi deskripsi -->
   <p class="mb-3">
-    <?= nl2br(htmlspecialchars($p['deskripsi'] ?? '-')) ?>
+  <?php
+    $desc = isset($p['deskripsi']) ? $p['deskripsi'] : '-';
+    echo nl2br(htmlspecialchars($desc, ENT_QUOTES, 'UTF-8'));
+    ?>
   </p>
 
 
@@ -430,7 +465,8 @@ ob_start();
   $anggotaLain = [];
 
   foreach ($anggota as $row) {
-      $roleLower = strtolower(trim($row['role'] ?? ''));
+    $role = isset($row['role']) ? $row['role'] : '';
+    $roleLower = strtolower(trim($role));    
       if ($roleLower === 'ketua' && $ketua === null) {
           $ketua = $row['nama'];
       } else {
@@ -500,46 +536,37 @@ ob_start();
 
           <?php foreach ($publikasi as $p): ?>
 
-  <div class="col-xl-4 col-md-6">
-    <div class="post-item position-relative h-100" data-aos="fade-up">
+          <div class="col-xl-4 col-md-6">
+          <div class="post-item h-100" data-aos="fade-up">
 
-      <div class="post-content d-flex flex-column">
+            <div class="post-content">
+              
+              <!-- ISI -->
+              <h3 class="post-title" title="<?= htmlspecialchars($p['judul']) ?>">
+                <?= htmlspecialchars(limit_words($p['judul'], 10)) ?>
+              </h3>
 
-        <!-- JUDUL -->
-        <h3 class="post-title" title="<?= htmlspecialchars($p['judul']) ?>">
-          <?= htmlspecialchars(limit_words($p['judul'], 10)) ?>
-        </h3>
+              <div class="meta d-flex align-items-center mb-1">
+                <i class="bi bi-person"></i>
+                <span class="ps-2"><?= htmlspecialchars($p['penulis']) ?></span>
+              </div>
 
-        <!-- NAMA DOSEN -->
-        <div class="meta d-flex align-items-center mb-1">
-          <div class="d-flex align-items-center">
-            <i class="bi bi-person"></i>
-            <span class="ps-2"><?= htmlspecialchars($p['penulis']) ?></span>
+              <div class="meta d-flex align-items-center mb-2">
+                <i class="bi bi-clock"></i>
+                <span class="ps-2"><?= htmlspecialchars($p['tahun']) ?></span>
+              </div>
+            </div>
+              <!-- PUSH KE BAWAH -->
+              <div class="readmore-box mt-auto">
+                <a href="<?= htmlspecialchars($p['link']) ?>" class="readmore stretched-link" target="_blank">
+                  <span>Read More</span>
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+
+            
           </div>
         </div>
-
-        <!-- TAHUN (ikon jam) -->
-        <div class="meta d-flex align-items-center mb-2">
-          <div class="d-flex align-items-center">
-            <i class="bi bi-clock"></i>
-            <span class="ps-2"><?= htmlspecialchars($p['tahun']) ?></span>
-          </div>
-        </div>
-
-        <hr>
-
-        <!-- READ MORE -->
-        <div class="readmore-box">
-          <a href="<?= htmlspecialchars($p['link']) ?>" class="readmore stretched-link" target="_blank">
-            <span>Read More</span>
-            <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
 
 <?php endforeach ?>
 

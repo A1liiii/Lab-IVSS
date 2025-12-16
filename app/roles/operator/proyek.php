@@ -70,17 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("
             INSERT INTO proyek (judul, deskripsi, tanggal_mulai, tanggal_selesai, status)
             VALUES (?, ?, ?, ?, ?)
+            RETURNING proyek_id
         ");
-        $stmt->execute(array(
+        $stmt->execute([
             $judul,
             $deskripsi,
             $tanggal_mulai !== '' ? $tanggal_mulai : null,
             $tanggal_selesai !== '' ? $tanggal_selesai : null,
             $status
-        ));
+        ]);
 
-        // ambil ID proyek
-        $proyekId = $conn->lastInsertId("proyek_proyek_id_seq");
+        $proyekId = (int) $stmt->fetchColumn();
 
         // ======= SIMPAN ANGGOTA PROYEK (dari builder) =======
         if (!empty($anggotaUsers)) {
@@ -396,89 +396,97 @@ ob_start();
 
 <!-- LIST PROYEK -->
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 proyek-grid">
-    <?php if(empty($list)): ?>
-        <div class="col">
-            <div class="card p-4 text-center text-muted">
-                Belum ada proyek.
-            </div>
+<?php if(empty($list)): ?>
+    <div class="col">
+        <div class="card p-4 text-center text-muted">
+            Belum ada proyek.
         </div>
-    <?php else: ?>
-        <?php foreach($list as $p): 
-            $tglMulai   = !empty($p['tanggal_mulai']) ? date("d M Y", strtotime($p['tanggal_mulai'])) : "-";
-            $tglSelesai = !empty($p['tanggal_selesai']) ? date("d M Y", strtotime($p['tanggal_selesai'])) : "-";
-            $statusBadge = "bg-secondary";
-            if ($p['status'] === 'on going') $statusBadge = "bg-info";
-            if ($p['status'] === 'selesai')  $statusBadge = "bg-success";
+    </div>
+<?php else: ?>
+<?php foreach($list as $p):
+    $tglMulai   = !empty($p['tanggal_mulai']) ? date("d M Y", strtotime($p['tanggal_mulai'])) : "-";
+    $tglSelesai = !empty($p['tanggal_selesai']) ? date("d M Y", strtotime($p['tanggal_selesai'])) : "-";
 
-            $fullDescRaw = isset($p['deskripsi']) ? $p['deskripsi'] : "";
-            $fullDesc    = trim(strip_tags($fullDescRaw));
-            $shortDesc   = excerpt($fullDesc, 180);
-            $hasMoreDesc = (text_length_custom($fullDesc) > text_length_custom($shortDesc));
+    $statusBadge = "bg-secondary";
+    if ($p['status'] === 'on going') $statusBadge = "bg-info";
+    if ($p['status'] === 'selesai')  $statusBadge = "bg-success";
 
-            $anggotaList   = isset($p['anggota_list']) ? $p['anggota_list'] : "";
-            $anggotaDetail = isset($p['anggota_detail']) ? $p['anggota_detail'] : "";
-        ?>
-            <div class="col d-flex">
-                <div class="card shadow-sm proyek-card p-3 w-100"
-                     data-id="<?= (int)$p['proyek_id'] ?>"
-                     data-judul="<?= safe($p['judul']) ?>"
-                     data-deskripsi="<?= safe($fullDescRaw) ?>"
-                     data-tglmulai="<?= safe($p['tanggal_mulai']) ?>"
-                     data-tglselesai="<?= safe($p['tanggal_selesai']) ?>"
-                     data-status="<?= safe($p['status']) ?>"
-                     data-anggota="<?= safe($anggotaList) ?>"
-                     data-anggota-detail="<?= safe($anggotaDetail) ?>">
+    $fullDescRaw = $p['deskripsi'] ?? "";
+    $fullDesc    = trim(strip_tags($fullDescRaw));
+    $shortDesc   = excerpt($fullDesc, 160);
+    $hasMoreDesc = (text_length_custom($fullDesc) > text_length_custom($shortDesc));
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge <?= $statusBadge ?> text-uppercase small">
-                            <?= safe($p['status']) ?>
-                        </span>
-                        <span class="text-muted small ms-2">
-                            <i class="bi bi-calendar-event"></i>
-                            <?= safe($tglMulai) ?> &ndash; <?= safe($tglSelesai) ?>
-                        </span>
-                    </div>
+    $anggotaList   = $p['anggota_list'] ?? "";
+    $anggotaDetail = $p['anggota_detail'] ?? "";
+?>
+    <div class="col d-flex">
+        <div class="card shadow-sm proyek-card w-100"
+             data-id="<?= (int)$p['proyek_id'] ?>"
+             data-judul="<?= safe($p['judul']) ?>"
+             data-deskripsi="<?= safe($fullDescRaw) ?>"
+             data-tglmulai="<?= safe($p['tanggal_mulai']) ?>"
+             data-tglselesai="<?= safe($p['tanggal_selesai']) ?>"
+             data-status="<?= safe($p['status']) ?>"
+             data-anggota="<?= safe($anggotaList) ?>"
+             data-anggota-detail="<?= safe($anggotaDetail) ?>">
 
-                    <h6 class="fw-bold mb-2"><?= safe($p['judul']) ?></h6>
-
-                    <div class="small text-muted mb-2 desc-wrapper">
-                        <span class="proyek-short"><?= safe($shortDesc) ?></span>
-                        <?php if ($hasMoreDesc): ?>
-                            <span class="proyek-full d-none"><?= safe($fullDesc) ?></span>
-                            <span class="toggle-proyek text-primary" style="cursor:pointer;">View more</span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="mb-3 small">
-                        <strong>Anggota:</strong><br>
-                        <?php if ($anggotaList !== ''): ?>
-                            <span><?= safe($anggotaList) ?></span>
-                        <?php else: ?>
-                            <span class="text-muted">Belum ada anggota terdaftar.</span>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="d-flex gap-2 mt-auto">
-                        <button type="button"
-                                class="btn btn-outline-primary btn-sm w-100"
-                                onclick="openProyekDetail(this)">
-                            <i class="bi bi-pencil-square"></i> Detail / Edit
-                        </button>
-
-                        <form method="POST"
-                              onsubmit="return confirm('Hapus proyek ini beserta anggota yang terkait?');"
-                              style="width:80px;">
-                            <input type="hidden" name="action" value="delete">
-                            <input type="hidden" name="proyek_id" value="<?= (int)$p['proyek_id'] ?>">
-                            <button type="submit"
-                                    class="btn btn-outline-danger btn-sm w-100">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge <?= $statusBadge ?> text-uppercase proyek-status">
+                    <?= safe($p['status']) ?>
+                </span>
+                <span class="text-muted proyek-date">
+                    <i class="bi bi-calendar-event"></i>
+                    <?= safe($tglMulai) ?> – <?= safe($tglSelesai) ?>
+                </span>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+
+            <!-- TITLE -->
+            <h6 class="proyek-title"><?= safe($p['judul']) ?></h6>
+
+            <!-- DESCRIPTION -->
+            <div class="proyek-desc">
+                <span class="proyek-short"><?= safe($shortDesc) ?></span>
+                <?php if ($hasMoreDesc): ?>
+                    <span class="proyek-full d-none"><?= safe($fullDesc) ?></span>
+                    <span class="toggle-proyek text-primary">View more</span>
+                <?php endif; ?>
+            </div>
+
+            <!-- ANGGOTA -->
+            <div class="proyek-anggota">
+                <div class="label">Anggota</div>
+                <?php if ($anggotaList !== ''): ?>
+                    <div class="value"><?= safe($anggotaList) ?></div>
+                <?php else: ?>
+                    <div class="value text-muted">Belum ada anggota</div>
+                <?php endif; ?>
+            </div>
+
+            <!-- ACTION -->
+            <div class="proyek-action mt-auto">
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm w-100"
+                        onclick="openProyekDetail(this)">
+                    <i class="bi bi-pencil-square"></i> Detail / Edit
+                </button>
+
+                <form method="POST"
+                      onsubmit="return confirm('Hapus proyek ini beserta anggota yang terkait?');"
+                      style="width:64px;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="proyek_id" value="<?= (int)$p['proyek_id'] ?>">
+                    <button type="submit"
+                            class="btn btn-outline-danger btn-sm w-100">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+<?php endforeach; ?>
+<?php endif; ?>
 </div>
 
 <!-- PAGINATION -->
@@ -776,6 +784,78 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <style>
+/* ===============================
+   LIST PROYEK – IMPROVE ONLY
+================================ */
+
+.proyek-card{
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    min-height: 360px;
+    transition: .25s ease;
+}
+
+.proyek-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 12px 26px rgba(0,0,0,.08);
+}
+
+/* header */
+.proyek-status{
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 20px;
+}
+
+.proyek-date{
+    font-size: 12px;
+}
+
+/* title */
+.proyek-title{
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 6px;
+}
+
+/* description */
+.proyek-desc{
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.proyek-desc .toggle-proyek{
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* anggota */
+.proyek-anggota{
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.proyek-anggota .label{
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.proyek-anggota .value{
+    color: #495057;
+}
+
+/* action */
+.proyek-action{
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
 .card .btn { border-radius: 8px; }
 
 /* grid tetap rapi */

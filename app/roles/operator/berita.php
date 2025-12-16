@@ -3,7 +3,6 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 require_once __DIR__ . "/../../core/auth.php";
-requireRole("operator");
 
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
@@ -28,7 +27,11 @@ function text_length($s){
 }
 
 
-$currentUserId = (isset($_SESSION['user_id'])) ? $_SESSION['user_id'] : null;
+if (empty($_SESSION['user']['user_id'])) {
+    die("Session user tidak valid. Silakan login ulang.");
+}
+
+$currentUserId = (int) $_SESSION['user']['user_id'];
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -68,8 +71,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // file_url (lampiran) sementara dikosongkan
+        // Upload file PDF (opsional)
         $fileUrl = null;
+        if (isset($_FILES['file_pdf']) && $_FILES['file_pdf']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['file_pdf'];
+
+            if ($file['size'] > 5 * 1024 * 1024) {
+                $_SESSION['flash_error'] = "File PDF maksimal 5MB.";
+                header("Location: berita.php");
+                exit;
+            }
+
+            $mime = mime_content_type($file['tmp_name']);
+            if ($mime !== 'application/pdf') {
+                $_SESSION['flash_error'] = "Lampiran harus berupa PDF.";
+                header("Location: berita.php");
+                exit;
+            }
+
+            $newName = 'berita_file_' . time() . '_' . rand(100,999) . '.pdf';
+            $destDir = __DIR__ . "/../../../public/uploads/berita/files/";
+
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+
+            if (move_uploaded_file($file['tmp_name'], $destDir . $newName)) {
+                $fileUrl = $newName;
+            }
+        }
 
         $stmt = $conn->prepare("
             INSERT INTO berita (user_id, judul, deskripsi, foto, file_url, tgl_post, kategori)
@@ -146,22 +176,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+        // ===================== CEK FILE PDF BARU ======================
+        $filePdfName = null;
 
-        // ===================== UPDATE BERITA ======================
-        if ($fotoName) {
+        if (!empty($_FILES['file_pdf']) && $_FILES['file_pdf']['error'] === UPLOAD_ERR_OK) {
+
+            if ($_FILES['file_pdf']['size'] > 5 * 1024 * 1024) {
+                $_SESSION['flash_error'] = "File PDF maksimal 5MB.";
+                header("Location: berita.php");
+                exit;
+            }
+
+            $mime = mime_content_type($_FILES['file_pdf']['tmp_name']);
+            if ($mime !== 'application/pdf') {
+                $_SESSION['flash_error'] = "Lampiran harus PDF.";
+                header("Location: berita.php");
+                exit;
+            }
+
+            $newFile = 'berita_file_' . time() . '_' . rand(100,999) . '.pdf';
+            $destDir = __DIR__ . "/../../../public/uploads/berita/files/";
+
+            if (!is_dir($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+
+            // ambil file lama
+            $stmtOldFile = $conn->prepare("SELECT file_url FROM berita WHERE berita_id = ?");
+            $stmtOldFile->execute([$id]);
+            $oldFile = $stmtOldFile->fetchColumn();
+
+            if ($oldFile && is_file($destDir . $oldFile)) {
+                unlink($destDir . $oldFile);
+            }
+
+            move_uploaded_file($_FILES['file_pdf']['tmp_name'], $destDir . $newFile);
+            $filePdfName = $newFile;
+        }
+
+        // ===================== UPDATE BERITA (FOTO & PDF AWARE) =====================
+        if ($fotoName !== null && $filePdfName !== null) {
+
+            // FOTO & PDF diganti
+            $stmt = $conn->prepare("
+                UPDATE berita
+                SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?, foto = ?, file_url = ?
+                WHERE berita_id = ?
+            ");
+            $stmt->execute([
+                $judul,
+                $kategori,
+                $tgl_post,
+                $deskripsi,
+                $fotoName,
+                $filePdfName,
+                $id
+            ]);
+
+        } elseif ($fotoName !== null) {
+
+            // Hanya FOTO diganti
             $stmt = $conn->prepare("
                 UPDATE berita
                 SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?, foto = ?
                 WHERE berita_id = ?
             ");
-            $stmt->execute([$judul, $kategori, $tgl_post, $deskripsi, $fotoName, $id]);
+            $stmt->execute([
+                $judul,
+                $kategori,
+                $tgl_post,
+                $deskripsi,
+                $fotoName,
+                $id
+            ]);
+
+        } elseif ($filePdfName !== null) {
+
+            // Hanya PDF diganti
+            $stmt = $conn->prepare("
+                UPDATE berita
+                SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?, file_url = ?
+                WHERE berita_id = ?
+            ");
+            $stmt->execute([
+                $judul,
+                $kategori,
+                $tgl_post,
+                $deskripsi,
+                $filePdfName,
+                $id
+            ]);
+
         } else {
+
+            // Tidak ada file diganti
             $stmt = $conn->prepare("
                 UPDATE berita
                 SET judul = ?, kategori = ?, tgl_post = ?, deskripsi = ?
                 WHERE berita_id = ?
             ");
-            $stmt->execute([$judul, $kategori, $tgl_post, $deskripsi, $id]);
+            $stmt->execute([
+                $judul,
+                $kategori,
+                $tgl_post,
+                $deskripsi,
+                $id
+            ]);
         }
 
         $_SESSION['flash_success'] = "Berita berhasil diperbarui.";
@@ -305,6 +425,16 @@ ob_start();
                    accept=".jpg,.jpeg,.png,.webp">
             <div class="form-text small">Disimpan di: <code>/public/uploads/berita/</code></div>
         </div>
+        <div class="col-md-6">
+            <label class="form-label small">File PDF (opsional)</label>
+            <input type="file"
+                name="file_pdf"
+                class="form-control"
+                accept=".pdf">
+            <div class="form-text small">
+                PDF pendukung / isi berita (maks 5MB)
+            </div>
+        </div>
 
         <div class="col-12">
             <label class="form-label small">Deskripsi</label>
@@ -366,10 +496,6 @@ ob_start();
                         ?>
                         <p class="small text-muted mb-3 flex-grow-1">
                             <span class="berita-short"><?= safe($shortText) ?></span>
-                            <?php if ($hasMore): ?>
-                                <span class="berita-full d-none"><?= safe($fullText) ?></span>
-                                <span class="toggle-view text-primary" style="cursor:pointer;">View more</span>
-                            <?php endif; ?>
                         </p>
                         <div class="d-flex gap-2">
                             <button type="button"
@@ -495,6 +621,14 @@ ob_start();
                                   id="deskripsi_field"
                                   name="deskripsi" rows="5"></textarea>
                     </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Ganti / Tambah File PDF</label>
+                        <input type="file"
+                            name="file_pdf"
+                            class="form-control"
+                            accept=".pdf">
+                        <div class="form-text small">Kosongkan jika tidak diganti</div>
+                    </div>
 
                     <div class="small text-muted" id="fileInfoBox" style="display:none;">
                         Lampiran: <a href="#" id="fileUrlLink" target="_blank">Lihat file</a>
@@ -550,7 +684,7 @@ function openBeritaDetail(btn){
     const link    = document.getElementById('fileUrlLink');
     if (fileUrl) {
         fileBox.style.display = 'block';
-        link.href = fileUrl;
+        link.href = "../../../public/uploads/berita/files/" + fileUrl;
     } else {
         fileBox.style.display = 'none';
     }

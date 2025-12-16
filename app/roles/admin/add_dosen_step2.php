@@ -14,6 +14,7 @@ if (!isset($_GET['nip'])) {
 }
 
 $nip = $_GET['nip'];
+$as = $_GET['as'] ?? 'dosen';
 
 // ambil data dosen berdasarkan nip
 $stmt = $conn->prepare("SELECT * FROM dosen WHERE nip = ?");
@@ -65,14 +66,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ");
                 $updateDosen->execute([$userId, $nip]);
 
-                // assign role dosen
-                $roleStmt = $conn->prepare("
+                // ===============================
+                // ASSIGN ROLE (DINAMIS)
+                // ===============================
+                $rolesToAssign = ['dosen'];
+
+                if ($as === 'ketua_lab') {
+                    $rolesToAssign[] = 'ketua lab';
+                }
+
+                if ($as === 'operator') {
+                    $rolesToAssign[] = 'operator';
+                }
+
+                $roleInsert = $conn->prepare("
                     INSERT INTO user_roles (user_id, role_id)
-                    VALUES (?, (
-                        SELECT role_id FROM roles WHERE role_name = 'dosen'
-                    ))
+                    SELECT ?, role_id FROM roles WHERE role_name = ?
                 ");
-                $roleStmt->execute([$userId]);
+
+                foreach ($rolesToAssign as $roleName) {
+                    $roleInsert->execute([$userId, $roleName]);
+                }
 
                 $conn->commit();
 

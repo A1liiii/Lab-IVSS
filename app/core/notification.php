@@ -19,27 +19,7 @@ function showReminder() {
     ";
 
 
-    // ============================================================
-    // 2. PENGINGAT EDIT PROFIL — UNTUK SEMUA ROLE
-    // ============================================================
-
-    if (!empty($nip)) {
-        $alert .= "
-        <div class='alert alert-warning d-flex align-items-center gap-2 p-2 small mb-3'>
-            <i class='bi bi-exclamation-triangle-fill'></i>
-            <span>Profil utama Anda hanya dapat diubah melalui <strong>Role Dosen</strong>. Silakan switch role.</span>
-        </div>
-        ";
-    }
-
-    if (!empty($nim)) {
-        $alert .= "
-        <div class='alert alert-warning d-flex align-items-center gap-2 p-2 small mb-3'>
-            <i class='bi bi-exclamation-triangle-fill'></i>
-            <span>Profil utama Anda hanya dapat diubah melalui <strong>Role Mahasiswa</strong>. Silakan switch role.</span>
-        </div>
-        ";
-    }
+ 
 
     return $alert;
 }

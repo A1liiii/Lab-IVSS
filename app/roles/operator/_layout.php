@@ -22,107 +22,125 @@ $title    = $title  ?? "Operator Panel";
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-<style>
-/* ================= GLOBAL FIX ================= */
-html, body {
-    height: 100%;
-    overflow: hidden; /* Sidebar dan content scroll sendiri */
-}
+    <style>
+        /* GLOBAL LAYOUT FIX */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* agar sidebar tidak nge-scroll body */
+        }
 
-body {
-    display: flex;
-    flex-direction: column;
-    background-color: #f5f8ff;
-}
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f8ff;
+        }
 
-:root {
-    --blue: #004aad;
-    --yellow: #ffde59;
-}
+        /* ROOT COLORS */
+        :root {
+            --blue: #004aad;
+            --yellow: #ffde59;
+        }
 
-/* ================= TOPBAR ================= */
-.topbar {
-    background: #ffffff;
-    border-bottom: 1px solid #e6e6e6;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* TOPBAR */
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e6e6e6;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.topbar-title {
-    font-size: 21px;
-    font-weight: 700;
-    color: var(--blue);
-}
+        .topbar-title {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--blue);
+        }
 
-/* ================= LAYOUT WRAPPER ================= */
-.layout-wrapper {
-    height: calc(100vh - 63px);
-    display: flex;
-    overflow: hidden;
-}
+        /* LAYOUT WRAPPER / CONTENT BODY */
+        .layout-wrapper {
+            height: calc(100vh - 63px); /* full layout minus topbar */
+            display: flex;
+            overflow: hidden;
+        }
 
-/* ================= SIDEBAR ================= */
-.sidebar {
-    width: 240px;
-    background: var(--blue);
-    padding: 25px 15px;
-    color: #fff;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
-}
+        /* SIDEBAR */
+        .sidebar {
+            flex-shrink: 0;
+            width: 240px;
+            background: var(--blue);
+            padding: 25px 15px;
+            color: #fff;
+            height: 100%;
+            overflow-y: auto;           /* kalau menu panjang, sidebar bisa scroll */
+            scrollbar-width: thin;
+            min-height: calc(100vh - 63px);
+            box-shadow: inset -2px 0 6px rgba(0,0,0,0.05);
+        }
 
-.sidebar a {
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    text-decoration: none;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    font-weight: 500;
-    transition: .2s;
-}
+        .sidebar a {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: .2s;
+        }
 
-.sidebar a:hover {
-    background: var(--yellow);
-    color: black;
-    transform: translateX(5px);
-}
+        .sidebar a:hover {
+            background: var(--yellow);
+            color: #000;
+            transform: translateX(5px);
+        }
 
-.sidebar .active {
-    background: var(--yellow);
-    color: black !important;
-    font-weight: 700;
-}
+        .sidebar .active {
+            background: var(--yellow);
+            color: #000 !important;
+            font-weight: 700;
+        }
 
-/* ================= MAIN CONTENT ================= */
-main {
-    flex-grow: 1;
-    overflow-y: auto; /* hanya content yg scroll */
-    padding: 25px;
-    scrollbar-width: thin;
-}
+        /* MAIN CONTENT */
+        main {
+            flex-grow: 1;
+            padding-bottom: 0 !important;
+            overflow-y: auto;            /* scroll hanya area konten */
+            scrollbar-width: thin;
+        }
 
-main::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar {
-    width: 6px;
-}
+        main::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
 
-main::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
-    border-radius: 6px;
-}
+        main::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+        }
 
-main::-webkit-scrollbar-thumb:hover,
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.35);
-}
-</style>
+        main::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        .modal-dialog-scrollable .modal-body {
+            overflow-y: auto !important;
+            max-height: calc(100vh - 200px); /* bebas, tapi ini paling ideal */
+        }
+
+        .modal-open {
+            overflow: hidden !important; /* body di-lock seperti biasa */
+        }
+
+        body.modal-open main {
+            overflow: hidden !important; /* cegah double-scroll */
+        }
+
+    </style>
 </head>
 
 <body>
@@ -134,9 +152,11 @@ main::-webkit-scrollbar-thumb:hover,
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <span class="text-secondary">
-                <i class="bi bi-person-circle"></i> <?= htmlspecialchars($username) ?>
-            </span>
+            <a href="/Lab-ivss/app/roles/dosen/profile.php"
+            class="text-secondary text-decoration-none">
+                <i class="bi bi-person-circle"></i>
+                <?= htmlspecialchars($_SESSION['user']['username']) ?>
+            </a>
         </div>
     </div>
 
@@ -179,7 +199,7 @@ main::-webkit-scrollbar-thumb:hover,
         </div>
 
         <!-- MAIN CONTENT -->
-        <main>
+        <main class="flex-grow-1 p-4">
             <?php 
             require_once __DIR__ . "/../../core/notification.php";
             echo showReminder();
