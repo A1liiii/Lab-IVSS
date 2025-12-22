@@ -7,6 +7,24 @@ ob_start();
 require_once __DIR__ . "/../../core/database.php";
 $conn = Database::connect();
 
+function resolveFotoProfil(?string $userId, ?string $nim): string
+{
+    // default
+    $foto = "../../../public/assets/img/default-user.png";
+
+    // 1️⃣ user_id.jpg
+    if ($userId && file_exists(__DIR__."/../../../public/uploads/profiles/$userId.jpg")) {
+        return "../../../public/uploads/profiles/$userId.jpg";
+    }
+
+    // 2️⃣ nim.jpg
+    if ($nim && file_exists(__DIR__."/../../../public/uploads/profiles/$nim.jpg")) {
+        return "../../../public/uploads/profiles/$nim.jpg";
+    }
+
+    return $foto;
+}
+
 // =========================
 // 1. Ambil parameter
 // =========================
@@ -38,14 +56,10 @@ if (!$tipe || !$id) {
         $profil = $stmt->fetch(PDO::FETCH_ASSOC);
         $userId = $profil['user_id'] ?? null;
 
-        $fotoProfil = "../../../public/assets/img/default-user.png";
-
-        if ($userId) {
-            $candidate = "../../../public/uploads/profiles/{$userId}.jpg";
-            if (file_exists($candidate)) {
-                $fotoProfil = $candidate;
-            }
-        }
+        $fotoProfil = resolveFotoProfil(
+            $profil['user_id'] ?? null,
+            $profil['nip'] ?? null
+        );
 
         if ($profil) {
             $userId = $profil['user_id'] ?? null;
@@ -112,6 +126,10 @@ if (!$tipe || !$id) {
         ");
         $stmt->execute(['id' => $id]);
         $profil = $stmt->fetch(PDO::FETCH_ASSOC);
+        $fotoProfil = resolveFotoProfil(
+            $profil['user_id'] ?? null,
+            $profil['nim'] ?? null
+        );
 
         if ($profil) {
             $userId = $profil['user_id'] ?? null;

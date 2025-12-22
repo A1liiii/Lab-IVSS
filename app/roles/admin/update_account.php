@@ -26,7 +26,19 @@ try{
         $stmt2->execute([$hashed, $user_id]);
     }
 
-    header("Location: detail_user.php?id=" . $user_id);
+    // === LOG UPDATE AKUN LOGIN MAHASISWA ===
+    try {
+        $log = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $log->execute([
+            $_SESSION['user']['user_id'], // admin
+            'update',
+            'Memperbarui akun login mahasiswa ' . $namaMhs . ' (' . $nim . ')'
+        ]);
+    } catch (PDOException $e) {}
+        header("Location: detail_user.php?id=" . $user_id);
     exit;
 
 }catch(Exception $e){

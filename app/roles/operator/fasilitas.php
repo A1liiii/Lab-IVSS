@@ -30,6 +30,17 @@ if (empty($_SESSION['user']['user_id'])) {
 }
 
 $currentUserId = (int) $_SESSION['user']['user_id'];
+function logAktivitas(PDO $conn, int $userId, string $aksi, string $deskripsi){
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $aksi, $deskripsi]);
+    } catch (Exception $e) {
+        // log gagal tidak boleh mematikan proses utama
+    }
+}
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -79,6 +90,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fotoName,
             $kategori
         ));
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'create',
+            'Operator Menambahkan '.$nama
+        );
 
         $_SESSION['flash_success'] = "Fasilitas berhasil ditambahkan.";
         header("Location: fasilitas.php");
@@ -152,7 +169,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt->execute(array($nama, $kategori, $deskripsi, $id));
         }
-
+            logAktivitas(
+                $conn,
+                $currentUserId,
+                'update',
+                'Memperbarui data fasilitas '.$nama
+            );
         $_SESSION['flash_success'] = "Fasilitas berhasil diperbarui.";
         header("Location: fasilitas.php");
         exit;
@@ -166,10 +188,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("SELECT foto FROM fasilitas WHERE fasilitas_id = ?");
             $stmt->execute(array($id));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmtNama = $conn->prepare("SELECT nama FROM fasilitas WHERE fasilitas_id = ?");
+            $stmtNama->execute([$id]);
+            $namaFasilitas = $stmtNama->fetchColumn();
 
             $stmtDel = $conn->prepare("DELETE FROM fasilitas WHERE fasilitas_id = ?");
             $stmtDel->execute(array($id));
-
+            logAktivitas(
+                $conn,
+                $currentUserId,
+                'delete',
+                'Operator menghapus data fasilitas '.$namaFasilitas
+            );
             if ($row && !empty($row['foto'])) {
                 $destDir = __DIR__ . "/../../../public/uploads/fasilitas/";
                 $path = $destDir . $row['foto'];

@@ -52,6 +52,7 @@ $sqlMhs = "
     LEFT JOIN users u        ON u.nim = m.nim
     LEFT JOIN user_roles ur ON ur.user_id = u.user_id
     LEFT JOIN roles r       ON r.role_id = ur.role_id
+     WHERE LOWER(m.kategori) = 'riset'
 ";
 $mahasiswa = $conn->query($sqlMhs)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -174,8 +175,25 @@ if ($tipe==='dosen') {
     $filter='mahasiswa';
 }
 
-$foto = "../../../public/uploads/profiles/".($row['user_id']??0).".jpg";
+$baseDir = __DIR__ . "/../../../public/uploads/profiles/";
+$baseUrl = "../../../public/uploads/profiles/";
 $default = "../../../public/assets/img/default-user.png";
+
+/* FOTO:
+   1. user_id.jpg
+   2. nim.jpg
+*/
+$foto = $default;
+
+// 1️⃣ user_id.jpg
+if (!empty($row['user_id']) && file_exists($baseDir.$row['user_id'].".jpg")) {
+    $foto = $baseUrl.$row['user_id'].".jpg";
+}
+// 2️⃣ nim.jpg (mahasiswa)
+elseif ($row['tipe']==='mahasiswa' && file_exists($baseDir.$row['id_anggota'].".jpg")) {
+    $foto = $baseUrl.$row['id_anggota'].".jpg";
+}
+
 $link = "anggota_detail.php?tipe={$tipe}&id={$row['id_anggota']}";
 ?>
 

@@ -124,6 +124,32 @@ function roleExists(PDO $conn, string $roleName): bool {
 
 $hasKetuaLab = roleExists($conn, 'ketua lab');
 $hasOperator = roleExists($conn, 'operator');
+function resolveUserFotoSimple(array $u): string {
+    $baseDir = __DIR__ . "/../../../public/uploads/profiles/";
+    $baseUrl = "../../../public/uploads/profiles/";
+
+    // 1. user_id.jpg
+    if (!empty($u['user_id'])) {
+        $path = $baseDir . $u['user_id'] . ".jpg";
+        if (file_exists($path)) {
+            return $baseUrl . $u['user_id'] . ".jpg";
+        }
+    }
+
+    // 2. nim.jpg (khusus mahasiswa)
+    if (!empty($u['nim'])) {
+        $path = $baseDir . $u['nim'] . ".jpg";
+        if (file_exists($path)) {
+            return $baseUrl . $u['nim'] . ".jpg";
+        }
+    }
+
+    // 3. default
+    return "../../../public/assets/img/default-user.png";
+}
+function fotoVersion(string $path): string {
+    return file_exists($path) ? filemtime($path) : time();
+}
 ob_start();
 ?>
 
@@ -179,10 +205,12 @@ ob_start();
         <div class="col-6 col-md-4 col-lg-3">
         <div class="card user-card h-100">
 
+        <?php
+        $fotoPath = __DIR__."/../../../public/uploads/profiles/".$u['user_id'].".jpg";
+        ?>
             <!-- FOTO -->
             <div class="user-avatar-wrapper">
-                <img src="../../../public/uploads/profiles/<?=$u['user_id']?>.jpg?v=<?=time()?>"
-                    onerror="this.onerror=null;this.src='../../../public/assets/img/default-user.png';"
+                <img src="<?= resolveUserFotoSimple($u) ?>?v=<?= fotoVersion($fotoPath) ?>"
                     class="user-avatar"
                     alt="User Photo">
             </div>

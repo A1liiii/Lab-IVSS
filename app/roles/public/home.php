@@ -115,11 +115,18 @@ $dosen = $conn->query("
 
 /* MAHASISWA */
 $mahasiswa = $conn->query("
-    SELECT m.nim AS id_anggota, m.nama, 'Mahasiswa' AS jabatan,
-           NULL AS nidn, u.user_id, m.foto AS foto_field,
-           {$rolesSubquery}, 'mahasiswa' AS tipe
+    SELECT 
+        m.nim AS id_anggota,
+        m.nama,
+        'Mahasiswa' AS jabatan,
+        NULL AS nidn,
+        u.user_id,
+        m.foto AS foto_field,
+        {$rolesSubquery},
+        'mahasiswa' AS tipe
     FROM mahasiswa m
     LEFT JOIN users u ON u.nim = m.nim
+    WHERE LOWER(m.kategori) = 'riset'
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 /* STAFF */
@@ -165,13 +172,27 @@ foreach ($anggotaLab as $i => $a) {
         $email = $q->fetchColumn() ?: '-';
     }
 
-    // FOTO
-    $foto = "../../../public/assets/img/default-user.png";
-    if ($userId && file_exists(__DIR__."/../../../public/uploads/profiles/$userId.jpg")) {
-        $foto = "../../../public/uploads/profiles/$userId.jpg";
-    } elseif ($fotoField && file_exists(__DIR__."/../../../public/uploads/anggota/$fotoField")) {
-        $foto = "../../../public/uploads/anggota/$fotoField";
-    }
+    // FOTO (PRIORITAS: user_id → nim → foto_field → default)
+$foto = "../../../public/assets/img/default-user.png";
+
+// 1️⃣ user_id.jpg
+if (!empty($userId) && file_exists(__DIR__."/../../../public/uploads/profiles/$userId.jpg")) {
+    $foto = "../../../public/uploads/profiles/$userId.jpg";
+}
+
+// 2️⃣ nim.jpg (khusus mahasiswa)
+elseif (
+    ($tipe === 'mahasiswa') &&
+    !empty($idAnggota) &&
+    file_exists(__DIR__."/../../../public/uploads/profiles/$idAnggota.jpg")
+) {
+    $foto = "../../../public/uploads/profiles/$idAnggota.jpg";
+}
+
+// 3️⃣ foto_field lama (uploads/anggota)
+elseif (!empty($fotoField) && file_exists(__DIR__."/../../../public/uploads/anggota/$fotoField")) {
+    $foto = "../../../public/uploads/anggota/$fotoField";
+}
 
     $anggotaLab[$i]['nama_normal']   = $a['nama'] ?? 'Tidak diketahui';
     $anggotaLab[$i]['email']         = $email;
@@ -359,6 +380,70 @@ ob_start();
   font-weight: 500;
   margin-top: 12px;
 }
+/* ===================== VISI & MISI CARD FIX ===================== */
+
+.vm-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bagian atas (icon) */
+.vm-top {
+  padding: 24px 24px 0;
+}
+
+.vm-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(13,110,253,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #0d6efd;
+}
+
+/* Body disamakan */
+.vm-body {
+  padding: 20px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Judul */
+.vm-title {
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+/* TEXT VISI */
+.vm-text {
+  font-size: .95rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: auto; /* ⬅️ PENTING: push konten agar tinggi sejajar */
+}
+
+/* LIST MISI */
+.vm-misi-list {
+  padding-left: 18px;
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.vm-misi-list li {
+  margin-bottom: 8px;
+}
+
 
 </style>
 
@@ -493,7 +578,7 @@ ob_start();
 
         <div class="vm-body">
           <h3 class="vm-title">VISI</h3>
-          <p class="vm-text">
+          <p class="vm-misi-list">
             <?= !empty($lab['visi']) ? htmlspecialchars($lab['visi']) : 'Visi lab belum diisi.' ?>
           </p>
         </div>
@@ -756,12 +841,11 @@ ob_start();
             <div class="team-card h-100">
 
               <div class="ratio ratio-1x1 rounded-top overflow-hidden bg-light">
-                 <img
-                  src="<?= htmlspecialchars($foto, ENT_QUOTES, 'UTF-8') ?>"
-                  alt="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
-                  class="img-fluid w-100 h-100"
-                  style="object-fit: contain;"
-                >
+              <img
+                src="<?= htmlspecialchars($foto, ENT_QUOTES, 'UTF-8') ?>"
+                alt="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
+                class="img-fluid w-100 h-100 team-img"
+              >
               </div>
 
               <div class="team-info text-center">

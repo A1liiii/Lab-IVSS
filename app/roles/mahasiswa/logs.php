@@ -102,14 +102,6 @@ ob_start();
   </form>
 </div>
 
-<!-- add inline -->
-<div class="card p-3 mb-3">
-  <form method="POST" class="d-flex gap-2">
-    <input type="hidden" name="action" value="add">
-    <input name="deskripsi" class="form-control" placeholder="Tambah aktivitas singkat...">
-    <button class="btn btn-primary">Tambah</button>
-  </form>
-</div>
 
 <div class="list-group mb-3">
   <?php if(empty($rows)): ?>

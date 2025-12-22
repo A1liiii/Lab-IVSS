@@ -72,6 +72,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $_SESSION['roles'] = $roles;
 
+            // === AUTO LOG LOGIN ===
+    try {
+        $log = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi)
+            VALUES (?, ?, ?)
+        ");
+        $log->execute([
+            $user['user_id'],
+            'login',
+            'Login ke sistem'
+        ]);
+    } catch (PDOException $e) {}
+
             // Kalau cuma punya 1 role → langsung redirect
             if (count($roles) === 1) {
                 $_SESSION['active_role'] = $roles[0];
@@ -93,6 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="public/assets/img/logo_ivss2.png" rel="icon">    
     <title>Login Sistem</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -134,6 +148,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             from {opacity: 0; transform: translateY(10px);}
             to {opacity: 1; transform: translateY(0);}
         }
+
+        .logo-link {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: auto;
+        }
     </style>
 </head>
 
@@ -144,6 +169,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <!-- Floating Login Box in Center -->
     <div class="login-wrapper">
         <div class="login-box shadow-lg">
+            <!-- LOGO -->
+            <a href="/lab-ivss/app/roles/public/home.php" class="logo-link">
+                <img src="public/assets/img/logo_ivss2.png"
+                    alt="IVSS Lab"
+                    class="login-logo">
+            </a>
             <h3 class="text-center fw-bold mb-4">Login Sistem</h3>
 
             <?php if(isset($error)): ?>

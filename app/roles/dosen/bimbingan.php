@@ -16,7 +16,23 @@ function safe($v){ return htmlspecialchars($v ?? "-", ENT_QUOTES, 'UTF-8'); }
 $dosen_user_id = $_SESSION['user']['user_id'] ?? null;
 if (!$dosen_user_id) die("User invalid.");
 
+function autoLog(PDO $conn, string $aksi, string $deskripsi = null){
+    if (empty($_SESSION['user']['user_id'])) return;
 
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user']['user_id'],
+            $aksi,
+            $deskripsi
+        ]);
+    } catch (Exception $e) {
+        // DIAM SAJA — LOG TIDAK BOLEH MATIIN FLOW
+    }
+}
 // ====================== HANDLE POSTS ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -77,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nim . ".jpg",
             date("Y-m-d")
         ]);
-
+        autoLog($conn, 'create', 'Tambah mahasiswa bimbingan: '.$nim);
         $_SESSION['flash_success'] = "Mahasiswa bimbingan berhasil ditambahkan.";
         header("Location: bimbingan.php");
         exit;
@@ -106,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE nim=? AND user_id=?
         ");
         $stmt->execute([$nama,$email,$prodi,$angkatan,$status,$nim,$dosen_user_id]);
+        autoLog($conn, 'update', 'Update mahasiswa bimbingan: '.$nim);
 
         $_SESSION['flash_success'] = "Data mahasiswa berhasil diperbarui.";
         header("Location: bimbingan.php");
@@ -121,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             WHERE nim=? AND kategori='bimbingan' AND user_id=?
         ");
         $stmt->execute([$nim, $dosen_user_id]);
+        autoLog($conn, 'delete', 'Hapus mahasiswa bimbingan: '.$nim);
 
         $_SESSION['flash_success'] = "Mahasiswa bimbingan dihapus.";
         header("Location: bimbingan.php");

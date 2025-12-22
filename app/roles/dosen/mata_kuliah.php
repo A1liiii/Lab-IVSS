@@ -49,6 +49,25 @@ function generateKodeMK($nama, $prodi, $tahun, $nip) {
     return "{$inisialMK}-{$inisialProdi}-{$tahunKode}-{$nip}";
 }
 
+function autoLog(PDO $conn, string $aksi, string $deskripsi = null){
+    if (empty($_SESSION['user']['user_id'])) return;
+
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user']['user_id'],
+            $aksi,
+            $deskripsi
+        ]);
+    } catch (Exception $e) {
+        // log gagal TIDAK BOLEH ganggu proses utama
+    }
+}
+
+
 // ===================== HANDLE ACTIONS (POST) =====================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -76,7 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("INSERT INTO mata_kuliah (kode_matkul, nip, nama_matkul, semester, prodi, sks, tahun_ajar)
                                 VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([$kode, $nip, $nama, $semester ?: null, $prodi ?: null, $sks ?: null, $tahun_ajar ?: null]);
-
+        autoLog(
+            $conn,
+            'create',
+            'Tambah mata kuliah: '.$nama.''
+        );
         $_SESSION['flash_success'] = "Mata kuliah ditambahkan.";
         header("Location: mata_kuliah.php");
         exit;
@@ -94,6 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($kode) {
             $stmt = $conn->prepare("UPDATE mata_kuliah SET nama_matkul=?, semester=?, prodi=?, sks=?, tahun_ajar=? WHERE kode_matkul=? AND nip=?");
             $stmt->execute([$nama, $semester ?: null, $prodi ?: null, $sks ?: null, $tahun_ajar ?: null, $kode, $nip]);
+            autoLog(
+                $conn,
+                'update',
+                'Update mata kuliah: '.$nama
+            );
             $_SESSION['flash_success'] = "Perubahan disimpan.";
         } else {
             $_SESSION['flash_error'] = "Kode mata kuliah tidak ditemukan.";
@@ -108,6 +136,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($kode) {
             $stmt = $conn->prepare("DELETE FROM mata_kuliah WHERE kode_matkul = ? AND nip = ?");
             $stmt->execute([$kode, $nip]);
+            autoLog(
+                $conn,
+                'delete',
+                'Hapus mata kuliah: '.$nama
+            );
             $_SESSION['flash_success'] = "Mata kuliah dihapus.";
         }
         header("Location: mata_kuliah.php");

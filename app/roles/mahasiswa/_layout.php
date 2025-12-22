@@ -13,13 +13,14 @@ $onlyMhs = (count($roles) === 1 && in_array('mahasiswa', $roles, true));
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link href="../../../public/assets/img/logo_ivss2.png" rel="icon">
     <meta charset="UTF-8">
     <title><?= $title ?? "Mahasiswa Panel" ?></title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <link href="../../../public/assets/img/logo_ivss2.png" rel="icon">
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 

@@ -32,6 +32,17 @@ if (empty($_SESSION['user']['user_id'])) {
 }
 
 $currentUserId = (int) $_SESSION['user']['user_id'];
+function logAktivitas(PDO $conn, int $userId, string $aksi, string $deskripsi){
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $aksi, $deskripsi]);
+    } catch (Exception $e) {
+        // sengaja dikosongkan agar tidak ganggu proses utama
+    }
+}
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -114,6 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tgl_post,
             $kategori
         ]);
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'create',
+            'Operator Menambahkan berita: '.$judul
+        );
 
         $_SESSION['flash_success'] = "Berita berhasil ditambahkan.";
         header("Location: berita.php");
@@ -284,6 +301,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
         }
 
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'update',
+            'Operator Memperbarui berita: '.$judul
+        );
         $_SESSION['flash_success'] = "Berita berhasil diperbarui.";
         header("Location: berita.php");
         exit;
@@ -298,9 +321,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("SELECT foto FROM berita WHERE berita_id = ?");
             $stmt->execute([$id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmtJudul = $conn->prepare("SELECT judul FROM berita WHERE berita_id = ?");
+            $stmtJudul->execute([$id]);
+            $judulBerita = $stmtJudul->fetchColumn();
 
             $stmtDel = $conn->prepare("DELETE FROM berita WHERE berita_id = ?");
             $stmtDel->execute([$id]);
+            logAktivitas(
+                $conn,
+                $currentUserId,
+                'delete',
+                'Operator Menghapus berita: '.$judulBerita
+            );
 
             // hapus file fisik (kalau ada)
             if (!empty($row['foto'])) {
@@ -312,6 +344,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $_SESSION['flash_error'] = "ID berita tidak ditemukan.";
         }
+
 
         header("Location: berita.php");
         exit;

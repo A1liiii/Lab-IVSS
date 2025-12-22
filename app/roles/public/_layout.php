@@ -22,7 +22,7 @@ if (!$lab) {
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title><?= isset($title) ? $title : 'IVSS' ?></title>
+  <title><?= isset($title) ? $title : 'Intellegent Vision and Smart System' ?></title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -97,7 +97,7 @@ body.scrolled .login-btn {
       <a href="../public/home.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <img src="../../../public/assets/img/logo_ivss2.png" alt="">
-        <h1 class="sitename">IVSS</h1>
+        <h1 class="sitename">Intelegent Vision and Smart System</h1>
       </a>
       <nav id="navmenu" class="navmenu">
         <ul>

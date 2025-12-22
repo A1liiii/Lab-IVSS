@@ -75,6 +75,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         ':instagram'=>$data['instagram'],
                         ':tiktok'=>$data['tiktok'],
                     ]);
+
+                    try {
+                        $log = $db->prepare("
+                            INSERT INTO public.log_activity (user_id, aksi, deskripsi, waktu)
+                            VALUES (?, ?, ?, NOW())
+                        ");
+                        $log->execute([
+                            $_SESSION['user']['user_id'],
+                            'update',
+                            'Memperbarui informasi laboratorium'
+                        ]);
+                    } catch (PDOException $e) {}
                 } else {
                     $sql = "INSERT INTO lab_info (nama,deskripsi,visi,misi,motto,alamat,email,no_telp,youtube,instagram,tiktok)
                             VALUES (:nama,:deskripsi,:visi,:misi,:motto,:alamat,:email,:no_telp,:youtube,:instagram,:tiktok)";

@@ -55,7 +55,7 @@ ob_start();
                 <?php if (!empty($f['deskripsi'])): ?>
                   <p><?= htmlspecialchars(mb_substr($f['deskripsi'], 0, 100)) ?><?= mb_strlen($f['deskripsi']) > 100 ? '...' : '' ?></p>
                 <?php endif; ?>
-
+                button zoom-in
                 <a href="/Lab-IVSS/public/uploads/fasilitas/<?= htmlspecialchars($f['foto']) ?>" 
                   class="glightbox d-flex align-items-center justify-content-center"
                   data-gallery="fasilitas-gallery"

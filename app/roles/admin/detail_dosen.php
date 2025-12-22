@@ -104,6 +104,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['jabatan'],
             $nip_lama
         ]);
+        // === LOG UPDATE PROFIL DOSEN ===
+        try {
+            $log = $conn->prepare("
+                INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+                VALUES (?, ?, ?, NOW())
+            ");
+            $log->execute([
+                $_SESSION['user']['user_id'],
+                'update',
+                'Memperbarui profil dosen '.$_POST['nama'].' ('.$nip_lama.')'
+            ]);
+        } catch (PDOException $e) {}
     }
 
     // UPDATE ACCOUNT LOGIN
@@ -120,6 +132,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $conn->prepare("UPDATE users SET ".implode(",", $q)." WHERE user_id=?");
         $stmt->execute($p);
+        // === LOG UPDATE ACCOUNT LOGIN (PAKAI NAMA DOSEN) ===
+        try {
+            $log = $conn->prepare("
+                INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+                VALUES (?, ?, ?, NOW())
+            ");
+            $log->execute([
+                $_SESSION['user']['user_id'], // admin
+                'update',
+                'Memperbarui akun login dosen ' . $dosen['nama'] . ' (' . $nip . ')'
+            ]);
+        } catch (PDOException $e) {}
     }
 
     // Pendidikan CRUD
@@ -134,6 +158,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['universitas'],
             $_POST['tahun_akhir']
         ]);
+        // === LOG TAMBAH PENDIDIKAN ===
+        try {
+            $log = $conn->prepare("
+                INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+                VALUES (?, ?, ?, NOW())
+            ");
+            $log->execute([
+                $_SESSION['user']['user_id'],
+                'create',
+                '[DOSEN] Tambah pendidikan ('.$_POST['pendidikan_tinggi'].') untuk dosen '.$nip
+            ]);
+        } catch (PDOException $e) {}
     }
 
     if (isset($_POST['update_edu'])) {
@@ -145,6 +181,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['tahun_akhir'],
             $_POST['id']
         ]);
+    }
+    // =======================
+    // DELETE PENDIDIKAN
+    // =======================
+    if (isset($_POST['del_edu'])) {
+
+        $stmt = $conn->prepare("
+            DELETE FROM pendidikan
+            WHERE id = ?
+        ");
+        $stmt->execute([$_POST['id']]);
     }
 
     // Mata Kuliah CRUD
@@ -204,6 +251,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['sks'], $_POST['tahun_ajar'], $_POST['kode_matkul']
         ]);
     }
+    // =======================
+    // DELETE MATA KULIAH
+    // =======================
+    if (isset($_POST['del_mk'])) {
+
+        $stmt = $conn->prepare("
+            DELETE FROM mata_kuliah
+            WHERE kode_matkul = ?
+        ");
+        $stmt->execute([$_POST['kode_matkul']]);
+    }
+
 
     header("Location: detail_dosen.php?user_id=".$_POST['user_id_redirect']);
     exit;
@@ -392,6 +451,14 @@ ob_start();
                 <div class="col-auto d-flex gap-2">
                     <button type="button" class="btn btn-outline-primary btn-sm btn-edit-toggle"><i class="bi bi-pencil"></i></button>
                     <button type="submit" class="btn btn-success btn-sm d-none btn-save-inline"><i class="bi bi-check-lg"></i></button>
+                    <!-- DELETE -->
+                    <button type="submit"
+                        name="del_edu"
+                        value="1"
+                        onclick="return confirm('Hapus riwayat pendidikan ini?')"
+                        class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </form>
         <?php endforeach; ?>
@@ -452,6 +519,13 @@ ob_start();
                 <div class="col-auto d-flex gap-2">
                     <button type="button" class="btn btn-outline-primary btn-sm btn-edit-toggle"><i class="bi bi-pencil"></i></button>
                     <button type="submit" class="btn btn-success btn-sm d-none btn-save-inline"><i class="bi bi-check-lg"></i></button>
+                        <button type="submit"
+                            name="del_mk"
+                            value="1"
+                            onclick="return confirm('Hapus mata kuliah ini?')"
+                            class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
                 </div>
             </form>
         <?php endforeach; ?>

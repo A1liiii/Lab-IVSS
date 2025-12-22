@@ -115,15 +115,6 @@ ob_start();
 <?php endif; ?>
 
 
-<!-- ADD LOG -->
-<div class="card p-3 shadow-sm mb-4 border-0">
-    <form method="POST" class="d-flex gap-2">
-        <input type="hidden" name="action" value="add">
-        <input class="form-control" name="deskripsi" placeholder="Tambahkan aktivitas baru..." required>
-        <button class="btn btn-primary"><i class="bi bi-plus-lg"></i></button>
-    </form>
-</div>
-
 
 <!-- LOG LIST -->
 <div class="row g-3">

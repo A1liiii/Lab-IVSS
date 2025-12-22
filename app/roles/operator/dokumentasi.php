@@ -30,6 +30,17 @@ if (empty($_SESSION['user']['user_id'])) {
 }
 
 $currentUserId = (int) $_SESSION['user']['user_id'];
+function logAktivitas(PDO $conn, int $userId, string $aksi, string $deskripsi){
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $aksi, $deskripsi]);
+    } catch (Exception $e) {
+        // log gagal tidak boleh mematikan proses utama
+    }
+}
 
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -90,6 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $jenis_kegiatan,
             $currentUserId
         ));
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'create',
+            'Operasi menambahkan dokumentasi '
+        );
 
         $_SESSION['flash_success'] = "Dokumentasi berhasil ditambahkan.";
         header("Location: dokumentasi.php");
@@ -174,6 +191,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ");
             $stmt->execute(array($caption, $tanggal_kegiatan, $jenis_kegiatan, $id));
         }
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'update',
+            'Operator memperbarui dokumentasi'
+        );
 
         $_SESSION['flash_success'] = "Dokumentasi berhasil diperbarui.";
         header("Location: dokumentasi.php");
@@ -188,9 +211,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("SELECT type_file FROM act_documentation WHERE documentation_id = ?");
             $stmt->execute(array($id));
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmtCap = $conn->prepare("
+                SELECT caption FROM act_documentation
+                WHERE documentation_id = ?
+            ");
+            $stmtCap->execute([$id]);
+            $captionDok = $stmtCap->fetchColumn();
 
             $stmtDel = $conn->prepare("DELETE FROM act_documentation WHERE documentation_id = ?");
             $stmtDel->execute(array($id));
+            logAktivitas(
+                $conn,
+                $currentUserId,
+                'delete',
+                'Operator menghapus dokumentasi'
+            );
 
             if ($row && !empty($row['type_file'])) {
                 $destDir = __DIR__ . "/../../../public/uploads/dokumentasi/";

@@ -11,6 +11,20 @@ function safe($v){ return htmlspecialchars($v ?? "-", ENT_QUOTES,'UTF-8'); }
 $user_id = $_SESSION['user']['user_id'] ?? null;
 if (!$user_id) die("User not found.");
 
+function autoLog(PDO $conn, string $aksi, string $deskripsi = null){
+    if (empty($_SESSION['user']['user_id'])) return;
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user']['user_id'],
+            $aksi,
+            $deskripsi
+        ]);
+    } catch (Exception $e) {}
+}
 // =====================================================
 // HANDLE POST
 // =====================================================
@@ -30,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $dest = __DIR__ . "/../../../public/uploads/profiles/" . $user_id . ".jpg";
                 move_uploaded_file($file['tmp_name'], $dest);
                 $_SESSION['flash_success'] = "Foto berhasil diperbarui.";
+                autoLog($conn, 'update_photo', 'Update foto profil');
             }
         }
         header("Location: profile.php"); exit;
@@ -46,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['jabatan'], $_POST['nip']
         ]);
         $_SESSION['flash_success'] = "Data dosen diperbarui.";
+        autoLog($conn, 'update_profile', 'Update profil');
         header("Location: profile.php"); exit;
     }
 
@@ -57,10 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($pwd === "") {
             $stmt = $conn->prepare("UPDATE users SET username=? WHERE user_id=?");
             $stmt->execute([$username, $user_id]);
+
         } else {
             $stmt = $conn->prepare("UPDATE users SET username=?, password=? WHERE user_id=?");
             $stmt->execute([$username, password_hash($pwd, PASSWORD_DEFAULT), $user_id]);
         }
+        autoLog($conn, 'update_account', 'Mengganti username akun');
         $_SESSION['flash_success'] = "Akun diperbarui.";
         header("Location: profile.php"); exit;
     }

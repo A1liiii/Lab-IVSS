@@ -164,7 +164,7 @@ $recentPosts = $recentStmt->fetchAll(PDO::FETCH_ASSOC);
 
 /* Read More – bar biru full width di bawah card */
 .blog .post-item .readmore-box {
-  background: #0F2F8A;                 /* biru tua IVSS */
+  background: #8b8d95ff;                 /* biru tua IVSS */
   padding: 14px 20px;
   margin: 0 -20px -16px -20px;         /* samakan dengan padding card */
   border-radius: 0 0 12px 12px;

@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
             <div class="mb-3">
-                <label>Nama Lengkap *</label>
+                <label>Nama Lengkap(besertakan gelar) *</label>
                 <input type="text" name="nama" class="form-control" required>
             </div>
 

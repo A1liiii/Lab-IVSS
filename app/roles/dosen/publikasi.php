@@ -16,6 +16,23 @@ function safe($v){ return htmlspecialchars($v ?? "-", ENT_QUOTES,'UTF-8'); }
 // Ambil user_id dosen
 $user_id = $_SESSION['user']['user_id'] ?? null;
 
+function autoLog(PDO $conn, string $aksi, string $deskripsi = null){
+    if (empty($_SESSION['user']['user_id'])) return;
+
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user']['user_id'],
+            $aksi,
+            $deskripsi
+        ]);
+    } catch (Exception $e) {
+        // log gagal TIDAK BOLEH ganggu proses utama
+    }
+}
 // =====================================================
 // ================= HANDLE FORM ACTIONS ===============
 // =====================================================
@@ -39,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             VALUES (?, ?, ?, ?)
         ");
         $stmt->execute([$user_id, $judul, $tahun, $link]);
-
+        autoLog($conn, 'create', 'Tambah publikasi');
         $_SESSION['flash_success'] = "Publikasi berhasil ditambahkan.";
         header("Location: publikasi.php");
         exit;
@@ -58,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
             WHERE publikasi_id=? AND user_id=?
         ");
         $stmt->execute([$judul, $tahun, $link, $id, $user_id]);
-
+        autoLog($conn, 'update', 'Update publikasi');
         $_SESSION['flash_success'] = "Publikasi berhasil diperbarui.";
         header("Location: publikasi.php");
         exit;
@@ -69,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         $id = $_POST['publikasi_id'];
         $stmt = $conn->prepare("DELETE FROM publikasi WHERE publikasi_id=? AND user_id=?");
         $stmt->execute([$id, $user_id]);
+        autoLog($conn, 'delete', 'Hapus publikasi');
 
         $_SESSION['flash_success'] = "Publikasi berhasil dihapus.";
         header("Location: publikasi.php");

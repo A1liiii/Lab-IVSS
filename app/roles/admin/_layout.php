@@ -10,6 +10,7 @@ requireRole("admin");
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link href="../../../public/assets/img/logo_ivss2.png" rel="icon">
     <meta charset="UTF-8">
     <title><?= $title ?? 'Admin Panel' ?></title>
 

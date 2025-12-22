@@ -101,6 +101,19 @@ try {
 
     $conn->commit();
 
+    // === LOG GENERATE USER MAHASISWA ===
+    try {
+        $log = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $log->execute([
+            $_SESSION['user']['user_id'], // admin
+            'create',
+            'Admin Membuat akun login Mahasiswa ' . $reg['nama'] . ' (' . $reg['nim'] . ')'
+        ]);
+    } catch (PDOException $e) {}
+
     header("Location: ../admin/user.php");
     exit;
 

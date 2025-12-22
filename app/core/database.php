@@ -3,7 +3,7 @@
 class Database {
     public static function connect() {
         $host = "localhost";
-        $port = "5432"; 
+        $port = "5433"; 
         $user = "postgres"; 
         $pass = "PasswordBaru123!";        
         $db   = "labivss";

@@ -38,7 +38,7 @@ $stmtMhs->execute([$nim]);
 $mhs = $stmtMhs->fetch(PDO::FETCH_ASSOC);
 
 if(!$mhs){
-    die("<div class='alert alert-danger'>❌ Data mahasiswa tidak ditemukan di tabel mahasiswa.</div>");
+    die("<div class='alert alert-danger'>Data mahasiswa tidak ditemukan di tabel mahasiswa.</div>");
 }
 
 // Format tanggal
@@ -47,6 +47,75 @@ function formatDate($ts){
     return date("d M Y, H:i", strtotime($ts));
 }
 
+// ========================= HANDLE UPDATE (ADMIN) =========================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_mahasiswa_admin'])) {
+
+    $allowedStatus = ['aktif','cuti','lulus'];
+    $status = in_array($_POST['status'], $allowedStatus) ? $_POST['status'] : 'aktif';
+
+    $stmt = $conn->prepare("
+        UPDATE mahasiswa SET
+            nama      = ?,
+            email     = ?,
+            prodi     = ?,
+            angkatan  = ?,
+            status    = ?
+        WHERE nim = ?
+    ");
+
+    $stmt->execute([
+        $_POST['nama'] ?? '',
+        $_POST['email'] ?? '',
+        $_POST['prodi'] ?? '',
+        $_POST['angkatan'] ?? '',
+        $status,
+        $nim
+    ]);
+    // === LOG UPDATE PROFIL MAHASISWA ===
+    try {
+        $log = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $log->execute([
+            $_SESSION['user']['user_id'], // admin
+            'update',
+            'Admin Memperbarui profil mahasiswa ' . $mhs['nama'] . ' (' . $nim . ')'
+        ]);
+    } catch (PDOException $e) {}
+    
+    $_SESSION['flash_success'] = "Profil mahasiswa berhasil diperbarui.";
+    header("Location: detail_mahasiswa.php?user_id=".$user_id);
+    exit;
+}
+// ========================= UPDATE FOTO (ADMIN) =========================
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_foto_admin'])) {
+
+    if (!empty($_FILES['foto']['name'])) {
+
+        $foto = $_FILES['foto'];
+        $ext  = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
+
+        if (in_array($ext, ['jpg','jpeg','png'])) {
+
+            $dir = __DIR__ . "/../../../public/uploads/profiles/";
+            if(!is_dir($dir)) mkdir($dir, 0777, true);
+
+            $filename = $nim . "." . $ext;
+            move_uploaded_file($foto['tmp_name'], $dir . $filename);
+
+            $stmt = $conn->prepare("UPDATE mahasiswa SET foto=? WHERE nim=?");
+            $stmt->execute([$filename, $nim]);
+
+            $_SESSION['flash_success'] = "Foto mahasiswa berhasil diperbarui.";
+        } else {
+            $_SESSION['flash_error'] = "Format foto harus JPG atau PNG.";
+        }
+    }
+
+    header("Location: detail_mahasiswa.php?user_id=".$user_id);
+    exit;
+}
 ob_start();
 ?>
 
@@ -58,13 +127,33 @@ ob_start();
 
     <!-- FOTO PROFIL -->
     <div class="text-center mb-4">
-        <img src="../../../public/uploads/profiles/<?= $user_id ?>.jpg"
-             onerror="this.src='../../../public/assets/img/default-user.png';"
-             class="rounded-circle border"
-             style="width:120px;height:120px;object-fit:cover;">
+    <?php
+    $fotoMhs = $mhs['foto'] 
+        ?: (file_exists(__DIR__."/../../../public/uploads/profiles/".$nim.".jpg") ? $nim.".jpg" : null);
+
+    $fotoMhs = $fotoMhs 
+        ?: (file_exists(__DIR__."/../../../public/uploads/profiles/".$nim.".png") ? $nim.".png" : null);
+    ?>
+
+        <img src="../../../public/uploads/profiles/<?= safe($fotoMhs) ?>"
+            onerror="this.src='../../../public/assets/img/default-user.png';"
+            class="rounded-circle border"
+            style="width:120px;height:120px;object-fit:cover;">
         
         <h5 class="fw-bold mt-3"><?= safe($mhs['nama']) ?></h5>
         <span class="badge bg-info text-dark px-3 py-2">Mahasiswa</span>
+    <form method="POST" enctype="multipart/form-data" class="mt-2">
+        <input type="hidden" name="update_foto_admin" value="1">
+
+        <label class="btn btn-sm btn-outline-primary">
+            Ganti Foto
+            <input type="file" name="foto" accept=".jpg,.jpeg,.png" hidden>
+        </label>
+
+        <button class="btn btn-sm btn-primary">
+            <i class="bi bi-upload"></i> Upload
+        </button>
+    </form>
     </div>
 
     <hr>
@@ -114,6 +203,67 @@ ob_start();
             <td><?= formatDate($mhs['tanggal_join']) ?></td>
         </tr>
     </table>
+
+    <hr>
+
+<h6 class="fw-bold text-primary mb-3">
+    <i class="bi bi-pencil-square"></i> Edit Profil Mahasiswa
+</h6>
+
+<?php if(!empty($_SESSION['flash_success'])): ?>
+<div class="alert alert-success">
+    <?= safe($_SESSION['flash_success']) ?>
+</div>
+<?php unset($_SESSION['flash_success']); endif; ?>
+
+<form method="POST">
+<input type="hidden" name="update_mahasiswa_admin" value="1">
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label class="fw-semibold">Nama</label>
+        <input type="text" name="nama" class="form-control"
+               value="<?= safe($mhs['nama']) ?>" required>
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-semibold">Email</label>
+        <input type="email" name="email" class="form-control"
+               value="<?= safe($mhs['email']) ?>">
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-semibold">Program Studi</label>
+        <input type="text" name="prodi" class="form-control"
+               value="<?= safe($mhs['prodi']) ?>">
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-semibold">Angkatan</label>
+        <input type="number" name="angkatan" class="form-control"
+               value="<?= safe($mhs['angkatan']) ?>">
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-semibold">Status Mahasiswa</label>
+        <select name="status" class="form-select">
+            <option value="aktif" <?= $mhs['status']=='aktif'?'selected':'' ?>>Aktif</option>
+            <option value="cuti"  <?= $mhs['status']=='cuti'?'selected':'' ?>>Cuti</option>
+            <option value="lulus" <?= $mhs['status']=='lulus'?'selected':'' ?>>Lulus</option>
+        </select>
+    </div>
+
+</div>
+
+<div class="mt-4">
+    <button class="btn btn-primary">
+        <i class="bi bi-save"></i> Simpan Perubahan
+    </button>
+</div>
+
+</form>
+
 
     <hr>
 

@@ -9,6 +9,21 @@ $conn = Database::connect();
 
 function safe($x){ return htmlspecialchars($x ?? "-", ENT_QUOTES, 'UTF-8'); }
 
+function autoLog(PDO $conn, string $aksi, string $deskripsi = null){
+    if (empty($_SESSION['user']['user_id'])) return;
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([
+            $_SESSION['user']['user_id'],
+            $aksi,
+            $deskripsi
+        ]);
+    } catch (Exception $e) {}
+}
+
 // Ambil identitas dari session
 $user_id = $_SESSION['user']['user_id'] ?? null;
 $nim     = $_SESSION['user']['nim'] ?? null;
@@ -42,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$filename, $nim]);
 
                 $_SESSION['flash_success'] = "Foto berhasil diperbarui.";
+                autoLog($conn, 'update_photo', 'Update foto profil');
             } else {
                 $_SESSION['flash_error'] = "Format foto harus JPG atau PNG.";
             }
@@ -70,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $_SESSION['flash_success'] = "Profil berhasil diperbarui.";
+        autoLog($conn, 'update_profile', 'Memperbarui Profil');
         header("Location: profile.php");
         exit;
     }

@@ -32,8 +32,24 @@ function text_length_custom($s){
     return strlen($s);
 }
 
-$currentUserId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+$currentUserId = isset($_SESSION['user']['user_id'])
+    ? (int)$_SESSION['user']['user_id']
+    : null;
 
+if(!$currentUserId){
+    die("Session user tidak valid. Silakan login ulang.");
+}
+function logAktivitas(PDO $conn, int $userId, string $aksi, string $deskripsi){
+    try {
+        $stmt = $conn->prepare("
+            INSERT INTO log_activity (user_id, aksi, deskripsi, waktu)
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([$userId, $aksi, $deskripsi]);
+    } catch (Exception $e) {
+        // silent fail
+    }
+}
 // ====================== HANDLE POSTS (ADD / UPDATE / DELETE) ======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = isset($_POST['action']) ? $_POST['action'] : '';
@@ -81,6 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         $proyekId = (int) $stmt->fetchColumn();
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'create',
+            'Operator Menambahkan proyek '.$judul
+        );
 
         // ======= SIMPAN ANGGOTA PROYEK (dari builder) =======
         if (!empty($anggotaUsers)) {
@@ -163,7 +185,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtAng->execute(array($uid, $id, $role));
             }
         }
-
+        logAktivitas(
+            $conn,
+            $currentUserId,
+            'update',
+            'Operator memperbarui data proyek: '.$judul
+        );
         $_SESSION['flash_success'] = "Proyek berhasil diperbarui.";
         header("Location: proyek.php");
         exit;
@@ -176,9 +203,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id) {
             $stmtDelAnggota = $conn->prepare("DELETE FROM anggota_proyek WHERE proyek_id = ?");
             $stmtDelAnggota->execute(array($id));
+            $stmtJudul = $conn->prepare("SELECT judul FROM proyek WHERE proyek_id = ?");
+            $stmtJudul->execute([$id]);
+            $judulProyek = $stmtJudul->fetchColumn();
 
             $stmtDel = $conn->prepare("DELETE FROM proyek WHERE proyek_id = ?");
             $stmtDel->execute(array($id));
+            logAktivitas(
+                $conn,
+                $currentUserId,
+                'delete',
+                'Operator Menghapus proyek: '.$judulProyek
+            );
 
             $_SESSION['flash_success'] = "Proyek telah dihapus.";
         } else {

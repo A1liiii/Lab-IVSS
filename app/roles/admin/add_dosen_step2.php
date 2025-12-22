@@ -90,6 +90,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $conn->commit();
 
+                // === LOG ACTIVITY : CREATE USER DOSEN ===
+                try {
+                    $log = $conn->prepare("
+                        INSERT INTO public.log_activity (user_id, aksi, deskripsi, waktu)
+                        VALUES (?, ?, ?, NOW())
+                    ");
+
+                    // role tambahan (opsional)
+                    $roleInfo = implode(", ", $rolesToAssign);
+
+                    $log->execute([
+                        $_SESSION['user']['user_id'], // ADMIN yang membuat
+                        'create',
+                        'Membuat akun dosen: ' . $dosen['nama'] . ' (' . $nip . ')'
+                    ]);
+                } catch (PDOException $e) {
+                    // log gagal → tidak menggagalkan proses utama
+                }
+
                 header("Location: user.php");
                 exit;
 
